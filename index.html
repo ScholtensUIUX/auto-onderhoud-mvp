@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto-onderhoud MVP</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 2rem;
+      background: #fafafa;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+    }
+    tr:hover {
+      background-color: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Auto-onderhoud overzicht</h1>
+  <table id="bonnen">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Garage</th>
+        <th>Totaalbedrag</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
+  <script>
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.querySelector('#bonnen tbody');
+
+        if (!data.facturen || !Array.isArray(data.facturen)) {
+          console.error("Geen facturen-array gevonden in data.json");
+          return;
+        }
+
+        data.facturen.forEach((factuur, index) => {
+          // Hoofd-rij voor compacte weergave
+          const mainRow = document.createElement('tr');
+          mainRow.style.cursor = 'pointer';
+          mainRow.innerHTML = `
+            <td>${factuur.datum}</td>
+            <td>${factuur.garage}</td>
+            <td>€ ${factuur.totaal.toFixed(2)}</td>
+          `;
+          tbody.appendChild(mainRow);
+
+          // Sub-rijen voor detailregels (verstopt)
+          const regels = factuur.regels || [];
+          const detailRows = [];
+          regels.forEach(regel => {
+            const row = document.createElement('tr');
+            row.style.display = 'none'; // standaard verborgen
+            row.style.backgroundColor = index % 2 === 0 ? '#f9fcff' : '#f2f9ff';
+            row.innerHTML = `
+              <td></td>
+              <td></td>
+              <td style="padding-left: 1.5rem;" colspan="2">- ${regel.omschrijving} (€${regel.bedrag.toFixed(2)})</td>
+            `;
+            tbody.appendChild(row);
+            detailRows.push(row);
+          });
+
+          // Klik op hoofd-rij togglet detail-rijen
+          mainRow.addEventListener('click', () => {
+            detailRows.forEach(r => {
+              r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
+            });
+          });
+        });
+      })
+      .catch(err => {
+        console.error("Fout bij het laden van data.json:", err);
+      });
+  </script>
+</body>
+</html>
