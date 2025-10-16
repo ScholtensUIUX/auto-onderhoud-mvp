@@ -13,6 +13,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 1rem;
     }
     th, td {
       border-bottom: 1px solid #ddd;
@@ -25,10 +26,37 @@
     tr:hover {
       background-color: #f0f8ff;
     }
+    .detail-row {
+      display: none;
+      background-color: #f9fcff;
+    }
+    .detail-cell {
+      padding-left: 1.5rem;
+      font-size: 0.9rem;
+      color: #333;
+    }
+    select, input[type="text"] {
+      padding: 0.3rem;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      margin-right: 1rem;
+    }
+    label {
+      margin-right: 0.5rem;
+    }
   </style>
 </head>
 <body>
   <h1>Auto-onderhoud overzicht</h1>
+
+  <label for="categorieFilter">Filter op categorie:</label>
+  <select id="categorieFilter">
+    <option value="alle">Alle</option>
+  </select>
+
+  <label for="searchInput">Zoeken:</label>
+  <input type="text" id="searchInput" placeholder="Typ hier om te zoeken..." />
+
   <table id="bonnen">
     <thead>
       <tr>
@@ -41,54 +69,97 @@
   </table>
 
   <script>
+    let bonnenData = [];
+
+    function renderTable(filter = 'alle', zoekterm = '') {
+      const tbody = document.querySelector('#bonnen tbody');
+      tbody.innerHTML = '';
+
+      let filtered = bonnenData;
+
+      // Filter op categorie
+      if (filter !== 'alle') {
+        filtered = filtered.filter(bon => bon.categorie === filter);
+      }
+
+      // Filter op zoekterm (omschrijving, garage, kenteken)
+      if (zoekterm) {
+        const term = zoekterm.toLowerCase();
+        filtered = filtered.filter(bon =>
+          bon.omschrijving.toLowerCase().includes(term) ||
+          bon.garage.toLowerCase().includes(term) ||
+          bon.kenteken.toLowerCase().includes(term)
+        );
+      }
+
+      filtered.forEach((bon) => {
+        const mainRow = document.createElement('tr');
+        mainRow.style.cursor = 'pointer';
+        mainRow.innerHTML = `
+          <td>${bon.factuurdatum}</td>
+          <td>${bon.garage}</td>
+          <td>€ ${bon.totaal.toFixed(2)}</td>
+        `;
+        tbody.appendChild(mainRow);
+
+        const detailRow = document.createElement('tr');
+        detailRow.classList.add('detail-row');
+        detailRow.innerHTML = `
+          <td colspan="3" class="detail-cell">
+            <strong>Omschrijving:</strong> ${bon.omschrijving}<br>
+            <strong>Kilometerstand:</strong> ${bon.kilometerstand}<br>
+            <strong>Kenteken:</strong> ${bon.kenteken}<br>
+            <strong>Categorie:</strong> ${bon.categorie}<br>
+            <strong>Merk/Uitvoering:</strong> ${bon.merk} ${bon.uitvoering}<br>
+            <strong>APK geldig tot:</strong> ${bon.apk_geldig_tot}<br>
+            <strong>BTW:</strong> € ${bon.btw.toFixed(2)} | <strong>Bedrag excl. BTW:</strong> € ${bon.bedrag_excl_btw.toFixed(2)}
+          </td>
+        `;
+        tbody.appendChild(detailRow);
+
+        mainRow.addEventListener('click', () => {
+          detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
+        });
+      });
+    }
+
     fetch('data.json')
       .then(response => response.json())
       .then(data => {
-        const tbody = document.querySelector('#bonnen tbody');
-
-        if (!data.facturen || !Array.isArray(data.facturen)) {
-          console.error("Geen facturen-array gevonden in data.json");
+        if (!data.bonnen || !Array.isArray(data.bonnen)) {
+          console.error("Geen bonnen-array gevonden in data.json");
           return;
         }
 
-        data.facturen.forEach((factuur, index) => {
-          // Hoofd-rij voor compacte weergave
-          const mainRow = document.createElement('tr');
-          mainRow.style.cursor = 'pointer';
-          mainRow.innerHTML = `
-            <td>${factuur.datum}</td>
-            <td>${factuur.garage}</td>
-            <td>€ ${factuur.totaal.toFixed(2)}</td>
-          `;
-          tbody.appendChild(mainRow);
+        // Sorteer op datum aflopend (nieuwste bovenaan)
+        bonnenData = data.bonnen.sort((a, b) => new Date(b.factuurdatum) - new Date(a.factuurdatum));
 
-          // Sub-rijen voor detailregels (verstopt)
-          const regels = factuur.regels || [];
-          const detailRows = [];
-          regels.forEach(regel => {
-            const row = document.createElement('tr');
-            row.style.display = 'none'; // standaard verborgen
-            row.style.backgroundColor = index % 2 === 0 ? '#f9fcff' : '#f2f9ff';
-            row.innerHTML = `
-              <td></td>
-              <td></td>
-              <td style="padding-left: 1.5rem;" colspan="2">- ${regel.omschrijving} (€${regel.bedrag.toFixed(2)})</td>
-            `;
-            tbody.appendChild(row);
-            detailRows.push(row);
-          });
+        // Vul filter dropdown met unieke categorieën
+        const categorieFilter = document.getElementById('categorieFilter');
+        const categorieën = [...new Set(bonnenData.map(b => b.categorie))];
+        categorieën.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat;
+          option.textContent = cat;
+          categorieFilter.appendChild(option);
+        });
 
-          // Klik op hoofd-rij togglet detail-rijen
-          mainRow.addEventListener('click', () => {
-            detailRows.forEach(r => {
-              r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
-            });
-          });
+        // Initial render
+        renderTable();
+
+        // Event listeners
+        categorieFilter.addEventListener('change', () => {
+          const zoekterm = document.getElementById('searchInput').value;
+          renderTable(categorieFilter.value, zoekterm);
+        });
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', () => {
+          const filter = categorieFilter.value;
+          renderTable(filter, searchInput.value);
         });
       })
-      .catch(err => {
-        console.error("Fout bij het laden van data.json:", err);
-      });
+      .catch(err => console.error("Fout bij het laden van data.json:", err));
   </script>
 </body>
 </html>
