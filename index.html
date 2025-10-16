@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto-onderhoud MVP</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 2rem;
+      background: #fafafa;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+  <h1>Auto-onderhoud overzicht</h1>
+  <table id="bonnen">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Kilometerstand</th>
+        <th>Garage</th>
+        <th>Omschrijving</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.querySelector('#bonnen tbody');
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.datum}</td>
+            <td>${item.kilometerstand}</td>
+            <td>${item.garage}</td>
+            <td>${item.omschrijving}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      });
+  </script>
+</body>
+</html>
