@@ -36,6 +36,19 @@
       border-color: #0070f3;
     }
 
+    .filters {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    select {
+      padding: 0.4rem;
+      border-radius: 0.4rem;
+      border: 1px solid #ccc;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -61,6 +74,13 @@
     .hidden {
       display: none;
     }
+
+    .placeholder {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px dashed #ccc;
+    }
   </style>
 </head>
 <body>
@@ -72,12 +92,21 @@
     <div id="tab-serviceboekje" class="tab">Serviceboekje</div>
   </div>
 
+  <!-- Filters (alleen voor Reparaties) -->
+  <div id="filters" class="filters">
+    <label for="categorieFilter">Categorie:</label>
+    <select id="categorieFilter">
+      <option value="alle">Alle</option>
+    </select>
+  </div>
+
   <!-- Tabel voor reparaties -->
   <table id="table-reparaties">
     <thead>
       <tr>
         <th>Datum</th>
         <th>Garage</th>
+        <th>Categorie</th>
         <th>Totaalbedrag</th>
       </tr>
     </thead>
@@ -85,7 +114,7 @@
   </table>
 
   <!-- Placeholder voor serviceboekje -->
-  <div id="table-serviceboekje" class="hidden">
+  <div id="table-serviceboekje" class="hidden placeholder">
     <p><em>Hier komt later het overzicht van geplande en historische servicebeurten.</em></p>
   </div>
 
@@ -95,6 +124,7 @@
     const tabServiceboekje = document.getElementById('tab-serviceboekje');
     const tableReparaties = document.getElementById('table-reparaties');
     const tableServiceboekje = document.getElementById('table-serviceboekje');
+    const filters = document.getElementById('filters');
 
     function showTab(tab) {
       if (tab === 'reparaties') {
@@ -102,11 +132,13 @@
         tabServiceboekje.classList.remove('active');
         tableReparaties.classList.remove('hidden');
         tableServiceboekje.classList.add('hidden');
+        filters.classList.remove('hidden');
       } else {
         tabServiceboekje.classList.add('active');
         tabReparaties.classList.remove('active');
         tableServiceboekje.classList.remove('hidden');
         tableReparaties.classList.add('hidden');
+        filters.classList.add('hidden');
       }
     }
 
@@ -118,19 +150,44 @@
       .then(response => response.json())
       .then(data => {
         const tbody = document.querySelector('#table-reparaties tbody');
+        const select = document.getElementById('categorieFilter');
+
         if (!data.bonnen || !Array.isArray(data.bonnen)) {
           console.error("Geen bonnen-array gevonden in data.json");
           return;
         }
 
-        data.bonnen.forEach(bon => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${bon.factuurdatum}</td>
-            <td>${bon.garage}</td>
-            <td>€ ${bon.totaal.toFixed(2)}</td>
-          `;
-          tbody.appendChild(row);
+        // Categorieën vullen in dropdown
+        const categories = [...new Set(data.bonnen.map(bon => bon.categorie))];
+        categories.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat;
+          option.textContent = cat;
+          select.appendChild(option);
+        });
+
+        // Functie om tabel te vullen
+        function renderTable(filterValue = 'alle') {
+          tbody.innerHTML = '';
+          const filtered = data.bonnen.filter(bon => filterValue === 'alle' || bon.categorie === filterValue);
+          filtered.forEach(bon => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${bon.factuurdatum}</td>
+              <td>${bon.garage}</td>
+              <td>${bon.categorie}</td>
+              <td>€ ${bon.totaal.toFixed(2)}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        }
+
+        // Initial render
+        renderTable();
+
+        // Filter event
+        select.addEventListener('change', e => {
+          renderTable(e.target.value);
         });
       })
       .catch(err => {
