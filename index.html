@@ -109,23 +109,24 @@
       });
     });
 
-    // REPARATIES laden
+    // JSON laden
     fetch('data.json')
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        return response.json();
+      })
       .then(data => {
+        // REPARATIES
+        const bonnen = data.bonnen || [];
         const tbody = document.querySelector('#reparaties tbody');
-        if (!data.bonnen || !Array.isArray(data.bonnen)) {
-          console.error("Geen bonnen-array gevonden in data.json");
-          return;
-        }
 
-        data.bonnen.forEach((factuur, index) => {
+        bonnen.forEach((factuur, index) => {
           const mainRow = document.createElement('tr');
           mainRow.style.cursor = 'pointer';
           mainRow.innerHTML = `
-            <td>${factuur.factuurdatum}</td>
-            <td>${factuur.garage}</td>
-            <td>€ ${factuur.totaal.toFixed(2)}</td>
+            <td>${factuur.factuurdatum || '-'}</td>
+            <td>${factuur.garage || '-'}</td>
+            <td>€ ${factuur.totaal ? factuur.totaal.toFixed(2) : '-'}</td>
           `;
           tbody.appendChild(mainRow);
 
@@ -142,7 +143,7 @@
             const row = document.createElement('tr');
             row.style.display = 'none';
             row.style.backgroundColor = index % 2 === 0 ? '#f9fcff' : '#f2f9ff';
-            row.innerHTML = `<td colspan="3" style="padding-left: 1.5rem;">${d.label}: ${d.value}</td>`;
+            row.innerHTML = `<td colspan="3" style="padding-left: 1.5rem;">${d.label}: ${d.value || '-'}</td>`;
             tbody.appendChild(row);
             detailRows.push(row);
           });
@@ -154,8 +155,8 @@
           });
         });
 
-        // SERVICEBEURTEN renderen
-        const serviceData = data.service || []; // service array toevoegen in data.json
+        // SERVICEBEURTEN
+        const serviceData = data.service || [];
         const serviceTbody = document.querySelector('#service tbody');
         const serviceFilter = document.getElementById('serviceFilter');
 
@@ -167,15 +168,14 @@
           serviceData.forEach(beurt => {
             const beurtDatum = new Date(beurt.datum);
             if ((filter === 'historisch' && beurtDatum > vandaag) ||
-                (filter === 'toekomstig' && beurtDatum <= vandaag)) {
-              return;
-            }
+                (filter === 'toekomstig' && beurtDatum <= vandaag)) return;
+
             const row = document.createElement('tr');
             row.innerHTML = `
-              <td>${beurt.datum}</td>
-              <td>${beurt.soort_onderhoud}</td>
-              <td>${beurt.kilometerstand}</td>
-              <td>${beurt.uitgevoerd_door}</td>
+              <td>${beurt.datum || '-'}</td>
+              <td>${beurt.soort_onderhoud || '-'}</td>
+              <td>${beurt.kilometerstand || '-'}</td>
+              <td>${beurt.uitgevoerd_door || '-'}</td>
               <td>${beurt.opmerkingen || ''}</td>
             `;
             serviceTbody.appendChild(row);
