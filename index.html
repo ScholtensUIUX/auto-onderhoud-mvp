@@ -10,76 +10,58 @@
       margin: 2rem;
       background: #fafafa;
     }
+    h1 { margin-bottom: 1rem; }
 
-    h1 {
-      margin-bottom: 1rem;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
+    /* Tabs */
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
     .tab {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 0.5rem;
-      background: #eee;
+      background: #f0f0f0;
       cursor: pointer;
       user-select: none;
     }
+    .tab.active { background: #0070f3; color: #fff; border-color: #0070f3; }
 
-    .tab.active {
-      background: #0070f3;
-      color: white;
-      border-color: #0070f3;
-    }
-
-    .filters {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    select {
-      padding: 0.4rem;
-      border-radius: 0.4rem;
+    /* Controls */
+    .controls { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+    select, input[type="text"] {
+      padding: 0.35rem 0.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
+    label { font-size: 0.95rem; }
 
+    /* Table */
     table {
       width: 100%;
       border-collapse: collapse;
       background: white;
-      border-radius: 0.5rem;
+      border-radius: 8px;
       overflow: hidden;
     }
-
-    th, td {
-      border-bottom: 1px solid #ddd;
-      padding: 0.5rem;
-      text-align: left;
-    }
-
-    th {
+    thead th {
       background: #eee;
+      padding: 0.6rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
     }
-
-    tr:hover {
-      background-color: #f0f8ff;
+    td {
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
     }
-
-    .hidden {
-      display: none;
-    }
+    tr.main-row { cursor: pointer; }
+    tr.main-row:hover { background: #f0f8ff; }
+    .detail-row { display: none; background: #f9fcff; }
+    .detail-cell { padding-left: 1.25rem; font-size: 0.95rem; color: #333; }
 
     .placeholder {
       background: white;
       padding: 1rem;
-      border-radius: 0.5rem;
-      border: 1px dashed #ccc;
+      border-radius: 8px;
+      border: 1px dashed #ddd;
     }
   </style>
 </head>
@@ -92,106 +74,158 @@
     <div id="tab-serviceboekje" class="tab">Serviceboekje</div>
   </div>
 
-  <!-- Filters (alleen voor Reparaties) -->
-  <div id="filters" class="filters">
+  <!-- Controls (only visible for Reparaties) -->
+  <div id="controls-reparaties" class="controls">
     <label for="categorieFilter">Categorie:</label>
     <select id="categorieFilter">
       <option value="alle">Alle</option>
     </select>
+
+    <label for="searchInput">Zoeken:</label>
+    <input type="text" id="searchInput" placeholder="Zoek op omschrijving, garage of kenteken..." />
   </div>
 
-  <!-- Tabel voor reparaties -->
-  <table id="table-reparaties">
-    <thead>
-      <tr>
-        <th>Datum</th>
-        <th>Garage</th>
-        <th>Categorie</th>
-        <th>Totaalbedrag</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <!-- Reparaties table -->
+  <div id="view-reparaties">
+    <table id="bonnen">
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Kilometerstand</th>
+          <th>Garage</th>
+          <th>Categorie</th>
+          <th>Totaal</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-  <!-- Placeholder voor serviceboekje -->
-  <div id="table-serviceboekje" class="hidden placeholder">
-    <p><em>Hier komt later het overzicht van geplande en historische servicebeurten.</em></p>
+  <!-- Serviceboekje placeholder -->
+  <div id="view-serviceboekje" class="placeholder" style="display:none;">
+    <p><em>Hier komt later het overzicht van geplande en historische servicebeurten (gebaseerd op model en intervallen).</em></p>
   </div>
 
   <script>
-    // Tabs
-    const tabReparaties = document.getElementById('tab-reparaties');
-    const tabServiceboekje = document.getElementById('tab-serviceboekje');
-    const tableReparaties = document.getElementById('table-reparaties');
-    const tableServiceboekje = document.getElementById('table-serviceboekje');
-    const filters = document.getElementById('filters');
+    // Tab handling
+    const tabRep = document.getElementById('tab-reparaties');
+    const tabSvc = document.getElementById('tab-serviceboekje');
+    const viewRep = document.getElementById('view-reparaties');
+    const viewSvc = document.getElementById('view-serviceboekje');
+    const controlsRep = document.getElementById('controls-reparaties');
 
     function showTab(tab) {
       if (tab === 'reparaties') {
-        tabReparaties.classList.add('active');
-        tabServiceboekje.classList.remove('active');
-        tableReparaties.classList.remove('hidden');
-        tableServiceboekje.classList.add('hidden');
-        filters.classList.remove('hidden');
+        tabRep.classList.add('active');
+        tabSvc.classList.remove('active');
+        viewRep.style.display = '';
+        viewSvc.style.display = 'none';
+        controlsRep.style.display = 'flex';
       } else {
-        tabServiceboekje.classList.add('active');
-        tabReparaties.classList.remove('active');
-        tableServiceboekje.classList.remove('hidden');
-        tableReparaties.classList.add('hidden');
-        filters.classList.add('hidden');
+        tabSvc.classList.add('active');
+        tabRep.classList.remove('active');
+        viewRep.style.display = 'none';
+        viewSvc.style.display = '';
+        controlsRep.style.display = 'none';
       }
     }
+    tabRep.addEventListener('click', () => showTab('reparaties'));
+    tabSvc.addEventListener('click', () => showTab('serviceboekje'));
 
-    tabReparaties.addEventListener('click', () => showTab('reparaties'));
-    tabServiceboekje.addEventListener('click', () => showTab('serviceboekje'));
+    // Data + rendering (keeps the exact click-to-expand behavior + filter + search)
+    let bonnenData = [];
 
-    // Data laden
+    function renderTable(filter = 'alle', zoekterm = '') {
+      const tbody = document.querySelector('#bonnen tbody');
+      tbody.innerHTML = '';
+
+      // filter & search
+      let filtered = bonnenData;
+      if (filter !== 'alle') {
+        filtered = filtered.filter(b => b.categorie === filter);
+      }
+      if (zoekterm) {
+        const term = zoekterm.toLowerCase();
+        filtered = filtered.filter(b =>
+          (b.omschrijving && b.omschrijving.toLowerCase().includes(term)) ||
+          (b.garage && b.garage.toLowerCase().includes(term)) ||
+          (b.kenteken && b.kenteken.toLowerCase().includes(term))
+        );
+      }
+
+      // render each bon: main row + hidden detail-row (click toggles)
+      filtered.forEach((bon, idx) => {
+        const mainRow = document.createElement('tr');
+        mainRow.className = 'main-row';
+        mainRow.innerHTML = `
+          <td>${bon.factuurdatum}</td>
+          <td>${bon.kilometerstand ?? ''}</td>
+          <td>${bon.garage}</td>
+          <td>${bon.categorie ?? ''}</td>
+          <td>€ ${Number(bon.totaal ?? 0).toFixed(2)}</td>
+        `;
+        tbody.appendChild(mainRow);
+
+        const detailRow = document.createElement('tr');
+        detailRow.className = 'detail-row';
+        detailRow.innerHTML = `
+          <td colspan="5" class="detail-cell">
+            <strong>Factuurnummer:</strong> ${bon.factuurnummer || '-'}<br>
+            <strong>Omschrijving:</strong> ${bon.omschrijving || '-'}<br>
+            <strong>Kilometerstand:</strong> ${bon.kilometerstand || '-'}<br>
+            <strong>Kenteken:</strong> ${bon.kenteken || '-'}<br>
+            <strong>Merk / Uitvoering:</strong> ${bon.merk || ''} ${bon.uitvoering || ''}<br>
+            <strong>APK geldig tot:</strong> ${bon.apk_geldig_tot || '-'}<br>
+            <strong>Bedrag excl. BTW:</strong> € ${Number(bon.bedrag_excl_btw ?? 0).toFixed(2)} |
+            <strong>BTW:</strong> € ${Number(bon.btw ?? 0).toFixed(2)} |
+            <strong>Totaal:</strong> € ${Number(bon.totaal ?? 0).toFixed(2)}
+          </td>
+        `;
+        tbody.appendChild(detailRow);
+
+        // Toggle detail row
+        mainRow.addEventListener('click', () => {
+          detailRow.style.display = detailRow.style.display === 'table-row' ? 'none' : 'table-row';
+        });
+      });
+    }
+
+    // Load data.json and initialize filters/search
     fetch('data.json')
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
-        const tbody = document.querySelector('#table-reparaties tbody');
-        const select = document.getElementById('categorieFilter');
-
         if (!data.bonnen || !Array.isArray(data.bonnen)) {
-          console.error("Geen bonnen-array gevonden in data.json");
+          console.error('data.json heeft geen bonnen-array op root (data.bonnen).');
           return;
         }
 
-        // Categorieën vullen in dropdown
-        const categories = [...new Set(data.bonnen.map(bon => bon.categorie))];
-        categories.forEach(cat => {
-          const option = document.createElement('option');
-          option.value = cat;
-          option.textContent = cat;
-          select.appendChild(option);
-        });
+        // Sorteer op factuurdatum aflopend (nieuwste eerst)
+        bonnenData = data.bonnen.slice().sort((a,b) => new Date(b.factuurdatum) - new Date(a.factuurdatum));
 
-        // Functie om tabel te vullen
-        function renderTable(filterValue = 'alle') {
-          tbody.innerHTML = '';
-          const filtered = data.bonnen.filter(bon => filterValue === 'alle' || bon.categorie === filterValue);
-          filtered.forEach(bon => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${bon.factuurdatum}</td>
-              <td>${bon.garage}</td>
-              <td>${bon.categorie}</td>
-              <td>€ ${bon.totaal.toFixed(2)}</td>
-            `;
-            tbody.appendChild(row);
-          });
-        }
+        // Vul categorie select
+        const select = document.getElementById('categorieFilter');
+        const cats = [...new Set(bonnenData.map(b => b.categorie).filter(Boolean))];
+        cats.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.textContent = cat;
+          select.appendChild(opt);
+        });
 
         // Initial render
         renderTable();
 
-        // Filter event
-        select.addEventListener('change', e => {
-          renderTable(e.target.value);
+        // Wire up controls
+        select.addEventListener('change', () => {
+          const zoek = document.getElementById('searchInput').value;
+          renderTable(select.value, zoek);
+        });
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          renderTable(select.value, e.target.value);
         });
       })
       .catch(err => {
-        console.error("Fout bij het laden van data.json:", err);
+        console.error('Fout bij laden data.json:', err);
       });
   </script>
 </body>
