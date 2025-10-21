@@ -3,125 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto-onderhoud overzicht</title>
+  <title>Wrenchly – Auto-onderhoud</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, sans-serif; margin: 40px; background: #fff; color: #111; }
-    h1 { font-size: 2rem; margin-bottom: 1rem; }
-    .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-    .tab { padding: 10px 20px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; }
-    .tab.active { background: #f2f2f2; font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
-    th { background: #f6f6f6; }
-    .details { background: #fafafa; padding: 10px 20px; border-radius: 8px; margin-top: 5px; }
-    select { padding: 6px 10px; border-radius: 6px; margin-left: 8px; }
+    body { font-family: 'Host Grotesk', sans-serif; background: #f8fafc; color: #111827; }
+    .tab-active { background-color: #fff; border-color: #e5e7eb; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .tab { transition: all 0.2s ease; }
+    .tab:hover { background-color: #f3f4f6; }
   </style>
 </head>
-<body>
-  <h1>Auto-onderhoud overzicht</h1>
 
-  <div class="tabs">
-    <div class="tab active" id="repairs-tab">Reparaties</div>
-    <div class="tab" id="service-tab">Serviceboekje</div>
-  </div>
+<body class="p-4 sm:p-8">
+  <main class="max-w-4xl mx-auto bg-white rounded-3xl shadow-md p-6 sm:p-10">
+    <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-0">Wrenchly – Onderhoudsoverzicht</h1>
+      <div class="flex gap-2 sm:gap-3">
+        <button id="tabReparaties" class="tab px-4 py-2 rounded-lg border text-sm sm:text-base">Reparaties</button>
+        <button id="tabServiceboekje" class="tab tab-active px-4 py-2 rounded-lg border text-sm sm:text-base">Serviceboekje</button>
+      </div>
+    </header>
 
-  <div id="filter-container" style="margin-bottom: 20px;"></div>
-  <div id="content"></div>
+    <!-- Filter -->
+    <div id="filterContainer" class="mb-4 hidden">
+      <label for="filter" class="mr-2 text-sm font-medium">Filter servicebeurten:</label>
+      <select id="filter" class="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500">
+        <option value="toekomstig">Toekomstig</option>
+        <option value="historisch">Historisch</option>
+      </select>
+    </div>
+
+    <!-- Cards-container -->
+    <section id="cardContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></section>
+  </main>
 
   <script>
-    let currentTab = 'repairs';
-    let allData = {};
+    const tabReparaties = document.getElementById('tabReparaties');
+    const tabServiceboekje = document.getElementById('tabServiceboekje');
+    const filterContainer = document.getElementById('filterContainer');
+    const filter = document.getElementById('filter');
+    const cardContainer = document.getElementById('cardContainer');
+
+    let currentTab = 'serviceboekje';
+    let data = {};
 
     async function loadData() {
-      const response = await fetch('data.json');
-      allData = await response.json();
+      const res = await fetch('data.json');
+      data = await res.json();
       render();
     }
 
     function render() {
-      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-      document.getElementById(`${currentTab}-tab`).classList.add('active');
+      cardContainer.innerHTML = '';
 
-      const container = document.getElementById('content');
-      const filterContainer = document.getElementById('filter-container');
-      container.innerHTML = '';
-      filterContainer.innerHTML = '';
-
-      if (currentTab === 'repairs') {
-        renderRepairs(container);
+      if (currentTab === 'reparaties') {
+        filterContainer.classList.add('hidden');
+        data.reparaties.forEach(item => createCard(item.datum, item.soort, item.opmerking, item.kilometerstand, 'reparatie'));
       } else {
-        renderService(container, filterContainer);
+        filterContainer.classList.remove('hidden');
+        const type = filter.value;
+        const lijst = data.serviceboekje[type];
+        lijst.forEach(item => createCard(item.datum, item.soort, item.opmerking, item.kilometerstand, 'service'));
       }
     }
 
-    function renderRepairs(container) {
-      let html = `
-        <table>
-          <tr><th>Datum</th><th>Omschrijving</th></tr>
-          ${allData.repairs.map(r => `
-            <tr>
-              <td>${r.date}</td>
-              <td>${r.description}</td>
-            </tr>
-          `).join('')}
-        </table>
+    function createCard(date, title, desc, km, type) {
+      const card = document.createElement('div');
+      card.className = "bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-5 hover:shadow-md transition cursor-pointer";
+      card.innerHTML = `
+        <div class="flex flex-col gap-1">
+          <div class="text-xs text-gray-500">${date}</div>
+          <div class="text-base sm:text-lg font-semibold text-gray-800">${title}</div>
+          <p class="text-sm text-gray-600 mt-1">${desc || '-'}</p>
+        </div>
+        <div class="details hidden mt-3 border-t pt-3">
+          <p class="text-sm text-gray-600"><span class="font-medium">Kilometerstand:</span> ${km ? km + ' km' : '-'}</p>
+          ${type === 'service' ? `<p class="text-sm text-gray-600 mt-1"><span class="font-medium">Type:</span> Servicebeurt</p>` : ''}
+        </div>
       `;
-      container.innerHTML = html;
-    }
-
-    function renderService(container, filterContainer) {
-      const today = new Date();
-      const upcoming = allData.upcomingMaintenance.map(s => ({...s, isFuture: new Date(s.date) > today }));
-      const history = [
-        ...allData.serviceHistory,
-        ...upcoming.filter(s => !s.isFuture).map(s => ({
-          date: s.date,
-          type: s.task + " (uitgevoerd)",
-        }))
-      ];
-      const future = upcoming.filter(s => s.isFuture);
-
-      const filter = document.createElement('select');
-      filter.innerHTML = `
-        <option value="upcoming">Toekomstig</option>
-        <option value="history">Historisch</option>
-      `;
-      filter.value = 'upcoming';
-      filterContainer.innerHTML = `<label>Filter servicebeurten:</label>`;
-      filterContainer.appendChild(filter);
-
-      function renderTable(data, isFuture) {
-        let html = `
-          <table>
-            <tr><th>Datum</th><th>Soort onderhoud</th></tr>
-            ${data.map(d => `
-              <tr>
-                <td>${d.date}</td>
-                <td>${isFuture ? d.task : d.type}</td>
-              </tr>
-            `).join('')}
-          </table>
-        `;
-        container.innerHTML = html;
-      }
-
-      renderTable(future, true);
-      filter.addEventListener('change', () => {
-        if (filter.value === 'upcoming') renderTable(future, true);
-        else renderTable(history, false);
+      card.addEventListener('click', () => {
+        const details = card.querySelector('.details');
+        details.classList.toggle('hidden');
       });
+      cardContainer.appendChild(card);
     }
 
-    document.getElementById('repairs-tab').addEventListener('click', () => {
-      currentTab = 'repairs';
-      render();
-    });
-    document.getElementById('service-tab').addEventListener('click', () => {
-      currentTab = 'service';
+    tabReparaties.addEventListener('click', () => {
+      currentTab = 'reparaties';
+      tabReparaties.classList.add('tab-active');
+      tabServiceboekje.classList.remove('tab-active');
       render();
     });
 
+    tabServiceboekje.addEventListener('click', () => {
+      currentTab = 'serviceboekje';
+      tabServiceboekje.classList.add('tab-active');
+      tabReparaties.classList.remove('tab-active');
+      render();
+    });
+
+    filter.addEventListener('change', render);
     loadData();
   </script>
 </body>
 </html>
+
