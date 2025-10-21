@@ -3,189 +3,125 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto-onderhoud MVP</title>
+  <title>Auto-onderhoud overzicht</title>
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      margin: 2rem;
-      background: #fafafa;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      border-bottom: 1px solid #ddd;
-      padding: 0.5rem;
-      text-align: left;
-    }
-    th {
-      background: #eee;
-    }
-    tr:hover {
-      background-color: #f0f8ff;
-    }
-    .tab-button {
-      margin-right: 1rem;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border: 1px solid #ccc;
-      background-color: #fff;
-      border-radius: 4px;
-    }
-    .tab-button.active {
-      background-color: #eee;
-      font-weight: bold;
-    }
-    #serviceFilter {
-      margin-top: 0.5rem;
-      padding: 0.25rem 0.5rem;
-    }
+    body { font-family: system-ui, sans-serif; margin: 40px; background: #fff; color: #111; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab { padding: 10px 20px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; }
+    .tab.active { background: #f2f2f2; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
+    th { background: #f6f6f6; }
+    .details { background: #fafafa; padding: 10px 20px; border-radius: 8px; margin-top: 5px; }
+    select { padding: 6px 10px; border-radius: 6px; margin-left: 8px; }
   </style>
 </head>
 <body>
   <h1>Auto-onderhoud overzicht</h1>
 
-  <!-- Tabs -->
-  <div>
-    <button class="tab-button active" data-tab="reparaties">Reparaties</button>
-    <button class="tab-button" data-tab="service">Serviceboekje</button>
+  <div class="tabs">
+    <div class="tab active" id="repairs-tab">Reparaties</div>
+    <div class="tab" id="service-tab">Serviceboekje</div>
   </div>
 
-  <!-- Reparaties tabel -->
-  <table id="reparaties">
-    <thead>
-      <tr>
-        <th>Datum</th>
-        <th>Garage</th>
-        <th>Totaalbedrag</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <!-- Serviceboekje filter en tabel -->
-  <div id="serviceContainer" style="display:none;">
-    <label for="serviceFilter">Filter servicebeurten:</label>
-    <select id="serviceFilter">
-      <option value="alle">Alle</option>
-      <option value="historisch">Historisch</option>
-      <option value="toekomstig">Toekomstig</option>
-    </select>
-
-    <table id="service">
-      <thead>
-        <tr>
-          <th>Datum</th>
-          <th>Soort onderhoud</th>
-          <th>Kilometerstand</th>
-          <th>Uitgevoerd door</th>
-          <th>Opmerkingen</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <div id="filter-container" style="margin-bottom: 20px;"></div>
+  <div id="content"></div>
 
   <script>
-    // TAB functionaliteit
-    const tabs = document.querySelectorAll('.tab-button');
-    const reparatiesTable = document.getElementById('reparaties');
-    const serviceContainer = document.getElementById('serviceContainer');
+    let currentTab = 'repairs';
+    let allData = {};
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
+    async function loadData() {
+      const response = await fetch('data.json');
+      allData = await response.json();
+      render();
+    }
 
-        if (tab.dataset.tab === 'reparaties') {
-          reparatiesTable.style.display = '';
-          serviceContainer.style.display = 'none';
-        } else {
-          reparatiesTable.style.display = 'none';
-          serviceContainer.style.display = '';
-        }
+    function render() {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(`${currentTab}-tab`).classList.add('active');
+
+      const container = document.getElementById('content');
+      const filterContainer = document.getElementById('filter-container');
+      container.innerHTML = '';
+      filterContainer.innerHTML = '';
+
+      if (currentTab === 'repairs') {
+        renderRepairs(container);
+      } else {
+        renderService(container, filterContainer);
+      }
+    }
+
+    function renderRepairs(container) {
+      let html = `
+        <table>
+          <tr><th>Datum</th><th>Omschrijving</th></tr>
+          ${allData.repairs.map(r => `
+            <tr>
+              <td>${r.date}</td>
+              <td>${r.description}</td>
+            </tr>
+          `).join('')}
+        </table>
+      `;
+      container.innerHTML = html;
+    }
+
+    function renderService(container, filterContainer) {
+      const today = new Date();
+      const upcoming = allData.upcomingMaintenance.map(s => ({...s, isFuture: new Date(s.date) > today }));
+      const history = [
+        ...allData.serviceHistory,
+        ...upcoming.filter(s => !s.isFuture).map(s => ({
+          date: s.date,
+          type: s.task + " (uitgevoerd)",
+        }))
+      ];
+      const future = upcoming.filter(s => s.isFuture);
+
+      const filter = document.createElement('select');
+      filter.innerHTML = `
+        <option value="upcoming">Toekomstig</option>
+        <option value="history">Historisch</option>
+      `;
+      filter.value = 'upcoming';
+      filterContainer.innerHTML = `<label>Filter servicebeurten:</label>`;
+      filterContainer.appendChild(filter);
+
+      function renderTable(data, isFuture) {
+        let html = `
+          <table>
+            <tr><th>Datum</th><th>Soort onderhoud</th></tr>
+            ${data.map(d => `
+              <tr>
+                <td>${d.date}</td>
+                <td>${isFuture ? d.task : d.type}</td>
+              </tr>
+            `).join('')}
+          </table>
+        `;
+        container.innerHTML = html;
+      }
+
+      renderTable(future, true);
+      filter.addEventListener('change', () => {
+        if (filter.value === 'upcoming') renderTable(future, true);
+        else renderTable(history, false);
       });
+    }
+
+    document.getElementById('repairs-tab').addEventListener('click', () => {
+      currentTab = 'repairs';
+      render();
+    });
+    document.getElementById('service-tab').addEventListener('click', () => {
+      currentTab = 'service';
+      render();
     });
 
-    // JSON laden
-    fetch('data.json')
-      .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        return response.json();
-      })
-      .then(data => {
-        // REPARATIES
-        const bonnen = data.bonnen || [];
-        const tbody = document.querySelector('#reparaties tbody');
-
-        bonnen.forEach((factuur, index) => {
-          const mainRow = document.createElement('tr');
-          mainRow.style.cursor = 'pointer';
-          mainRow.innerHTML = `
-            <td>${factuur.factuurdatum || '-'}</td>
-            <td>${factuur.garage || '-'}</td>
-            <td>€ ${factuur.totaal ? factuur.totaal.toFixed(2) : '-'}</td>
-          `;
-          tbody.appendChild(mainRow);
-
-          // detailregels
-          const detailRows = [];
-          const details = [
-            {label: "Factuurnummer", value: factuur.factuurnummer},
-            {label: "Kilometerstand", value: factuur.kilometerstand},
-            {label: "Merk / Uitvoering", value: factuur.merk + ' ' + factuur.uitvoering},
-            {label: "Omschrijving", value: factuur.omschrijving},
-            {label: "Categorie", value: factuur.categorie}
-          ];
-          details.forEach(d => {
-            const row = document.createElement('tr');
-            row.style.display = 'none';
-            row.style.backgroundColor = index % 2 === 0 ? '#f9fcff' : '#f2f9ff';
-            row.innerHTML = `<td colspan="3" style="padding-left: 1.5rem;">${d.label}: ${d.value || '-'}</td>`;
-            tbody.appendChild(row);
-            detailRows.push(row);
-          });
-
-          mainRow.addEventListener('click', () => {
-            detailRows.forEach(r => {
-              r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
-            });
-          });
-        });
-
-        // SERVICEBEURTEN
-        const serviceData = data.service || [];
-        const serviceTbody = document.querySelector('#service tbody');
-        const serviceFilter = document.getElementById('serviceFilter');
-
-        function renderService() {
-          serviceTbody.innerHTML = '';
-          const filter = serviceFilter.value;
-          const vandaag = new Date();
-
-          serviceData.forEach(beurt => {
-            const beurtDatum = new Date(beurt.datum);
-            if ((filter === 'historisch' && beurtDatum > vandaag) ||
-                (filter === 'toekomstig' && beurtDatum <= vandaag)) return;
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${beurt.datum || '-'}</td>
-              <td>${beurt.soort_onderhoud || '-'}</td>
-              <td>${beurt.kilometerstand || '-'}</td>
-              <td>${beurt.uitgevoerd_door || '-'}</td>
-              <td>${beurt.opmerkingen || ''}</td>
-            `;
-            serviceTbody.appendChild(row);
-          });
-        }
-
-        serviceFilter.addEventListener('change', renderService);
-        renderService();
-      })
-      .catch(err => console.error("Fout bij het laden van data.json:", err));
+    loadData();
   </script>
 </body>
 </html>
