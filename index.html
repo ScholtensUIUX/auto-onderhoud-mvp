@@ -7,104 +7,156 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Host Grotesk', sans-serif; background: #f8fafc; color: #111827; }
-    .tab-active { background-color: #fff; border-color: #e5e7eb; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .tab { transition: all 0.2s ease; }
-    .tab:hover { background-color: #f3f4f6; }
+    body { font-family: 'Host Grotesk', sans-serif; background: #f9fafb; color: #111827; }
+    .tab { @apply px-4 py-2 rounded-lg border text-sm sm:text-base transition; }
+    .tab-active { background-color: white; border-color: #e5e7eb; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    tr:hover { background-color: #f0f8ff; }
   </style>
 </head>
 
 <body class="p-4 sm:p-8">
-  <main class="max-w-4xl mx-auto bg-white rounded-3xl shadow-md p-6 sm:p-10">
+  <main class="max-w-6xl mx-auto bg-white rounded-3xl shadow-sm p-6 sm:p-10">
     <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-0">Wrenchly – Onderhoudsoverzicht</h1>
-      <div class="flex gap-2 sm:gap-3">
-        <button id="tabReparaties" class="tab px-4 py-2 rounded-lg border text-sm sm:text-base">Reparaties</button>
-        <button id="tabServiceboekje" class="tab tab-active px-4 py-2 rounded-lg border text-sm sm:text-base">Serviceboekje</button>
+      <div class="flex gap-2">
+        <button id="tabReparaties" class="tab tab-active border rounded-lg">Reparaties</button>
+        <button id="tabServiceboekje" class="tab border rounded-lg">Serviceboekje</button>
       </div>
     </header>
 
-    <!-- Filter -->
-    <div id="filterContainer" class="mb-4 hidden">
-      <label for="filter" class="mr-2 text-sm font-medium">Filter servicebeurten:</label>
-      <select id="filter" class="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500">
-        <option value="toekomstig">Toekomstig</option>
-        <option value="historisch">Historisch</option>
-      </select>
+    <!-- Reparaties tabel -->
+    <div id="reparatiesContainer">
+      <table class="min-w-full border-collapse text-sm sm:text-base">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="text-left px-3 py-2">Datum</th>
+            <th class="text-left px-3 py-2">Garage</th>
+            <th class="text-left px-3 py-2">Totaalbedrag</th>
+          </tr>
+        </thead>
+        <tbody id="reparatiesBody"></tbody>
+      </table>
     </div>
 
-    <!-- Cards-container -->
-    <section id="cardContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></section>
+    <!-- Serviceboekje -->
+    <div id="serviceContainer" class="hidden">
+      <div class="mb-4">
+        <label for="serviceFilter" class="text-sm font-medium mr-2">Filter:</label>
+        <select id="serviceFilter" class="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500">
+          <option value="alle">Alle</option>
+          <option value="historisch">Historisch</option>
+          <option value="toekomstig">Toekomstig</option>
+        </select>
+      </div>
+
+      <table class="min-w-full border-collapse text-sm sm:text-base">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="text-left px-3 py-2">Datum</th>
+            <th class="text-left px-3 py-2">Soort onderhoud</th>
+            <th class="text-left px-3 py-2">Kilometerstand</th>
+            <th class="text-left px-3 py-2">Uitgevoerd door</th>
+            <th class="text-left px-3 py-2">Opmerkingen</th>
+          </tr>
+        </thead>
+        <tbody id="serviceBody"></tbody>
+      </table>
+    </div>
   </main>
 
   <script>
     const tabReparaties = document.getElementById('tabReparaties');
     const tabServiceboekje = document.getElementById('tabServiceboekje');
-    const filterContainer = document.getElementById('filterContainer');
-    const filter = document.getElementById('filter');
-    const cardContainer = document.getElementById('cardContainer');
+    const reparatiesContainer = document.getElementById('reparatiesContainer');
+    const serviceContainer = document.getElementById('serviceContainer');
+    const serviceFilter = document.getElementById('serviceFilter');
+    const reparatiesBody = document.getElementById('reparatiesBody');
+    const serviceBody = document.getElementById('serviceBody');
 
-    let currentTab = 'serviceboekje';
     let data = {};
 
     async function loadData() {
       const res = await fetch('data.json');
       data = await res.json();
-      render();
+      renderReparaties();
+      renderService();
     }
 
-    function render() {
-      cardContainer.innerHTML = '';
-
-      if (currentTab === 'reparaties') {
-        filterContainer.classList.add('hidden');
-        data.reparaties.forEach(item => createCard(item.datum, item.soort, item.opmerking, item.kilometerstand, 'reparatie'));
-      } else {
-        filterContainer.classList.remove('hidden');
-        const type = filter.value;
-        const lijst = data.serviceboekje[type];
-        lijst.forEach(item => createCard(item.datum, item.soort, item.opmerking, item.kilometerstand, 'service'));
-      }
-    }
-
-    function createCard(date, title, desc, km, type) {
-      const card = document.createElement('div');
-      card.className = "bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-5 hover:shadow-md transition cursor-pointer";
-      card.innerHTML = `
-        <div class="flex flex-col gap-1">
-          <div class="text-xs text-gray-500">${date}</div>
-          <div class="text-base sm:text-lg font-semibold text-gray-800">${title}</div>
-          <p class="text-sm text-gray-600 mt-1">${desc || '-'}</p>
-        </div>
-        <div class="details hidden mt-3 border-t pt-3">
-          <p class="text-sm text-gray-600"><span class="font-medium">Kilometerstand:</span> ${km ? km + ' km' : '-'}</p>
-          ${type === 'service' ? `<p class="text-sm text-gray-600 mt-1"><span class="font-medium">Type:</span> Servicebeurt</p>` : ''}
-        </div>
-      `;
-      card.addEventListener('click', () => {
-        const details = card.querySelector('.details');
-        details.classList.toggle('hidden');
-      });
-      cardContainer.appendChild(card);
-    }
-
+    // --- TABS ---
     tabReparaties.addEventListener('click', () => {
-      currentTab = 'reparaties';
       tabReparaties.classList.add('tab-active');
       tabServiceboekje.classList.remove('tab-active');
-      render();
+      reparatiesContainer.classList.remove('hidden');
+      serviceContainer.classList.add('hidden');
     });
 
     tabServiceboekje.addEventListener('click', () => {
-      currentTab = 'serviceboekje';
       tabServiceboekje.classList.add('tab-active');
       tabReparaties.classList.remove('tab-active');
-      render();
+      serviceContainer.classList.remove('hidden');
+      reparatiesContainer.classList.add('hidden');
     });
 
-    filter.addEventListener('change', render);
+    // --- RENDER REPARATIES ---
+    function renderReparaties() {
+      reparatiesBody.innerHTML = '';
+      const bonnen = data.bonnen || [];
+      bonnen.forEach((factuur, index) => {
+        const mainRow = document.createElement('tr');
+        mainRow.className = "cursor-pointer border-b";
+        mainRow.innerHTML = `
+          <td class="px-3 py-2">${factuur.factuurdatum}</td>
+          <td class="px-3 py-2">${factuur.garage}</td>
+          <td class="px-3 py-2">€ ${factuur.totaal.toFixed(2)}</td>
+        `;
+        reparatiesBody.appendChild(mainRow);
+
+        const details = [
+          {label: "Factuurnummer", value: factuur.factuurnummer},
+          {label: "Kilometerstand", value: factuur.kilometerstand},
+          {label: "Omschrijving", value: factuur.omschrijving},
+          {label: "Categorie", value: factuur.categorie}
+        ];
+        details.forEach(d => {
+          const detailRow = document.createElement('tr');
+          detailRow.className = "hidden bg-gray-50";
+          detailRow.innerHTML = `<td colspan="3" class="px-3 py-2 text-gray-700 text-sm"><strong>${d.label}:</strong> ${d.value}</td>`;
+          reparatiesBody.appendChild(detailRow);
+          mainRow.addEventListener('click', () => {
+            detailRow.classList.toggle('hidden');
+          });
+        });
+      });
+    }
+
+    // --- RENDER SERVICE ---
+    function renderService() {
+      serviceBody.innerHTML = '';
+      const filter = serviceFilter.value;
+      const beurten = data.service || [];
+      const vandaag = new Date();
+
+      beurten.forEach(beurt => {
+        const beurtDatum = new Date(beurt.datum);
+        const isHistorisch = beurtDatum <= vandaag;
+        if (filter === 'historisch' && !isHistorisch) return;
+        if (filter === 'toekomstig' && isHistorisch) return;
+
+        const row = document.createElement('tr');
+        row.className = "border-b";
+        row.innerHTML = `
+          <td class="px-3 py-2">${beurt.datum}</td>
+          <td class="px-3 py-2">${beurt.soort_onderhoud}</td>
+          <td class="px-3 py-2">${beurt.kilometerstand}</td>
+          <td class="px-3 py-2">${beurt.uitgevoerd_door}</td>
+          <td class="px-3 py-2">${beurt.opmerkingen || ''}</td>
+        `;
+        serviceBody.appendChild(row);
+      });
+    }
+
+    serviceFilter.addEventListener('change', renderService);
     loadData();
   </script>
 </body>
 </html>
-
