@@ -1,46 +1,56 @@
 {
-  "reparaties": [
+  "bonnen": [
     {
-      "datum": "2024-11-20",
-      "soort": "Remblokken vervangen",
-      "opmerking": "Voorzijde vervangen na slijtagecontrole",
-      "kilometerstand": 233500
+      "factuurnummer": "23005910",
+      "factuurdatum": "2023-10-17",
+      "garage": "Total Car Service, Bronsstraat 27-29, 1411 AV Naarden",
+      "kilometerstand": 326523,
+      "merk": "VOLVO",
+      "uitvoering": "XC90",
+      "omschrijving": "Remblokset en remschijf vervangen, werkplaatskosten",
+      "totaal": 488.03,
+      "categorie": "Onderhoud"
     },
     {
-      "datum": "2023-08-12",
-      "soort": "Airco condensor vervangen",
-      "opmerking": "Nieuwe condensor geplaatst i.v.m. lekkage",
-      "kilometerstand": 225000
+      "factuurnummer": "23006080",
+      "factuurdatum": "2023-11-29",
+      "garage": "Total Car Service, Bronsstraat 27-29, 1411 AV Naarden",
+      "kilometerstand": 329426,
+      "merk": "VOLVO",
+      "uitvoering": "XC90",
+      "omschrijving": "Lekkage verholpen, overloop ontstopt, Kleinmateriaal",
+      "totaal": 258.78,
+      "categorie": "Onderhoud"
     }
   ],
-  "serviceboekje": {
-    "historisch": [
-      {
-        "datum": "2025-03-10",
-        "soort": "Grote beurt",
-        "opmerking": "Olie, filters, bougies en remvloeistof vervangen",
-        "kilometerstand": 240000
-      },
-      {
-        "datum": "2024-03-05",
-        "soort": "Kleine beurt",
-        "opmerking": "Olie en oliefilter vervangen",
-        "kilometerstand": 230000
-      }
-    ],
-    "toekomstig": [
-      {
-        "datum": "2026-01-15",
-        "soort": "Distributieriem vervangen",
-        "opmerking": "Interval: elke 160.000 km of 8 jaar — gepland voor januari 2026",
-        "kilometerstand": 260000
-      },
-      {
-        "datum": "2026-06-01",
-        "soort": "Grote beurt",
-        "opmerking": "Volgende grote onderhoudsbeurt volgens schema Volvo XC90 2.5T",
-        "kilometerstand": 270000
-      }
-    ]
-  }
+  "service": [
+    {
+      "datum": "2023-01-15",
+      "soort_onderhoud": "30.000 km / 1 jaar onderhoud",
+      "kilometerstand": 30000,
+      "uitgevoerd_door": "ScholteWEdeBV, Ede",
+      "opmerkingen": ""
+    },
+    {
+      "datum": "2024-01-15",
+      "soort_onderhoud": "60.000 km / 2 jaar onderhoud",
+      "kilometerstand": 60000,
+      "uitgevoerd_door": "Henk Scholten Nijmegen B.V.",
+      "opmerkingen": ""
+    },
+    {
+      "datum": "2025-01-15",
+      "soort_onderhoud": "90.000 km / 3 jaar onderhoud",
+      "kilometerstand": 90000,
+      "uitgevoerd_door": "Henk Scholten Nijmegen B.V.",
+      "opmerkingen": ""
+    },
+    {
+      "datum": "2026-01-15",
+      "soort_onderhoud": "Distributieriem vervangen",
+      "kilometerstand": 120000,
+      "uitgevoerd_door": "Volvo dealer",
+      "opmerkingen": "Belangrijke onderhoudsbeurt"
+    }
+  ]
 }
