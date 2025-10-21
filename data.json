@@ -1,61 +1,46 @@
 {
-  "repairs": [
+  "reparaties": [
     {
-      "date": "2024-06-12",
-      "description": "Remblokken voorzijde vervangen"
+      "datum": "2024-11-20",
+      "soort": "Remblokken vervangen",
+      "opmerking": "Voorzijde vervangen na slijtagecontrole",
+      "kilometerstand": 233500
     },
     {
-      "date": "2024-09-20",
-      "description": "Olielekkage verholpen (klepdekselpakking)"
+      "datum": "2023-08-12",
+      "soort": "Airco condensor vervangen",
+      "opmerking": "Nieuwe condensor geplaatst i.v.m. lekkage",
+      "kilometerstand": 225000
     }
   ],
-  "serviceHistory": [
-    {
-      "date": "2024-01-15",
-      "type": "Grote beurt (120.000 km)"
-    },
-    {
-      "date": "2023-01-10",
-      "type": "Kleine beurt (105.000 km)"
-    },
-    {
-      "date": "2021-01-15",
-      "type": "Distributieriem vervangen (90.000 km)"
-    }
-  ],
-  "upcomingMaintenance": [
-    {
-      "task": "Distributieriem vervangen",
-      "interval": "150.000 km / 10 jaar",
-      "recommendedAtKm": 150000,
-      "date": "2026-01-15",
-      "note": "Laatste vervanging was in 2021, volgende gepland voor 2026."
-    },
-    {
-      "task": "Bougies vervangen",
-      "interval": "60.000 km",
-      "recommendedAtKm": 150000,
-      "date": "2025-06-01",
-      "note": "Laatste vervanging bij 90.000 km in 2021."
-    },
-    {
-      "task": "Remvloeistof verversen",
-      "interval": "Elke 2 jaar",
-      "date": "2025-01-10",
-      "note": "Veiligheidsinspectie, gelijktijdig met kleine beurt."
-    },
-    {
-      "task": "Automaatolie verversen",
-      "interval": "Elke 60.000 km",
-      "recommendedAtKm": 150000,
-      "date": "2025-07-01",
-      "note": "Aanbevolen om schakelkwaliteit te behouden."
-    },
-    {
-      "task": "Kleine beurt",
-      "interval": "15.000 km / 1 jaar",
-      "date": "2025-01-15",
-      "note": "Olie, oliefilter, inspectie en vloeistofcontrole."
-    }
-  ]
+  "serviceboekje": {
+    "historisch": [
+      {
+        "datum": "2025-03-10",
+        "soort": "Grote beurt",
+        "opmerking": "Olie, filters, bougies en remvloeistof vervangen",
+        "kilometerstand": 240000
+      },
+      {
+        "datum": "2024-03-05",
+        "soort": "Kleine beurt",
+        "opmerking": "Olie en oliefilter vervangen",
+        "kilometerstand": 230000
+      }
+    ],
+    "toekomstig": [
+      {
+        "datum": "2026-01-15",
+        "soort": "Distributieriem vervangen",
+        "opmerking": "Interval: elke 160.000 km of 8 jaar — gepland voor januari 2026",
+        "kilometerstand": 260000
+      },
+      {
+        "datum": "2026-06-01",
+        "soort": "Grote beurt",
+        "opmerking": "Volgende grote onderhoudsbeurt volgens schema Volvo XC90 2.5T",
+        "kilometerstand": 270000
+      }
+    ]
+  }
 }
