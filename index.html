@@ -3,160 +3,221 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wrenchly – Auto-onderhoud</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Auto-onderhoud MVP</title>
   <style>
-    body { font-family: 'Host Grotesk', sans-serif; background: #f9fafb; color: #111827; }
-    .tab { @apply px-4 py-2 rounded-lg border text-sm sm:text-base transition; }
-    .tab-active { background-color: white; border-color: #e5e7eb; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    @import url('https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;600&display=swap');
+
+    body {
+      font-family: "Host Grotesk", system-ui, sans-serif;
+      margin: 2rem;
+      background: #fafafa;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th { background: #eee; }
     tr:hover { background-color: #f0f8ff; }
-  </style>
-</head>
 
-<body class="p-4 sm:p-8">
-  <main class="max-w-6xl mx-auto bg-white rounded-3xl shadow-sm p-6 sm:p-10">
-    <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-      <h1 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-0">Wrenchly – Onderhoudsoverzicht</h1>
-      <div class="flex gap-2">
-        <button id="tabReparaties" class="tab tab-active border rounded-lg">Reparaties</button>
-        <button id="tabServiceboekje" class="tab border rounded-lg">Serviceboekje</button>
-      </div>
-    </header>
-
-    <!-- Reparaties tabel -->
-    <div id="reparatiesContainer">
-      <table class="min-w-full border-collapse text-sm sm:text-base">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="text-left px-3 py-2">Datum</th>
-            <th class="text-left px-3 py-2">Garage</th>
-            <th class="text-left px-3 py-2">Totaalbedrag</th>
-          </tr>
-        </thead>
-        <tbody id="reparatiesBody"></tbody>
-      </table>
-    </div>
-
-    <!-- Serviceboekje -->
-    <div id="serviceContainer" class="hidden">
-      <div class="mb-4">
-        <label for="serviceFilter" class="text-sm font-medium mr-2">Filter:</label>
-        <select id="serviceFilter" class="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500">
-          <option value="alle">Alle</option>
-          <option value="historisch">Historisch</option>
-          <option value="toekomstig">Toekomstig</option>
-        </select>
-      </div>
-
-      <table class="min-w-full border-collapse text-sm sm:text-base">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="text-left px-3 py-2">Datum</th>
-            <th class="text-left px-3 py-2">Soort onderhoud</th>
-            <th class="text-left px-3 py-2">Kilometerstand</th>
-            <th class="text-left px-3 py-2">Uitgevoerd door</th>
-            <th class="text-left px-3 py-2">Opmerkingen</th>
-          </tr>
-        </thead>
-        <tbody id="serviceBody"></tbody>
-      </table>
-    </div>
-  </main>
-
-  <script>
-    const tabReparaties = document.getElementById('tabReparaties');
-    const tabServiceboekje = document.getElementById('tabServiceboekje');
-    const reparatiesContainer = document.getElementById('reparatiesContainer');
-    const serviceContainer = document.getElementById('serviceContainer');
-    const serviceFilter = document.getElementById('serviceFilter');
-    const reparatiesBody = document.getElementById('reparatiesBody');
-    const serviceBody = document.getElementById('serviceBody');
-
-    let data = {};
-
-    async function loadData() {
-      const res = await fetch('data.json');
-      data = await res.json();
-      renderReparaties();
-      renderService();
+    .tab-button {
+      margin-right: 1rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 6px;
+      transition: all .2s ease;
+    }
+    .tab-button.active {
+      background-color: #e8e8e8;
+      font-weight: bold;
+    }
+    #serviceFilter {
+      margin-top: 0.5rem;
+      padding: 0.25rem 0.5rem;
     }
 
-    // --- TABS ---
-    tabReparaties.addEventListener('click', () => {
-      tabReparaties.classList.add('tab-active');
-      tabServiceboekje.classList.remove('tab-active');
-      reparatiesContainer.classList.remove('hidden');
-      serviceContainer.classList.add('hidden');
+    /* Responsiveness */
+    @media (max-width: 700px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      th { display: none; }
+      tr { margin-bottom: 1rem; border-bottom: 2px solid #ddd; }
+      td { border: none; padding: .3rem 0; }
+      td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        display: block;
+        color: #666;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Auto-onderhoud overzicht</h1>
+
+  <!-- Tabs -->
+  <div>
+    <button class="tab-button active" data-tab="reparaties">Reparaties</button>
+    <button class="tab-button" data-tab="service">Serviceboekje</button>
+  </div>
+
+  <!-- Reparaties tabel -->
+  <table id="reparaties">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Garage</th>
+        <th>Totaalbedrag</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Serviceboekje -->
+  <div id="serviceContainer" style="display:none;">
+    <label for="serviceFilter">Filter servicebeurten:</label>
+    <select id="serviceFilter">
+      <option value="alle">Alle</option>
+      <option value="historisch">Historisch</option>
+      <option value="toekomstig">Toekomstig</option>
+    </select>
+
+    <table id="service">
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Soort onderhoud</th>
+          <th>Kilometerstand</th>
+          <th>Uitgevoerd door</th>
+          <th>Opmerkingen</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // === Tabs ===
+    const tabs = document.querySelectorAll('.tab-button');
+    const reparatiesTable = document.getElementById('reparaties');
+    const serviceContainer = document.getElementById('serviceContainer');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        if (tab.dataset.tab === 'reparaties') {
+          reparatiesTable.style.display = '';
+          serviceContainer.style.display = 'none';
+        } else {
+          reparatiesTable.style.display = 'none';
+          serviceContainer.style.display = '';
+        }
+      });
     });
 
-    tabServiceboekje.addEventListener('click', () => {
-      tabServiceboekje.classList.add('tab-active');
-      tabReparaties.classList.remove('tab-active');
-      serviceContainer.classList.remove('hidden');
-      reparatiesContainer.classList.add('hidden');
-    });
+    // === JSON laden ===
+    fetch('data.json')
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data => {
+        renderReparaties(data.bonnen || []);
+        renderService(data.service || []);
+      })
+      .catch(e => console.error("Fout bij het laden van data.json:", e));
 
-    // --- RENDER REPARATIES ---
-    function renderReparaties() {
-      reparatiesBody.innerHTML = '';
-      const bonnen = data.bonnen || [];
+    // === Samenvatting genereren ===
+    function genereerSamenvatting(omschrijving = "") {
+      const tekst = omschrijving.toLowerCase();
+      let items = [];
+      if (tekst.includes("rem")) items.push("remmen gecontroleerd of vervangen");
+      if (tekst.includes("olie")) items.push("motorolie ververst");
+      if (tekst.includes("filter")) items.push("filters vervangen");
+      if (tekst.includes("apk")) items.push("APK uitgevoerd");
+      if (tekst.includes("band")) items.push("banden gewisseld of gecontroleerd");
+      if (tekst.includes("airco")) items.push("airco onderhouden of gevuld");
+      if (tekst.includes("distributieriem")) items.push("distributieriem gecontroleerd of vervangen");
+      if (!items.length) return "Algemene onderhoudswerkzaamheden uitgevoerd.";
+      return "Bij deze onderhoudsbeurt zijn " + items.join(", ") + ".";
+    }
+
+    // === Reparaties renderen ===
+    function renderReparaties(bonnen) {
+      const tbody = document.querySelector('#reparaties tbody');
+      tbody.innerHTML = '';
       bonnen.forEach((factuur, index) => {
         const mainRow = document.createElement('tr');
-        mainRow.className = "cursor-pointer border-b";
+        mainRow.style.cursor = 'pointer';
         mainRow.innerHTML = `
-          <td class="px-3 py-2">${factuur.factuurdatum}</td>
-          <td class="px-3 py-2">${factuur.garage}</td>
-          <td class="px-3 py-2">€ ${factuur.totaal.toFixed(2)}</td>
+          <td data-label="Datum">${factuur.factuurdatum || '-'}</td>
+          <td data-label="Garage">${factuur.garage || '-'}</td>
+          <td data-label="Totaal">€ ${factuur.totaal ? factuur.totaal.toFixed(2) : '-'}</td>
         `;
-        reparatiesBody.appendChild(mainRow);
+        tbody.appendChild(mainRow);
 
+        // detail + samenvatting
+        const samenvatting = genereerSamenvatting(factuur.omschrijving);
         const details = [
           {label: "Factuurnummer", value: factuur.factuurnummer},
           {label: "Kilometerstand", value: factuur.kilometerstand},
           {label: "Omschrijving", value: factuur.omschrijving},
-          {label: "Categorie", value: factuur.categorie}
+          {label: "Categorie", value: factuur.categorie},
+          {label: "Samenvatting", value: samenvatting}
         ];
-        details.forEach(d => {
-          const detailRow = document.createElement('tr');
-          detailRow.className = "hidden bg-gray-50";
-          detailRow.innerHTML = `<td colspan="3" class="px-3 py-2 text-gray-700 text-sm"><strong>${d.label}:</strong> ${d.value}</td>`;
-          reparatiesBody.appendChild(detailRow);
-          mainRow.addEventListener('click', () => {
-            detailRow.classList.toggle('hidden');
+
+        const detailRows = details.map(d => {
+          const row = document.createElement('tr');
+          row.style.display = 'none';
+          row.style.backgroundColor = index % 2 === 0 ? '#f9fcff' : '#f2f9ff';
+          row.innerHTML = `<td colspan="3" style="padding-left: 1.5rem;"><strong>${d.label}:</strong> ${d.value || '-'}</td>`;
+          tbody.appendChild(row);
+          return row;
+        });
+
+        mainRow.addEventListener('click', () => {
+          detailRows.forEach(r => {
+            r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
           });
         });
       });
     }
 
-    // --- RENDER SERVICE ---
-    function renderService() {
-      serviceBody.innerHTML = '';
-      const filter = serviceFilter.value;
-      const beurten = data.service || [];
+    // === Serviceboekje renderen ===
+    function renderService(serviceData) {
+      const serviceTbody = document.querySelector('#service tbody');
+      const serviceFilter = document.getElementById('serviceFilter');
       const vandaag = new Date();
 
-      beurten.forEach(beurt => {
-        const beurtDatum = new Date(beurt.datum);
-        const isHistorisch = beurtDatum <= vandaag;
-        if (filter === 'historisch' && !isHistorisch) return;
-        if (filter === 'toekomstig' && isHistorisch) return;
+      function render() {
+        serviceTbody.innerHTML = '';
+        serviceData.forEach(beurt => {
+          const beurtDatum = new Date(beurt.datum);
+          const filter = serviceFilter.value;
+          if ((filter === 'historisch' && beurtDatum > vandaag) ||
+              (filter === 'toekomstig' && beurtDatum <= vandaag)) return;
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td data-label="Datum">${beurt.datum || '-'}</td>
+            <td data-label="Soort">${beurt.soort_onderhoud || '-'}</td>
+            <td data-label="Km">${beurt.kilometerstand || '-'}</td>
+            <td data-label="Uitgevoerd door">${beurt.uitgevoerd_door || '-'}</td>
+            <td data-label="Opmerkingen">${beurt.opmerkingen || ''}</td>
+          `;
+          serviceTbody.appendChild(row);
+        });
+      }
 
-        const row = document.createElement('tr');
-        row.className = "border-b";
-        row.innerHTML = `
-          <td class="px-3 py-2">${beurt.datum}</td>
-          <td class="px-3 py-2">${beurt.soort_onderhoud}</td>
-          <td class="px-3 py-2">${beurt.kilometerstand}</td>
-          <td class="px-3 py-2">${beurt.uitgevoerd_door}</td>
-          <td class="px-3 py-2">${beurt.opmerkingen || ''}</td>
-        `;
-        serviceBody.appendChild(row);
-      });
+      serviceFilter.addEventListener('change', render);
+      render();
     }
-
-    serviceFilter.addEventListener('change', renderService);
-    loadData();
   </script>
 </body>
 </html>
