@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto-onderhoud MVP</title>
+  <title>Wrenchly – Auto-onderhoud overzicht</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;600&display=swap');
-
     body {
       font-family: "Host Grotesk", system-ui, sans-serif;
       margin: 2rem;
       background: #fafafa;
+    }
+    h1 {
+      margin-bottom: 1rem;
     }
     table {
       width: 100%;
@@ -21,40 +22,48 @@
       border-bottom: 1px solid #ddd;
       padding: 0.5rem;
       text-align: left;
+      vertical-align: top;
     }
-    th { background: #eee; }
-    tr:hover { background-color: #f0f8ff; }
-
+    th {
+      background: #eee;
+    }
+    tr:hover {
+      background-color: #f8fbff;
+    }
     .tab-button {
       margin-right: 1rem;
       padding: 0.5rem 1rem;
       cursor: pointer;
       border: 1px solid #ccc;
       background-color: #fff;
-      border-radius: 6px;
-      transition: all .2s ease;
+      border-radius: 4px;
     }
     .tab-button.active {
-      background-color: #e8e8e8;
+      background-color: #eee;
       font-weight: bold;
     }
-    #serviceFilter {
-      margin-top: 0.5rem;
+    #searchInput {
+      margin: 1rem 0;
+      padding: 0.4rem 0.6rem;
+      width: 100%;
+      max-width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #serviceFilter, #currentKmInput {
+      margin: 0.5rem 0.25rem;
       padding: 0.25rem 0.5rem;
     }
-
-    /* Responsiveness */
-    @media (max-width: 700px) {
-      table, thead, tbody, th, td, tr { display: block; }
-      th { display: none; }
-      tr { margin-bottom: 1rem; border-bottom: 2px solid #ddd; }
-      td { border: none; padding: .3rem 0; }
-      td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        display: block;
-        color: #666;
-      }
+    .status {
+      font-weight: bold;
+    }
+    .status.green { color: #0a7b0a; }
+    .status.orange { color: #d98600; }
+    .status.red { color: #c82333; }
+    em { color: #555; }
+    @media (max-width: 600px) {
+      body { margin: 1rem; font-size: 14px; }
+      th, td { padding: 0.4rem; }
     }
   </style>
 </head>
@@ -66,6 +75,9 @@
     <button class="tab-button active" data-tab="reparaties">Reparaties</button>
     <button class="tab-button" data-tab="service">Serviceboekje</button>
   </div>
+
+  <!-- Zoekveld Reparaties -->
+  <input type="text" id="searchInput" placeholder="Zoeken in reparaties (bijv. banden, airco, olie)..." />
 
   <!-- Reparaties tabel -->
   <table id="reparaties">
@@ -79,9 +91,11 @@
     <tbody></tbody>
   </table>
 
-  <!-- Serviceboekje -->
+  <!-- Serviceboekje filter en tabel -->
   <div id="serviceContainer" style="display:none;">
-    <label for="serviceFilter">Filter servicebeurten:</label>
+    <label for="currentKmInput">Huidige km-stand:</label>
+    <input type="number" id="currentKmInput" value="366000" min="0" step="100" />
+    <label for="serviceFilter">Filter:</label>
     <select id="serviceFilter">
       <option value="alle">Alle</option>
       <option value="historisch">Historisch</option>
@@ -96,6 +110,7 @@
           <th>Kilometerstand</th>
           <th>Uitgevoerd door</th>
           <th>Opmerkingen</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -103,10 +118,10 @@
   </div>
 
   <script>
-    // === Tabs ===
     const tabs = document.querySelectorAll('.tab-button');
     const reparatiesTable = document.getElementById('reparaties');
     const serviceContainer = document.getElementById('serviceContainer');
+    const searchInput = document.getElementById('searchInput');
 
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -115,109 +130,142 @@
         if (tab.dataset.tab === 'reparaties') {
           reparatiesTable.style.display = '';
           serviceContainer.style.display = 'none';
+          searchInput.style.display = '';
         } else {
           reparatiesTable.style.display = 'none';
           serviceContainer.style.display = '';
+          searchInput.style.display = 'none';
         }
       });
     });
 
-    // === JSON laden ===
     fetch('data.json')
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        renderReparaties(data.bonnen || []);
-        renderService(data.service || []);
-      })
-      .catch(e => console.error("Fout bij het laden van data.json:", e));
+        /* ---------- REPARATIES ---------- */
+        const bonnen = data.bonnen || [];
+        const tbody = document.querySelector('#reparaties tbody');
 
-    // === Samenvatting genereren ===
-    function genereerSamenvatting(omschrijving = "") {
-      const tekst = omschrijving.toLowerCase();
-      let items = [];
-      if (tekst.includes("rem")) items.push("remmen gecontroleerd of vervangen");
-      if (tekst.includes("olie")) items.push("motorolie ververst");
-      if (tekst.includes("filter")) items.push("filters vervangen");
-      if (tekst.includes("apk")) items.push("APK uitgevoerd");
-      if (tekst.includes("band")) items.push("banden gewisseld of gecontroleerd");
-      if (tekst.includes("airco")) items.push("airco onderhouden of gevuld");
-      if (tekst.includes("distributieriem")) items.push("distributieriem gecontroleerd of vervangen");
-      if (!items.length) return "Algemene onderhoudswerkzaamheden uitgevoerd.";
-      return "Bij deze onderhoudsbeurt zijn " + items.join(", ") + ".";
-    }
+        function renderReparaties(filterText = "") {
+          tbody.innerHTML = "";
+          bonnen.forEach((factuur, index) => {
+            const searchTarget = `${factuur.omschrijving} ${factuur.garage} ${factuur.categorie}`.toLowerCase();
+            if (!searchTarget.includes(filterText.toLowerCase())) return;
 
-    // === Reparaties renderen ===
-    function renderReparaties(bonnen) {
-      const tbody = document.querySelector('#reparaties tbody');
-      tbody.innerHTML = '';
-      bonnen.forEach((factuur, index) => {
-        const mainRow = document.createElement('tr');
-        mainRow.style.cursor = 'pointer';
-        mainRow.innerHTML = `
-          <td data-label="Datum">${factuur.factuurdatum || '-'}</td>
-          <td data-label="Garage">${factuur.garage || '-'}</td>
-          <td data-label="Totaal">€ ${factuur.totaal ? factuur.totaal.toFixed(2) : '-'}</td>
-        `;
-        tbody.appendChild(mainRow);
+            const mainRow = document.createElement('tr');
+            mainRow.style.cursor = 'pointer';
+            mainRow.innerHTML = `
+              <td>${factuur.factuurdatum || '-'}</td>
+              <td>${factuur.garage || '-'}</td>
+              <td>€ ${factuur.totaal ? factuur.totaal.toFixed(2) : '-'}</td>
+            `;
+            tbody.appendChild(mainRow);
 
-        // detail + samenvatting
-        const samenvatting = genereerSamenvatting(factuur.omschrijving);
-        const details = [
-          {label: "Factuurnummer", value: factuur.factuurnummer},
-          {label: "Kilometerstand", value: factuur.kilometerstand},
-          {label: "Omschrijving", value: factuur.omschrijving},
-          {label: "Categorie", value: factuur.categorie},
-          {label: "Samenvatting", value: samenvatting}
-        ];
+            const samenvatting = genereerSamenvatting(factuur.omschrijving || '');
+            const aanbeveling = genereerAanbeveling(factuur.omschrijving || '');
 
-        const detailRows = details.map(d => {
-          const row = document.createElement('tr');
-          row.style.display = 'none';
-          row.style.backgroundColor = index % 2 === 0 ? '#f9fcff' : '#f2f9ff';
-          row.innerHTML = `<td colspan="3" style="padding-left: 1.5rem;"><strong>${d.label}:</strong> ${d.value || '-'}</td>`;
-          tbody.appendChild(row);
-          return row;
-        });
+            const detailRows = [
+              {label: "Factuurnummer", value: factuur.factuurnummer},
+              {label: "Kilometerstand", value: factuur.kilometerstand},
+              {label: "Omschrijving", value: factuur.omschrijving},
+              {label: "Categorie", value: factuur.categorie},
+              {label: "Samenvatting", value: samenvatting},
+              {label: "Aanbeveling", value: aanbeveling}
+            ];
 
-        mainRow.addEventListener('click', () => {
-          detailRows.forEach(r => {
-            r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
+            const details = [];
+            detailRows.forEach(d => {
+              const row = document.createElement('tr');
+              row.style.display = 'none';
+              row.style.backgroundColor = index % 2 === 0 ? '#f9fcff' : '#f2f9ff';
+              row.innerHTML = `<td colspan="3" style="padding-left:1.5rem;"><em>${d.label}:</em> ${d.value}</td>`;
+              tbody.appendChild(row);
+              details.push(row);
+            });
+
+            mainRow.addEventListener('click', () => {
+              details.forEach(r => {
+                r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
+              });
+            });
           });
-        });
-      });
-    }
+        }
 
-    // === Serviceboekje renderen ===
-    function renderService(serviceData) {
-      const serviceTbody = document.querySelector('#service tbody');
-      const serviceFilter = document.getElementById('serviceFilter');
-      const vandaag = new Date();
+        searchInput.addEventListener('input', e => renderReparaties(e.target.value));
+        renderReparaties();
 
-      function render() {
-        serviceTbody.innerHTML = '';
-        serviceData.forEach(beurt => {
-          const beurtDatum = new Date(beurt.datum);
+        /* ---------- SERVICEBOEKJE ---------- */
+        const serviceData = data.service || [];
+        const serviceTbody = document.querySelector('#service tbody');
+        const serviceFilter = document.getElementById('serviceFilter');
+        const currentKmInput = document.getElementById('currentKmInput');
+
+        function bepaalStatus(beurtDatum, beurtKm, huidigeKm) {
+          const vandaag = new Date();
+          const datumVerschil = (new Date(beurtDatum) - vandaag) / (1000 * 60 * 60 * 24);
+          const kmVerschil = beurtKm - huidigeKm;
+
+          if (datumVerschil < -30 || kmVerschil < -2000)
+            return {label: "⚠️ Te laat", kleur: "red"};
+          if (datumVerschil < 60 || kmVerschil < 5000)
+            return {label: "⏳ Binnenkort", kleur: "orange"};
+          return {label: "✅ Oké", kleur: "green"};
+        }
+
+        function renderService() {
+          serviceTbody.innerHTML = '';
           const filter = serviceFilter.value;
-          if ((filter === 'historisch' && beurtDatum > vandaag) ||
-              (filter === 'toekomstig' && beurtDatum <= vandaag)) return;
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td data-label="Datum">${beurt.datum || '-'}</td>
-            <td data-label="Soort">${beurt.soort_onderhoud || '-'}</td>
-            <td data-label="Km">${beurt.kilometerstand || '-'}</td>
-            <td data-label="Uitgevoerd door">${beurt.uitgevoerd_door || '-'}</td>
-            <td data-label="Opmerkingen">${beurt.opmerkingen || ''}</td>
-          `;
-          serviceTbody.appendChild(row);
-        });
-      }
+          const huidigeKm = parseInt(currentKmInput.value) || 0;
+          const vandaag = new Date();
 
-      serviceFilter.addEventListener('change', render);
-      render();
-    }
+          serviceData.forEach(beurt => {
+            const beurtDatum = new Date(beurt.datum);
+            const isToekomstig = beurtDatum > vandaag;
+
+            if (filter === 'historisch' && isToekomstig) return;
+            if (filter === 'toekomstig' && !isToekomstig) return;
+
+            const status = bepaalStatus(beurt.datum, beurt.kilometerstand, huidigeKm);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${beurt.datum || '-'}</td>
+              <td>${beurt.soort_onderhoud || '-'}</td>
+              <td>${beurt.kilometerstand || '-'}</td>
+              <td>${beurt.uitgevoerd_door || '-'}</td>
+              <td>${beurt.opmerkingen || ''}</td>
+              <td class="status ${status.kleur}">${status.label}</td>
+            `;
+            serviceTbody.appendChild(row);
+          });
+        }
+
+        serviceFilter.addEventListener('change', renderService);
+        currentKmInput.addEventListener('input', renderService);
+        renderService();
+
+        /* ---------- SAMENVATTING + AANBEVELING ---------- */
+        function genereerSamenvatting(tekst) {
+          tekst = tekst.toLowerCase();
+          if (tekst.includes("rem")) return "Remmen gecontroleerd of vervangen.";
+          if (tekst.includes("olie")) return "Olie ververst en motor gesmeerd.";
+          if (tekst.includes("apk")) return "APK-keuring uitgevoerd.";
+          if (tekst.includes("band")) return "Banden gecontroleerd of vervangen.";
+          if (tekst.includes("airco")) return "Airco nagekeken of bijgevuld.";
+          return "Onderhoud uitgevoerd volgens factuur.";
+        }
+
+        function genereerAanbeveling(tekst) {
+          tekst = tekst.toLowerCase();
+          if (tekst.includes("rem")) return "Controleer remmen opnieuw over ±20.000 km.";
+          if (tekst.includes("olie")) return "Volgende oliewissel over ±15.000 km.";
+          if (tekst.includes("apk")) return "Volgende APK over 1 jaar.";
+          if (tekst.includes("band")) return "Controleer bandenspanning en profieldiepte maandelijks.";
+          if (tekst.includes("airco")) return "Laat airco jaarlijks controleren.";
+          return "Controleer onderhoudsinterval volgens schema.";
+        }
+      })
+      .catch(err => console.error("Fout bij het laden van data.json:", err));
   </script>
 </body>
 </html>
