@@ -205,11 +205,20 @@
           const datumVerschil = (new Date(beurtDatum) - vandaag) / (1000 * 60 * 60 * 24);
           const kmVerschil = beurtKm - huidigeKm;
 
-          if (datumVerschil < -30 || kmVerschil < -2000)
-            return {label: "⚠️ Te laat", kleur: "red"};
+          // Reeds uitgevoerd onderhoud (datum in verleden én km lager)
+          if (datumVerschil < 0 && beurtKm <= huidigeKm)
+            return { label: "✅ Uitgevoerd", kleur: "green" };
+
+          // Binnenkort (datum binnen 2 maanden of minder dan 5000 km te gaan)
           if (datumVerschil < 60 || kmVerschil < 5000)
-            return {label: "⏳ Binnenkort", kleur: "orange"};
-          return {label: "✅ Oké", kleur: "green"};
+            return { label: "⏳ Binnenkort", kleur: "orange" };
+
+          // Te laat (datum voorbij en km hoger dan huidige stand)
+          if (datumVerschil < 0 && beurtKm > huidigeKm)
+            return { label: "⚠️ Te laat", kleur: "red" };
+
+          // Alles oké
+          return { label: "✅ Oké", kleur: "green" };
         }
 
         function renderService() {
