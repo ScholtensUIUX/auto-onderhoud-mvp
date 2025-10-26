@@ -1,182 +1,137 @@
-{
-  "bonnen": [
-    {
-      "factuurnummer": "23005910",
-      "factuurdatum": "2023-10-17",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 326523,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Remblokset, remschijf vervangen, werkplaatstarief remmen achter vervangen, remklauw rechtsachter gangbaar gemaakt, kleinmateriaal",
-      "totaal": 488.03,
-      "categorie": "Onderhoud",
-      "samenvatting": "Bij deze onderhoudsbeurt zijn de remmen vervangen en gecontroleerd."
-    },
-    {
-      "factuurnummer": "23006080",
-      "factuurdatum": "2023-11-29",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 329426,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Lekkage verholpen, parafan leeg gehaald, overloop ontstopt, rand hersteld, water weggehaald, kleinmateriaal",
-      "totaal": 258.78,
-      "categorie": "Reparatie",
-      "samenvatting": "Lekkage is verholpen en afwatering gereinigd."
-    },
-    {
-      "factuurnummer": "23006134",
-      "factuurdatum": "2023-12-08",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 329603,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "APK incl. afmelden, mistverlichting voor en achter hersteld, handrem in orde gemaakt, zijverlichting hersteld, lamp vervangen, kleinmateriaal",
-      "totaal": 264.06,
-      "categorie": "APK",
-      "samenvatting": "APK uitgevoerd, verlichting en handrem hersteld."
-    },
-    {
-      "factuurnummer": "20240510",
-      "factuurdatum": "2024-02-23",
-      "garage": "Autobandenhal.nl, Tynaarlo",
-      "kilometerstand": 344881,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Wissel vaste set winter naar zomerbanden, flatblade set Valeo, wielmoeren nagetrokken",
-      "totaal": 90.00,
-      "categorie": "Banden",
-      "samenvatting": "Banden gewisseld van winter naar zomer en gecontroleerd."
-    },
-    {
-      "factuurnummer": "24006916",
-      "factuurdatum": "2024-05-31",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 341763,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Ruitreparatie, motorolie premium synthetic, interieurfilter, brandstofsysteem schoonmaak, kleinmateriaal",
-      "totaal": 544.08,
-      "categorie": "Onderhoud",
-      "samenvatting": "Motorolie ververst, filters vervangen en brandstofsysteem gereinigd."
-    },
-    {
-      "factuurnummer": "24007739",
-      "factuurdatum": "2024-12-10",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 354392,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "APK keuring, motorsteun boven vervangen, lamp stadslicht, kleinmateriaal en milieuheffing",
-      "totaal": 377.44,
-      "categorie": "APK",
-      "samenvatting": "APK uitgevoerd en motorsteun vervangen."
-    },
-    {
-      "factuurnummer": "25000009",
-      "factuurdatum": "2025-01-07",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 356189,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Remtang vervangen, remmen ontlucht inclusief vloeistof, milieuheffing",
-      "totaal": 361.68,
-      "categorie": "Remmen",
-      "samenvatting": "Remtang vervangen en remvloeistof ververst."
-    },
-    {
-      "factuurnummer": "25000601",
-      "factuurdatum": "2025-05-17",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 363367,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Remmen achter schoongemaakt, werkplaatstarief, kleinmateriaal en milieuheffing",
-      "totaal": 277.70,
-      "categorie": "Onderhoud",
-      "samenvatting": "Remmen achterzijde gereinigd en opnieuw afgesteld."
-    },
-    {
-      "factuurnummer": "25000688",
-      "factuurdatum": "2025-06-06",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 364279,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Oliefilter, motorolie 0W30, interieurfilter, injectiecleaner, kleinmateriaal en milieuheffing",
-      "totaal": 370.27,
-      "categorie": "Onderhoud",
-      "samenvatting": "Olie en filters vervangen, injectie gereinigd."
-    },
-    {
-      "factuurnummer": "25001575",
-      "factuurdatum": "2025-07-18",
-      "garage": "Total Car Service, Naarden",
-      "kilometerstand": 366514,
-      "merk": "VOLVO",
-      "uitvoering": "XC90",
-      "omschrijving": "Airco bijgevuld, remschijven en remblokken achter vervangen, voorremmen schoongemaakt",
-      "totaal": 787.95,
-      "categorie": "Airco & Remmen",
-      "samenvatting": "Airco gevuld en remmen volledig onderhouden."
-    }
-  ],
-  "service": [
-    {
-      "datum": "2023-01-15",
-      "soort_onderhoud": "30.000 km / 1 jaar onderhoud",
-      "kilometerstand": 30000,
-      "uitgevoerd_door": "ScholteW Ede BV",
-      "opmerkingen": "Eerste onderhoudsbeurt, olie en filters vervangen"
-    },
-    {
-      "datum": "2024-01-15",
-      "soort_onderhoud": "60.000 km / 2 jaar onderhoud",
-      "kilometerstand": 60000,
-      "uitgevoerd_door": "Henk Scholten Nijmegen B.V.",
-      "opmerkingen": "Kleine beurt, interieurfilter vervangen"
-    },
-    {
-      "datum": "2025-01-15",
-      "soort_onderhoud": "90.000 km / 3 jaar onderhoud",
-      "kilometerstand": 90000,
-      "uitgevoerd_door": "Henk Scholten Nijmegen B.V.",
-      "opmerkingen": "Grote beurt uitgevoerd"
-    },
-    {
-      "datum": "2026-01-15",
-      "soort_onderhoud": "Distributieriem vervangen",
-      "kilometerstand": 120000,
-      "uitgevoerd_door": "Volvo dealer",
-      "opmerkingen": "Belangrijke onderhoudsbeurt, controle van riem en spanrollen"
-    },
-    {
-      "datum": "2027-01-15",
-      "soort_onderhoud": "150.000 km / 5 jaar onderhoud",
-      "kilometerstand": 150000,
-      "uitgevoerd_door": "Volvo erkende garage",
-      "opmerkingen": "Controle vloeistoffen en remmen"
-    },
-    {
-      "datum": "2028-01-15",
-      "soort_onderhoud": "180.000 km / 6 jaar onderhoud",
-      "kilometerstand": 180000,
-      "uitgevoerd_door": "Volvo erkende garage",
-      "opmerkingen": "Olie, luchtfilter en bougies vervangen"
-    },
-    {
-      "datum": "2029-01-15",
-      "soort_onderhoud": "210.000 km / 7 jaar onderhoud",
-      "kilometerstand": 210000,
-      "uitgevoerd_door": "Volvo erkende garage",
-      "opmerkingen": "Airco onderhoud en brandstoffilter vervangen"
-    },
-    {
-      "datum": "2030-01-15",
-      "soort_onderhoud": "240.000 km / 8 jaar onderhoud",
-      "kilometerstand": 240000,
-      "uitgevoerd_door": "Volvo erkende garage",
-      "opmerkingen": "Distributieriem vervangen en transmissievloeistof ververst"
-    }
-  ]
-}
+"service": [
+  {
+    "datum": "2006-02-14",
+    "kilometerstand": 32843,
+    "garage": "Henk Scholte Ede B.V.",
+    "type_beurt": "Eerstejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Geplande eerstejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 15.000 km of 1 jaar"
+  },
+  {
+    "datum": "2007-02-12",
+    "kilometerstand": 32843,
+    "garage": "Henk Scholte Ede B.V.",
+    "type_beurt": "Tweedejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Geplande tweedejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 15.000 km of 1 jaar"
+  },
+  {
+    "datum": "2008-02-25",
+    "kilometerstand": 92688,
+    "garage": "Henk Scholte Nijmegen B.V.",
+    "type_beurt": "Derdejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Geplande derdejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 15.000 km of 1 jaar"
+  },
+  {
+    "datum": "2009-04-15",
+    "kilometerstand": 120889,
+    "garage": "Henk Scholte Nijmegen B.V.",
+    "type_beurt": "Vierdejaars servicebeurt",
+    "soort_onderhoud": "Grote beurt",
+    "omschrijving": "Geplande vierdejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 15.000 km of 1 jaar"
+  },
+  {
+    "datum": "2010-05-25",
+    "kilometerstand": 141744,
+    "garage": "Henk Scholte Nijmegen B.V.",
+    "type_beurt": "Vijfdejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Geplande vijfdejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 15.000 km of 1 jaar"
+  },
+  {
+    "datum": "2012-02-04",
+    "kilometerstand": 174968,
+    "garage": "Henk Scholte Nijmegen B.V.",
+    "type_beurt": "Zesdejaars servicebeurt",
+    "soort_onderhoud": "Grote beurt",
+    "omschrijving": "Geplande zesdejaars servicebeurt. Distributieriem vervangen.",
+    "volgende_interval": "Na 15.000 km of 1 jaar"
+  },
+  {
+    "datum": "2014-03-10",
+    "kilometerstand": 199462,
+    "garage": "Autobedrijf Van Kampen B.V., Groningen",
+    "type_beurt": "Zevendejaars servicebeurt",
+    "soort_onderhoud": "Grote beurt",
+    "omschrijving": "Grote beurt, remschijven en remschoenen achter vervangen, remblokken voor vervangen.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2016-01-15",
+    "kilometerstand": 216420,
+    "garage": "Broekhuis Volvo B.V., Groningen",
+    "type_beurt": "Achtstejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Geplande achtstejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2017-06-28",
+    "kilometerstand": 239087,
+    "garage": "Autohûs Haren",
+    "type_beurt": "Negendejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Geplande negendejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2018-04-20",
+    "kilometerstand": 250567,
+    "garage": "Autohûs Haren",
+    "type_beurt": "Tiendejaars servicebeurt",
+    "soort_onderhoud": "Grote beurt",
+    "omschrijving": "Grote beurt, remmen voor vervangen, aircoservice uitgevoerd.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2019-07-03",
+    "kilometerstand": 270791,
+    "garage": "Autohûs Haren",
+    "type_beurt": "Elfdejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Geplande elfdejaars servicebeurt volgens serviceboekje.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2021-01-04",
+    "kilometerstand": 283335,
+    "garage": "Autohûs Haren",
+    "type_beurt": "Twaalfdejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt + APK",
+    "omschrijving": "Kleine beurt gecombineerd met APK-keuring.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2022-05-11",
+    "kilometerstand": 300401,
+    "garage": "Autohûs Haren",
+    "type_beurt": "Dertiendejaars servicebeurt",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Kleine beurt volgens serviceboekje.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2023-07-06",
+    "kilometerstand": 319943,
+    "garage": "HR Car Improvement, Bussum",
+    "type_beurt": "Service 2023",
+    "soort_onderhoud": "Kleine beurt",
+    "omschrijving": "Kleine beurt uitgevoerd door HR Car Improvement.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  },
+  {
+    "datum": "2024-05-31",
+    "kilometerstand": 341763,
+    "garage": "Garage Naarden",
+    "type_beurt": "Service 2024",
+    "soort_onderhoud": "Grote beurt",
+    "omschrijving": "Grote beurt inclusief oliewissel, filters, remcontrole en vloeistoffen.",
+    "volgende_interval": "Na 20.000 km of 1 jaar"
+  }
+]
