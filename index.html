@@ -12,7 +12,9 @@
       --border-color: #ddd;
       --header-bg: #eee;
       --hover-bg: #f5f9ff;
+      --wrenchly-green: #18ff83;
     }
+
     @media (prefers-color-scheme: dark) {
       :root {
         --bg-color: #1c1c1e;
@@ -23,6 +25,7 @@
         --hover-bg: #383838;
       }
     }
+
     body {
       font-family: system-ui, sans-serif;
       margin: 1.5rem;
@@ -30,7 +33,11 @@
       color: var(--text-color);
       transition: background 0.3s ease, color 0.3s ease;
     }
-    h1 { margin-bottom: 1rem; }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -40,14 +47,22 @@
       border-radius: 8px;
       overflow: hidden;
     }
+
     th, td {
       border-bottom: 1px solid var(--border-color);
       padding: 0.6rem;
       text-align: left;
       vertical-align: top;
     }
-    th { background: var(--header-bg); font-weight: 600; }
-    tr:hover { background-color: var(--hover-bg); }
+
+    th {
+      background: var(--header-bg);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: var(--hover-bg);
+    }
 
     .tab-button {
       margin-right: 1rem;
@@ -56,12 +71,27 @@
       border: 1px solid var(--border-color);
       background-color: var(--table-bg);
       border-radius: 6px;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
       color: var(--text-color);
     }
-    .tab-button.active { background-color: var(--header-bg); font-weight: bold; }
 
-    .search-box { margin: 0.8rem 0; }
+    .tab-button:hover {
+      border-color: var(--wrenchly-green);
+      box-shadow: 0 0 6px rgba(24, 255, 131, 0.3);
+    }
+
+    .tab-button.active {
+      background-color: var(--wrenchly-green) !important;
+      color: #000 !important;
+      font-weight: 600;
+      border-color: var(--wrenchly-green) !important;
+      box-shadow: 0 0 10px rgba(24, 255, 131, 0.6);
+    }
+
+    .search-box {
+      margin: 0.8rem 0;
+    }
+
     .search-box input {
       padding: 0.4rem 0.6rem;
       width: 250px;
@@ -115,7 +145,13 @@
     <table id="service">
       <thead>
         <tr>
-          <th>Datum</th><th>Garage</th><th>Type</th><th>Soort onderhoud</th><th>Kilometerstand</th><th>Interval</th><th>Status</th>
+          <th>Datum</th>
+          <th>Garage</th>
+          <th>Type</th>
+          <th>Soort onderhoud</th>
+          <th>Kilometerstand</th>
+          <th>Interval</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody></tbody>
