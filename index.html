@@ -2,48 +2,35 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="color-scheme" content="light dark" />
-  <meta name="supported-color-schemes" content="light dark" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wrenchly – Auto-onderhoud</title>
   <style>
-    /* ====== Kleurvariabelen ====== */
     :root {
       --bg-color: #fafafa;
       --text-color: #222;
-      --table-bg: #ffffff;
+      --table-bg: #fff;
       --border-color: #ddd;
       --header-bg: #eee;
       --hover-bg: #f5f9ff;
-      --accent: #18ff83;
     }
-
-    /* ====== DARK MODE ====== */
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg-color: #121212;
+        --bg-color: #1c1c1e;
         --text-color: #f5f5f7;
-        --table-bg: #1e1e1e;
-        --border-color: #333;
-        --header-bg: #2a2a2a;
-        --hover-bg: #2f2f2f;
-        --accent: #18ff83;
+        --table-bg: #2c2c2e;
+        --border-color: #3a3a3c;
+        --header-bg: #333;
+        --hover-bg: #383838;
       }
     }
-
-    /* ====== Basisopmaak ====== */
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: system-ui, sans-serif;
       margin: 1.5rem;
       background: var(--bg-color);
       color: var(--text-color);
       transition: background 0.3s ease, color 0.3s ease;
     }
-
-    h1 {
-      margin-bottom: 1rem;
-    }
-
+    h1 { margin-bottom: 1rem; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -53,22 +40,14 @@
       border-radius: 8px;
       overflow: hidden;
     }
-
     th, td {
       border-bottom: 1px solid var(--border-color);
       padding: 0.6rem;
       text-align: left;
       vertical-align: top;
     }
-
-    th {
-      background: var(--header-bg);
-      font-weight: 600;
-    }
-
-    tr:hover {
-      background-color: var(--hover-bg);
-    }
+    th { background: var(--header-bg); font-weight: 600; }
+    tr:hover { background-color: var(--hover-bg); }
 
     .tab-button {
       margin-right: 1rem;
@@ -80,17 +59,9 @@
       transition: all 0.2s;
       color: var(--text-color);
     }
+    .tab-button.active { background-color: var(--header-bg); font-weight: bold; }
 
-    .tab-button.active {
-      background-color: var(--accent);
-      color: #000;
-      font-weight: bold;
-    }
-
-    .search-box {
-      margin: 0.8rem 0;
-    }
-
+    .search-box { margin: 0.8rem 0; }
     .search-box input {
       padding: 0.4rem 0.6rem;
       width: 250px;
@@ -114,23 +85,26 @@
 <body>
   <h1>Auto-onderhoud overzicht</h1>
 
+  <!-- Tabs -->
   <div>
     <button class="tab-button active" data-tab="reparaties">Reparaties</button>
     <button class="tab-button" data-tab="service">Serviceboekje</button>
+    <button class="tab-button" data-tab="aanstaand">Aanstaand onderhoud</button>
   </div>
 
+  <!-- Zoekfunctie -->
   <div class="search-box" id="searchContainer">
     <label for="searchInput">Zoeken in reparaties:</label>
     <input type="text" id="searchInput" placeholder="Bijv. airco, remmen, banden..." />
   </div>
 
+  <!-- Reparaties -->
   <table id="reparaties">
-    <thead>
-      <tr><th>Datum</th><th>Garage</th><th>Totaalbedrag</th></tr>
-    </thead>
+    <thead><tr><th>Datum</th><th>Garage</th><th>Totaalbedrag</th></tr></thead>
     <tbody></tbody>
   </table>
 
+  <!-- Serviceboekje -->
   <div id="serviceContainer" style="display:none;">
     <label for="serviceFilter">Filter servicebeurten:</label>
     <select id="serviceFilter">
@@ -138,16 +112,25 @@
       <option value="historisch">Historisch</option>
       <option value="toekomstig">Toekomstig</option>
     </select>
-
     <table id="service">
       <thead>
         <tr>
-          <th>Datum</th>
-          <th>Garage</th>
-          <th>Type</th>
-          <th>Soort onderhoud</th>
-          <th>Kilometerstand</th>
-          <th>Interval</th>
+          <th>Datum</th><th>Garage</th><th>Type</th><th>Soort onderhoud</th><th>Kilometerstand</th><th>Interval</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Aanstaand onderhoud -->
+  <div id="aanstaandContainer" style="display:none;">
+    <table id="aanstaand">
+      <thead>
+        <tr>
+          <th>Verwachte datum</th>
+          <th>Onderdeel</th>
+          <th>Reden</th>
+          <th>Verwacht bij km-stand</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -159,29 +142,24 @@
     const tabs = document.querySelectorAll('.tab-button');
     const reparatiesTable = document.getElementById('reparaties');
     const serviceContainer = document.getElementById('serviceContainer');
+    const aanstaandContainer = document.getElementById('aanstaandContainer');
     const searchContainer = document.getElementById('searchContainer');
 
-    // Wisselen tussen tabs
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        if (tab.dataset.tab === 'reparaties') {
-          reparatiesTable.style.display = '';
-          searchContainer.style.display = '';
-          serviceContainer.style.display = 'none';
-        } else {
-          reparatiesTable.style.display = 'none';
-          searchContainer.style.display = 'none';
-          serviceContainer.style.display = '';
-        }
+        reparatiesTable.style.display = serviceContainer.style.display = aanstaandContainer.style.display = 'none';
+        searchContainer.style.display = 'none';
+        if (tab.dataset.tab === 'reparaties') { reparatiesTable.style.display = ''; searchContainer.style.display = ''; }
+        if (tab.dataset.tab === 'service') serviceContainer.style.display = '';
+        if (tab.dataset.tab === 'aanstaand') aanstaandContainer.style.display = '';
       });
     });
 
-    // Bepaal onderhoudsstatus
     function bepaalStatus(beurtDatum, beurtKm, huidigeKm) {
       const vandaag = new Date();
-      const datumVerschil = (new Date(beurtDatum) - vandaag) / (1000 * 60 * 60 * 24);
+      const datumVerschil = (new Date(beurtDatum) - vandaag) / (1000*60*60*24);
       const kmVerschil = beurtKm - huidigeKm;
       if (datumVerschil < 0 && beurtKm <= huidigeKm) return { label: "✅ Uitgevoerd", kleur: "green" };
       if (datumVerschil < 60 || kmVerschil < 5000) return { label: "⏳ Binnenkort", kleur: "orange" };
@@ -189,7 +167,6 @@
       return { label: "✅ Oké", kleur: "green" };
     }
 
-    // JSON laden met cache-bypass
     fetch('data.json?nocache=' + Date.now())
       .then(r => r.json())
       .then(data => {
@@ -197,8 +174,9 @@
         const reparaties = data.bonnen || [];
         const serviceData = data.service || [];
 
+        // 🔹 Reparaties
         const repBody = document.querySelector('#reparaties tbody');
-        function renderReparaties(filter = '') {
+        function renderReparaties(filter='') {
           repBody.innerHTML = '';
           reparaties.filter(r => r.omschrijving.toLowerCase().includes(filter.toLowerCase()))
             .forEach(f => {
@@ -206,56 +184,59 @@
               row.style.cursor = 'pointer';
               row.innerHTML = `<td>${f.factuurdatum}</td><td>${f.garage}</td><td>€ ${f.totaal.toFixed(2)}</td>`;
               repBody.appendChild(row);
-              const details = [
-                `Factuurnummer: ${f.factuurnummer}`,
-                `Kilometerstand: ${f.kilometerstand}`,
-                `Omschrijving: ${f.omschrijving}`,
-                `Categorie: ${f.categorie}`
-              ];
+              const details = [`Factuurnummer: ${f.factuurnummer}`, `Kilometerstand: ${f.kilometerstand}`,
+                `Omschrijving: ${f.omschrijving}`, `Categorie: ${f.categorie}`];
               details.forEach(d => {
-                const r = document.createElement('tr');
-                r.style.display = 'none';
+                const r = document.createElement('tr'); r.style.display='none';
                 r.innerHTML = `<td colspan="3" style="padding-left:1.5rem;">${d}</td>`;
                 repBody.appendChild(r);
-                row.addEventListener('click', () => {
-                  r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
-                });
+                row.addEventListener('click', ()=>{r.style.display=r.style.display==='none'?'table-row':'none';});
               });
             });
         }
         renderReparaties();
-        document.getElementById('searchInput').addEventListener('input', e => renderReparaties(e.target.value));
+        document.getElementById('searchInput').addEventListener('input', e=>renderReparaties(e.target.value));
 
-        // Serviceboekje
-        const servBody = document.querySelector('#service tbody');
-        const servFilter = document.getElementById('serviceFilter');
-        function renderService() {
-          servBody.innerHTML = '';
-          const filter = servFilter.value;
-          const vandaag = new Date();
-          serviceData.forEach(b => {
-            const d = new Date(b.datum);
-            const isHist = d < vandaag;
-            const isToek = d > vandaag;
-            if (filter === 'historisch' && !isHist) return;
-            if (filter === 'toekomstig' && !isToek) return;
-            const status = bepaalStatus(b.datum, b.kilometerstand, huidigeKm);
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${b.datum}</td>
-              <td>${b.garage}</td>
-              <td>${b.type_beurt}</td>
-              <td>${b.soort_onderhoud}</td>
-              <td>${b.kilometerstand.toLocaleString()} km</td>
-              <td>${b.volgende_interval}</td>
-              <td class="status ${status.kleur}">${status.label}</td>`;
+        // 🔹 Serviceboekje
+        const servBody=document.querySelector('#service tbody');
+        const servFilter=document.getElementById('serviceFilter');
+        function renderService(){
+          servBody.innerHTML='';
+          const filter=servFilter.value;
+          const vandaag=new Date();
+          serviceData.forEach(b=>{
+            const d=new Date(b.datum);
+            const isHist=d<vandaag; const isToek=d>vandaag;
+            if(filter==='historisch'&&!isHist)return;
+            if(filter==='toekomstig'&&!isToek)return;
+            const s=bepaalStatus(b.datum,b.kilometerstand,huidigeKm);
+            const row=document.createElement('tr');
+            row.innerHTML=`<td>${b.datum}</td><td>${b.garage}</td><td>${b.type_beurt}</td>
+              <td>${b.soort_onderhoud}</td><td>${b.kilometerstand.toLocaleString()} km</td>
+              <td>${b.volgende_interval}</td><td class="status ${s.kleur}">${s.label}</td>`;
             servBody.appendChild(row);
           });
         }
-        servFilter.addEventListener('change', renderService);
+        servFilter.addEventListener('change',renderService);
         renderService();
+
+        // 🔹 Aanstaand onderhoud
+        const aanBody=document.querySelector('#aanstaand tbody');
+        const voorspellingen=[
+          {datum:'2025-06-01',onderdeel:'Olie + filters',reden:'20.000 km sinds laatste beurt (2024-05-31)',km:366000,status:'orange',label:'⚠️ Binnenkort'},
+          {datum:'2025-12-10',onderdeel:'APK',reden:'Jaarlijkse keuring',km:378000,status:'orange',label:'⏳ Inplannen'},
+          {datum:'2027-06-01',onderdeel:'Distributieriem',reden:'5 jaar na vervanging (2022)',km:406000,status:'red',label:'⚠️ Kritisch'},
+          {datum:'2025-07-01',onderdeel:'Airco onderhoud',reden:'Jaarlijks interval',km:368000,status:'orange',label:'⏳ Binnenkort'}
+        ];
+        aanBody.innerHTML='';
+        voorspellingen.forEach(v=>{
+          const row=document.createElement('tr');
+          row.innerHTML=`<td>${v.datum}</td><td>${v.onderdeel}</td><td>${v.reden}</td>
+                         <td>${v.km.toLocaleString()} km</td><td class="status ${v.status}">${v.label}</td>`;
+          aanBody.appendChild(row);
+        });
       })
-      .catch(e => console.error('Fout bij laden JSON:', e));
+      .catch(e=>console.error('Fout bij laden JSON:',e));
   </script>
 </body>
 </html>
