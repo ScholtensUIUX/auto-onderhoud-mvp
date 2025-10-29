@@ -2,319 +2,256 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wrenchly – Auto-onderhoud</title>
   <style>
-    :root {
-      --bg-color: #fafafa;
-      --text-color: #222;
-      --table-bg: #fff;
-      --border-color: #ddd;
-      --header-bg: #eee;
-      --hover-bg: #f5f9ff;
-      --wrenchly-green: #18ff83;
+    /* ===== CSS VARS ===== */
+    :root{
+      --bg: #f6f7f8;
+      --text:#1d1f21;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --header:#eef2f7;
+      --hover:#f3f6fb;
+      --brand:#18FF83;
+      --danger:#ef4444;
+      --warn:#f59e0b;
+      --ok:#22c55e;
+      --shadow: 0 1px 2px rgba(0,0,0,.06), 0 10px 20px rgba(0,0,0,.03);
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #1c1c1e;
-        --text-color: #f5f5f7;
-        --table-bg: #2c2c2e;
-        --border-color: #3a3a3c;
-        --header-bg: #333;
-        --hover-bg: #383838;
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#121214;
+        --text:#f5f5f7;
+        --card:#1c1c20;
+        --muted:#a3a3ad;
+        --border:#2a2a30;
+        --header:#242429;
+        --hover:#26262d;
+        --shadow: none;
       }
     }
-    body {
-      font-family: system-ui, sans-serif;
-      margin: 1.5rem;
-      background: var(--bg-color);
-      color: var(--text-color);
-      transition: background 0.3s ease, color 0.3s ease;
+
+    *{box-sizing:border-box}
+    body{
+      margin:16px;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica Neue,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      transition:background .2s ease,color .2s ease;
     }
-    h1 { margin-bottom: 1rem; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      background: var(--table-bg);
-      border-radius: 8px;
-      overflow: hidden;
+    h1{margin:0 0 12px;font-size:clamp(22px,3vw,38px);font-weight:800;}
+
+    /* BUTTONS & TABS */
+    .btn{
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text);
+      padding:.55rem .95rem;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow:var(--shadow);
     }
-    th, td {
-      border-bottom: 1px solid var(--border-color);
-      padding: 0.6rem;
-      text-align: left;
-      vertical-align: top;
+    .btn.primary{background:var(--brand);border-color:transparent;color:#0b2b19;}
+    .tab{border:1px solid var(--border);background:var(--card);padding:.55rem 1rem;border-radius:12px;font-weight:700;cursor:pointer;}
+    .tab.active{background:color-mix(in srgb,var(--brand) 88%,white 12%);border-color:color-mix(in srgb,var(--brand) 60%,var(--border) 40%);color:#0a2a18;}
+
+    /* TABLES */
+    .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+    table{width:100%;border-collapse:collapse;font-size:15px;}
+    thead th{background:var(--header);text-align:left;padding:14px 16px;border-bottom:1px solid var(--border);}
+    tbody td{padding:14px 16px;border-bottom:1px solid var(--border);}
+    tbody tr:hover{background:var(--hover);}
+    .right{text-align:right}
+    .detail{display:none;background:color-mix(in srgb,var(--hover) 80%,transparent);}
+    .clickable{cursor:pointer;}
+    .totals{padding:10px 14px;text-align:right;font-weight:800;background:var(--card);}
+
+    /* SEARCH & FILTER */
+    .search-box{margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .search-input{padding:.6rem .8rem;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);}
+    select{padding:.45rem .6rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);}
+
+    /* TOAST */
+    .toast{
+      position:fixed;right:20px;bottom:20px;
+      background:var(--card);color:var(--text);
+      border:1px solid var(--border);border-left:6px solid var(--brand);
+      padding:12px 16px;border-radius:12px;
+      box-shadow:var(--shadow);
+      opacity:0;transform:translateY(20px);
+      transition:opacity .3s ease,transform .3s ease;
+      z-index:100;
     }
-    th { background: var(--header-bg); font-weight: 600; }
-    tr:hover { background-color: var(--hover-bg); }
-    .tab-button {
-      margin-right: 1rem;
-      padding: 0.45rem 1rem;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      background-color: var(--table-bg);
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      color: var(--text-color);
-    }
-    .tab-button.active {
-      background-color: var(--wrenchly-green) !important;
-      color: #000 !important;
-      font-weight: 600;
-      border-color: var(--wrenchly-green) !important;
-      box-shadow: 0 0 10px rgba(24, 255, 131, 0.6);
-    }
-    .search-box { margin: 0.8rem 0; }
-    .search-box input {
-      padding: 0.4rem 0.6rem;
-      width: 250px;
-      max-width: 100%;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: var(--table-bg);
-      color: var(--text-color);
-    }
-    .status.green { color: #4caf50; font-weight: bold; }
-    .status.orange { color: #ff9800; font-weight: bold; }
-    .status.red { color: #f44336; font-weight: bold; }
-    .totaalbedrag, .service-totaal, .aanstaand-totaal {
-      margin-top: 0.75rem;
-      font-weight: 700;
-      text-align: right;
-    }
-    .subtle { opacity: .8; font-weight: 500; text-align:right; }
-    @media (max-width: 600px) {
-      table, th, td { font-size: 0.85rem; }
-      .tab-button { margin-bottom: 0.5rem; display: inline-block; }
-    }
+    .toast.show{opacity:1;transform:translateY(0);}
+    @media(max-width:600px){.toast{left:10px;right:10px;bottom:10px;text-align:center}}
+
+    /* MODAL (same as before, shortened slightly for space) */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:min(720px,100%);max-height:90dvh;overflow:auto;}
+    .modal header{padding:14px 16px;background:var(--header);border-bottom:1px solid var(--border);display:flex;align-items:center;}
+    .modal header h3{margin:0;font-size:18px}
+    .modal .close{margin-left:auto;cursor:pointer;border:none;background:transparent;font-size:22px;color:var(--muted)}
+    .modal .content{padding:16px;display:grid;gap:12px}
+    .modal textarea{min-height:100px;padding:.7rem;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);}
+    .upload{border:1px dashed var(--border);border-radius:12px;padding:14px;}
+    .previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .preview{width:84px;height:84px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+    .ai-box{border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--hover);font-size:14px;}
+    .modal footer{padding:12px 16px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--border);}
   </style>
 </head>
 <body>
   <h1>Auto-onderhoud overzicht</h1>
-
-  <div>
-    <button class="tab-button active" data-tab="reparaties">Reparaties</button>
-    <button class="tab-button" data-tab="service">Serviceboekje</button>
-    <button class="tab-button" data-tab="aanstaand">Aanstaand onderhoud</button>
+  <div class="tabs">
+    <button class="tab active" data-tab="reparaties">Reparaties</button>
+    <button class="tab" data-tab="service">Serviceboekje</button>
+    <button class="tab" data-tab="upcoming">Aanstaand onderhoud</button>
+    <button id="planTopBtn" class="btn primary" style="margin-left:auto">Plan afspraak</button>
   </div>
 
-  <div class="search-box" id="searchContainer">
-    <label for="searchInput">Zoeken in reparaties:</label>
-    <input type="text" id="searchInput" placeholder="Bijv. airco, remmen, banden..." />
+  <!-- SEARCH + CSV EXPORT -->
+  <div class="search-box" id="searchWrap">
+    <label for="q">Zoeken:</label>
+    <input id="q" class="search-input" type="text" placeholder="Bijv. airco, remmen, banden…"/>
+    <button id="csvBtn" class="btn">Exporteer CSV</button>
   </div>
 
-  <table id="reparaties">
-    <thead><tr><th>Datum</th><th>Garage</th><th>Totaalbedrag</th></tr></thead>
-    <tbody></tbody>
-  </table>
-  <div class="totaalbedrag" id="totaalBedrag"></div>
+  <!-- Reparaties -->
+  <section id="reparatiesSection" class="table-wrap">
+    <table id="repTable">
+      <thead><tr><th>Datum</th><th>Garage</th><th class="right">Totaalbedrag</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div id="repTotals" class="totals"></div>
+  </section>
 
-  <div id="serviceContainer" style="display:none;">
+  <!-- Service -->
+  <div class="search-box" id="serviceControls" style="display:none">
     <label for="serviceFilter">Filter servicebeurten:</label>
     <select id="serviceFilter">
       <option value="alle">Alle</option>
       <option value="historisch">Historisch</option>
       <option value="toekomstig">Toekomstig</option>
     </select>
-    <table id="service">
-      <thead>
-        <tr>
-          <th style="width:12%">Datum</th>
-          <th style="width:24%">Garage</th>
-          <th style="width:22%">Type</th>
-          <th style="width:22%">Soort onderhoud</th>
-          <th style="width:12%">Kilometerstand</th>
-          <th style="width:8%">Status</th>
-        </tr>
-      </thead>
+  </div>
+  <section id="serviceSection" class="table-wrap" style="display:none">
+    <table id="serviceTable">
+      <thead><tr><th>Datum</th><th>Garage</th><th>Type</th><th>Soort</th><th>Kilometerstand</th><th>Status</th></tr></thead>
       <tbody></tbody>
     </table>
-    <div class="service-totaal" id="serviceTotaal"></div>
-    <div class="subtle">(Schattingen o.b.v. type beurt; echte bedragen kunnen afwijken.)</div>
+  </section>
+
+  <!-- Aanstaand -->
+  <section id="upcomingSection" class="table-wrap" style="display:none">
+    <table id="upTable">
+      <thead><tr><th>Verwachte datum</th><th>Onderdeel</th><th>Omschrijving</th><th class="right">Geschatte kosten</th><th class="right">Actie</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- MODAL -->
+  <div id="overlay" class="overlay">
+    <div class="modal">
+      <header><h3>Afspraak plannen</h3><button class="close" id="closeModal">×</button></header>
+      <div class="content">
+        <div><label>Wat wil je laten doen?</label><textarea id="issue" placeholder="Bijv. ‘auto piept bij remmen’, ‘stuur trilt boven 100 km/u’"></textarea></div>
+        <div class="upload"><div>Foto’s toevoegen</div><input id="photos" type="file" accept="image/*" multiple/><div id="previews" class="previews"></div></div>
+        <div class="ai-box" id="aiBox"><strong>AI-suggestie</strong><div id="aiSuggest" class="muted">Typ een klacht hierboven...</div></div>
+      </div>
+      <footer><button class="btn" id="cancelBtn">Annuleren</button><button class="btn primary" id="sendBtn">Verzend verzoek</button></footer>
+    </div>
   </div>
 
-  <div id="aanstaandContainer" style="display:none;">
-    <table id="aanstaand">
-      <thead>
-        <tr>
-          <th>Verwachte datum</th>
-          <th>Onderdeel</th>
-          <th>Reden</th>
-          <th>Verwacht bij km-stand</th>
-          <th>Geschatte kosten</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div class="aanstaand-totaal" id="aanstaandTotaal"></div>
-    <div class="subtle">(Schattingen o.b.v. gemiddeld onderhoud; voorzichtige raming komende 12 maanden)</div>
-  </div>
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
 
   <script>
-    const tabs = document.querySelectorAll('.tab-button');
-    const reparatiesTable = document.getElementById('reparaties');
-    const serviceContainer = document.getElementById('serviceContainer');
-    const aanstaandContainer = document.getElementById('aanstaandContainer');
-    const searchContainer = document.getElementById('searchContainer');
-    const totaalDiv = document.getElementById('totaalBedrag');
-    const serviceTotaalDiv = document.getElementById('serviceTotaal');
-    const aanstaandTotaalDiv = document.getElementById('aanstaandTotaal');
+    const € = n=> new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(n??0);
+    const fmtDate = iso=>{const d=new Date(iso);if(isNaN(d))return iso;return d.toLocaleDateString('nl-NL');};
+    const fmtKM = km=> km?new Intl.NumberFormat('nl-NL').format(km)+' km':'–';
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        reparatiesTable.style.display = serviceContainer.style.display = aanstaandContainer.style.display = 'none';
-        searchContainer.style.display = 'none';
-        totaalDiv.style.display = serviceTotaalDiv.style.display = aanstaandTotaalDiv.style.display = 'none';
-        if (tab.dataset.tab === 'reparaties') {
-          reparatiesTable.style.display = '';
-          searchContainer.style.display = '';
-          totaalDiv.style.display = '';
-        }
-        if (tab.dataset.tab === 'service') {
-          serviceContainer.style.display = '';
-          serviceTotaalDiv.style.display = '';
-        }
-        if (tab.dataset.tab === 'aanstaand') {
-          aanstaandContainer.style.display = '';
-          aanstaandTotaalDiv.style.display = '';
-        }
-      });
+    /* Tabs */
+    const tabs=document.querySelectorAll('.tab');
+    const sections={reparaties:repSection=document.getElementById('reparatiesSection'),service:document.getElementById('serviceSection'),upcoming:document.getElementById('upcomingSection')};
+    const searchWrap=document.getElementById('searchWrap');const serviceControls=document.getElementById('serviceControls');
+    tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(b=>b.classList.remove('active'));t.classList.add('active');const x=t.dataset.tab;Object.keys(sections).forEach(k=>sections[k].style.display=(k===x)?'':'none');searchWrap.style.display=(x==='reparaties')?'':'none';serviceControls.style.display=(x==='service')?'':'none';}));
+
+    /* Toast */
+    function showToast(msg){
+      const toast=document.getElementById('toast');
+      toast.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),3000);
+    }
+
+    /* Modal */
+    const overlay=document.getElementById('overlay');
+    const openModal=()=>overlay.style.display='flex';
+    const closeModal=()=>{overlay.style.display='none';document.getElementById('issue').value='';document.getElementById('previews').innerHTML='';};
+    document.getElementById('planTopBtn').onclick=openModal;
+    document.getElementById('closeModal').onclick=closeModal;
+    document.getElementById('cancelBtn').onclick=closeModal;
+    document.getElementById('sendBtn').onclick=()=>{closeModal();showToast('✅ Je afspraakverzoek is verzonden (dummy).');};
+
+    /* AI-suggestie */
+    const rules=[{re:/piep|tikken/i,msg:'Waarschijnlijk versleten remblokken, controle binnen 500 km.'},{re:/tril|stuur/i,msg:'Mogelijk wieluitlijning of onbalans banden.'},{re:/olie/i,msg:'Controleer carterpakking of oliefilter.'},{re:/rook/i,msg:'Controleer motorventilatie of bougies.'},{re:/geur|stank/i,msg:'Mogelijk remmen of koppeling oververhit.'}];
+    const ai=document.getElementById('aiSuggest');
+    document.getElementById('issue').addEventListener('input',e=>{const t=e.target.value;const m=rules.find(r=>r.re.test(t));ai.textContent=m?m.msg:'Geen directe match, plan diagnose-afspraak.';});
+
+    /* Foto preview */
+    document.getElementById('photos').addEventListener('change',e=>{
+      const p=document.getElementById('previews');p.innerHTML='';
+      [...e.target.files].forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.className='preview';p.appendChild(img);});
     });
 
-    function formatDate(dateStr) {
-      const d = new Date(dateStr);
-      if (isNaN(d)) return dateStr;
-      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    /* Data */
+    let DATA={bonnen:[],service:[],upcoming_maintenance:[]};
+    fetch('data.json?nocache='+Date.now()).then(r=>r.json()).then(d=>{DATA=d;renderRep();renderService();renderUpcoming();});
+
+    const repBody=document.querySelector('#repTable tbody');const repTotals=document.getElementById('repTotals');
+    function renderRep(){
+      repBody.innerHTML='';let total=0;const q=document.getElementById('q').value.toLowerCase();
+      (DATA.bonnen||[]).filter(b=>!q||(b.omschrijving||'').toLowerCase().includes(q)||(b.garage||'').toLowerCase().includes(q)).forEach(f=>{
+        total+=f.totaal||0;
+        const row=document.createElement('tr');row.className='clickable';row.innerHTML=`<td>${fmtDate(f.factuurdatum)}</td><td>${f.garage}</td><td class="right">${€(f.totaal)}</td>`;
+        const det=document.createElement('tr');det.className='detail';det.innerHTML=`<td colspan="3"><div><strong>Factuurnummer:</strong> ${f.factuurnummer}</div><div><strong>Kilometerstand:</strong> ${fmtKM(f.kilometerstand)}</div><div><strong>Omschrijving:</strong> ${f.omschrijving}</div><div><strong>Categorie:</strong> ${f.categorie}</div></td>`;
+        repBody.append(row,det);
+        row.onclick=()=>det.style.display=det.style.display==='table-row'?'none':'table-row';
+      });
+      repTotals.textContent='Totaal uitgegeven aan reparaties: '+€(total);
     }
-    function formatCurrency(num) {
-      return Number(num || 0).toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
+    document.getElementById('q').oninput=renderRep;
+
+    /* CSV Export */
+    document.getElementById('csvBtn').onclick=()=>{
+      const rows=[['Factuurnummer','Datum','Garage','Omschrijving','Kilometerstand','Totaal']];
+      (DATA.bonnen||[]).forEach(b=>rows.push([b.factuurnummer,fmtDate(b.factuurdatum),b.garage,b.omschrijving,b.kilometerstand,€(b.totaal)]));
+      const csv=rows.map(r=>r.join(';')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wrenchly_reparaties_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+      showToast('📦 CSV-bestand geëxporteerd.');
+    };
+
+    /* Service */
+    const serviceBody=document.querySelector('#serviceTable tbody');
+    function renderService(){
+      serviceBody.innerHTML='';
+      const filter=document.getElementById('serviceFilter').value;const today=new Date();
+      (DATA.service||[]).forEach(b=>{
+        const d=new Date(b.datum);const hist=d<today;if(filter==='historisch'&&!hist)return;if(filter==='toekomstig'&&hist)return;
+        const status=hist?'✔ Uitgevoerd':'⏳ Binnenkort';
+        const cls=hist?'ok':'warn';
+        serviceBody.innerHTML+=`<tr><td>${fmtDate(b.datum)}</td><td>${b.garage}</td><td>${b.type_beurt}</td><td>${b.soort_onderhoud}</td><td>${fmtKM(b.kilometerstand)}</td><td class="${cls}">${status}</td></tr>`;
+      });
     }
-    function bepaalStatus(beurtDatum, beurtKm, huidigeKm) {
-      const vandaag = new Date();
-      const datumVerschil = (new Date(beurtDatum) - vandaag) / (1000*60*60*24);
-      const kmVerschil = beurtKm - huidigeKm;
-      if (datumVerschil < 0 && beurtKm <= huidigeKm) return { label:"✅ Uitgevoerd", kleur:"green" };
-      if (datumVerschil < 60 || kmVerschil < 5000) return { label:"⏳ Binnenkort", kleur:"orange" };
-      if (datumVerschil < 0 && beurtKm > huidigeKm) return { label:"⚠️ Te laat", kleur:"red" };
-      return { label:"✅ Oké", kleur:"green" };
-    }
+    document.getElementById('serviceFilter').onchange=renderService;
 
-    fetch('data.json?nocache=' + Date.now())
-      .then(r => r.json())
-      .then(data => {
-        const huidigeKm = 366000;
-        const reparaties = data.bonnen || [];
-        const serviceData = data.service || [];
-
-        // Reparaties
-        const repBody = document.querySelector('#reparaties tbody');
-        function renderReparaties(filter='') {
-          repBody.innerHTML = '';
-          let totaal = 0;
-          reparaties
-            .filter(r => (r.omschrijving||'').toLowerCase().includes(filter.toLowerCase()))
-            .forEach(f => {
-              totaal += f.totaal || 0;
-              const mainRow = document.createElement('tr');
-              mainRow.style.cursor = 'pointer';
-              mainRow.innerHTML = `<td>${formatDate(f.factuurdatum)}</td><td>${f.garage}</td><td>${formatCurrency(f.totaal)}</td>`;
-              repBody.appendChild(mainRow);
-
-              const details = [
-                `Factuurnummer: ${f.factuurnummer || '-'}`,
-                `Kilometerstand: ${f.kilometerstand?.toLocaleString('nl-NL') || '-'}`,
-                `Omschrijving: ${f.omschrijving || '-'}`,
-                `Categorie: ${f.categorie || '-'}`
-              ];
-              const detailRows = details.map(d => {
-                const r = document.createElement('tr');
-                r.style.display = 'none';
-                r.innerHTML = `<td colspan="3" style="padding-left:1.5rem;">${d}</td>`;
-                repBody.appendChild(r);
-                return r;
-              });
-              mainRow.addEventListener('click', () => {
-                detailRows.forEach(r => {
-                  r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
-                });
-              });
-            });
-          totaalDiv.textContent = `Totaal uitgegeven aan reparaties: ${formatCurrency(totaal)}`;
-        }
-        renderReparaties();
-        document.getElementById('searchInput').addEventListener('input', e => renderReparaties(e.target.value));
-
-        // Serviceboekje zonder Interval-kolom
-        const servBody = document.querySelector('#service tbody');
-        const servFilter = document.getElementById('serviceFilter');
-        function estimateServiceCost(b){
-          const txt = `${b.type_beurt||''} ${b.soort_onderhoud||''}`.toLowerCase();
-          let est = 0;
-          if (txt.includes('grote')) est += 600;
-          else if (txt.includes('kleine')) est += 300;
-          if (txt.includes('apk')) est += 65;
-          if (txt.includes('airco')) est += 120;
-          if (txt.includes('distributieriem')) est += 900;
-          if (txt.includes('rem') && txt.includes('vervang')) est += 300;
-          return est;
-        }
-        function renderService(){
-          servBody.innerHTML='';
-          const filter = servFilter.value;
-          const vandaag = new Date();
-          let totaalSchatting=0;
-          serviceData.forEach(b=>{
-            const d=new Date(b.datum);
-            const isHist=d<vandaag;
-            const isToek=d>vandaag;
-            if(filter==='historisch'&&!isHist)return;
-            if(filter==='toekomstig'&&!isToek)return;
-            const s=bepaalStatus(b.datum,b.kilometerstand,huidigeKm);
-            const schatting=estimateServiceCost(b);
-            totaalSchatting+=schatting;
-            const row=document.createElement('tr');
-            row.innerHTML=`
-              <td>${formatDate(b.datum)}</td>
-              <td>${b.garage}</td>
-              <td>${b.type_beurt}</td>
-              <td>${b.soort_onderhoud}</td>
-              <td>${b.kilometerstand.toLocaleString()} km</td>
-              <td class="status ${s.kleur}">${s.label}</td>`;
-            servBody.appendChild(row);
-          });
-          serviceTotaalDiv.textContent=`Geschatte totale kosten (zichtbare beurten): ${formatCurrency(totaalSchatting)}`;
-        }
-        servFilter.addEventListener('change',renderService);
-        renderService();
-
-        // Aanstaand onderhoud
-        const aanBody=document.querySelector('#aanstaand tbody');
-        const voorspellingen=[
-          {datum:'2025-06-01',onderdeel:'Olie + filters',reden:'20.000 km sinds laatste beurt (31/05/2024)',km:366000,kosten:250,status:'orange',label:'⚠️ Binnenkort'},
-          {datum:'2025-12-10',onderdeel:'APK',reden:'Jaarlijkse keuring',km:378000,kosten:65,status:'orange',label:'⏳ Inplannen'},
-          {datum:'2027-06-01',onderdeel:'Distributieriem',reden:'5 jaar na vervanging (2022)',km:406000,kosten:900,status:'red',label:'⚠️ Kritisch'},
-          {datum:'2025-07-01',onderdeel:'Airco onderhoud',reden:'Jaarlijks interval',km:368000,kosten:120,status:'orange',label:'⏳ Binnenkort'}
-        ];
-        aanBody.innerHTML='';
-        let totaalAanstaand=0;
-        voorspellingen.forEach(v=>{
-          if(new Date(v.datum)<new Date().setFullYear(new Date().getFullYear()+1)){
-            totaalAanstaand+=v.kosten;
-          }
-          const row=document.createElement('tr');
-          row.innerHTML=`<td>${formatDate(v.datum)}</td><td>${v.onderdeel}</td><td>${v.reden}</td>
-                         <td>${v.km.toLocaleString()} km</td><td>${formatCurrency(v.kosten)}</td>
-                         <td class="status ${v.status}">${v.label}</td>`;
-          aanBody.appendChild(row);
-        });
-        aanstaandTotaalDiv.textContent=`Geschatte kosten komende 12 maanden: ${formatCurrency(totaalAanstaand)}`;
-      })
-      .catch(e=>console.error('Fout bij laden JSON:',e));
-  </script>
-</body>
-</html>
+    /* Upcoming */
+    const upBody=document.querySelector('#upTable tbody');
+    function renderUpcoming(){
+      upBody.innerHTML='';
+      (DATA.upcoming_maintenance||[]).forEach(u=>{
+        upBody.innerHTML+=`<tr><td>${fmtDate(u.verwachte_datum)}</td><td>${u.onderdeel}</td><td>${u.omschrijving}</td><td class="right">${€(u.geschatte_kosten)}</td><td class="right"><
