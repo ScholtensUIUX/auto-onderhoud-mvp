@@ -59,10 +59,6 @@
       transition: all 0.2s ease;
       color: var(--text-color);
     }
-    .tab-button:hover {
-      border-color: var(--wrenchly-green);
-      box-shadow: 0 0 6px rgba(24, 255, 131, 0.3);
-    }
     .tab-button.active {
       background-color: var(--wrenchly-green) !important;
       color: #000 !important;
@@ -216,7 +212,7 @@
         const reparaties = data.bonnen || [];
         const serviceData = data.service || [];
 
-        // Reparaties
+        // Reparaties met uitklapbare details
         const repBody = document.querySelector('#reparaties tbody');
         function renderReparaties(filter='') {
           repBody.innerHTML = '';
@@ -225,9 +221,29 @@
             .filter(r => (r.omschrijving||'').toLowerCase().includes(filter.toLowerCase()))
             .forEach(f => {
               totaal += f.totaal || 0;
-              const row = document.createElement('tr');
-              row.innerHTML = `<td>${formatDate(f.factuurdatum)}</td><td>${f.garage}</td><td>${formatCurrency(f.totaal)}</td>`;
-              repBody.appendChild(row);
+              const mainRow = document.createElement('tr');
+              mainRow.style.cursor = 'pointer';
+              mainRow.innerHTML = `<td>${formatDate(f.factuurdatum)}</td><td>${f.garage}</td><td>${formatCurrency(f.totaal)}</td>`;
+              repBody.appendChild(mainRow);
+
+              const details = [
+                `Factuurnummer: ${f.factuurnummer || '-'}`,
+                `Kilometerstand: ${f.kilometerstand?.toLocaleString('nl-NL') || '-'}`,
+                `Omschrijving: ${f.omschrijving || '-'}`,
+                `Categorie: ${f.categorie || '-'}`
+              ];
+              const detailRows = details.map(d => {
+                const r = document.createElement('tr');
+                r.style.display = 'none';
+                r.innerHTML = `<td colspan="3" style="padding-left:1.5rem;">${d}</td>`;
+                repBody.appendChild(r);
+                return r;
+              });
+              mainRow.addEventListener('click', () => {
+                detailRows.forEach(r => {
+                  r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
+                });
+              });
             });
           totaalDiv.textContent = `Totaal uitgegeven aan reparaties: ${formatCurrency(totaal)}`;
         }
