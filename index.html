@@ -5,122 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wrenchly – Auto-onderhoud</title>
   <style>
-    /* ===== CSS VARS ===== */
     :root{
-      --bg: #f6f7f8;
-      --text:#1d1f21;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --border:#e5e7eb;
-      --header:#eef2f7;
-      --hover:#f3f6fb;
-      --brand:#18FF83;
-      --danger:#ef4444;
-      --warn:#f59e0b;
-      --ok:#22c55e;
-      --shadow: 0 1px 2px rgba(0,0,0,.06), 0 10px 20px rgba(0,0,0,.03);
+      --bg:#f6f7f8;--text:#1d1f21;--card:#ffffff;--border:#e5e7eb;
+      --header:#eef2f7;--hover:#f3f6fb;--brand:#18FF83;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --bg:#121214;
-        --text:#f5f5f7;
-        --card:#1c1c20;
-        --muted:#a3a3ad;
-        --border:#2a2a30;
-        --header:#242429;
-        --hover:#26262d;
-        --shadow: none;
+        --bg:#121214;--text:#f5f5f7;--card:#1c1c20;--border:#2a2a30;
+        --header:#242429;--hover:#26262d;
       }
     }
-
-    *{box-sizing:border-box}
-    body{
-      margin:16px;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica Neue,Arial,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      transition:background .2s ease,color .2s ease;
-    }
-    h1{margin:0 0 12px;font-size:clamp(22px,3vw,38px);font-weight:800;}
-
-    /* BUTTONS & TABS */
-    .btn{
-      border:1px solid var(--border);
-      background:var(--card);
-      color:var(--text);
-      padding:.55rem .95rem;
-      border-radius:10px;
-      font-weight:600;
-      cursor:pointer;
-      box-shadow:var(--shadow);
-    }
-    .btn.primary{background:var(--brand);border-color:transparent;color:#0b2b19;}
-    .tab{border:1px solid var(--border);background:var(--card);padding:.55rem 1rem;border-radius:12px;font-weight:700;cursor:pointer;}
-    .tab.active{background:color-mix(in srgb,var(--brand) 88%,white 12%);border-color:color-mix(in srgb,var(--brand) 60%,var(--border) 40%);color:#0a2a18;}
-
-    /* TABLES */
-    .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
-    table{width:100%;border-collapse:collapse;font-size:15px;}
-    thead th{background:var(--header);text-align:left;padding:14px 16px;border-bottom:1px solid var(--border);}
-    tbody td{padding:14px 16px;border-bottom:1px solid var(--border);}
-    tbody tr:hover{background:var(--hover);}
-    .right{text-align:right}
-    .detail{display:none;background:color-mix(in srgb,var(--hover) 80%,transparent);}
-    .clickable{cursor:pointer;}
-    .totals{padding:10px 14px;text-align:right;font-weight:800;background:var(--card);}
-
-    /* SEARCH & FILTER */
-    .search-box{margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-    .search-input{padding:.6rem .8rem;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);}
-    select{padding:.45rem .6rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);}
-
-    /* TOAST */
-    .toast{
-      position:fixed;right:20px;bottom:20px;
-      background:var(--card);color:var(--text);
-      border:1px solid var(--border);border-left:6px solid var(--brand);
-      padding:12px 16px;border-radius:12px;
-      box-shadow:var(--shadow);
-      opacity:0;transform:translateY(20px);
-      transition:opacity .3s ease,transform .3s ease;
-      z-index:100;
-    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica Neue,Arial,sans-serif;
+      background:var(--bg);color:var(--text);margin:1.5rem;}
+    h1{margin-bottom:1rem;font-weight:800;}
+    .tab{border:1px solid var(--border);background:var(--card);
+      padding:.5rem 1rem;border-radius:10px;cursor:pointer;}
+    .tab.active{background:var(--brand);color:#002;}
+    .btn{border:1px solid var(--border);background:var(--card);padding:.5rem .9rem;
+      border-radius:10px;cursor:pointer;}
+    .btn.primary{background:var(--brand);border:none;font-weight:600;}
+    .search-box{margin:.7rem 0;}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:.6rem .8rem;border-bottom:1px solid var(--border);}
+    th{background:var(--header);text-align:left;}
+    tr:hover{background:var(--hover);}
+    .right{text-align:right;}
+    .detail{display:none;background:var(--hover);}
+    .totals{text-align:right;padding:.6rem;font-weight:700;}
+    .toast{position:fixed;right:20px;bottom:20px;background:var(--card);
+      border-left:5px solid var(--brand);padding:12px 16px;border-radius:12px;
+      opacity:0;transform:translateY(20px);transition:all .3s ease;z-index:100;}
     .toast.show{opacity:1;transform:translateY(0);}
-    @media(max-width:600px){.toast{left:10px;right:10px;bottom:10px;text-align:center}}
-
-    /* MODAL (same as before, shortened slightly for space) */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
-    .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:min(720px,100%);max-height:90dvh;overflow:auto;}
-    .modal header{padding:14px 16px;background:var(--header);border-bottom:1px solid var(--border);display:flex;align-items:center;}
-    .modal header h3{margin:0;font-size:18px}
-    .modal .close{margin-left:auto;cursor:pointer;border:none;background:transparent;font-size:22px;color:var(--muted)}
-    .modal .content{padding:16px;display:grid;gap:12px}
-    .modal textarea{min-height:100px;padding:.7rem;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);}
-    .upload{border:1px dashed var(--border);border-radius:12px;padding:14px;}
-    .previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .preview{width:84px;height:84px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
-    .ai-box{border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--hover);font-size:14px;}
-    .modal footer{padding:12px 16px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--border);}
   </style>
 </head>
 <body>
   <h1>Auto-onderhoud overzicht</h1>
-  <div class="tabs">
+
+  <div>
     <button class="tab active" data-tab="reparaties">Reparaties</button>
     <button class="tab" data-tab="service">Serviceboekje</button>
     <button class="tab" data-tab="upcoming">Aanstaand onderhoud</button>
-    <button id="planTopBtn" class="btn primary" style="margin-left:auto">Plan afspraak</button>
+    <button id="planTopBtn" class="btn primary" style="margin-left:10px;">Plan afspraak</button>
   </div>
 
-  <!-- SEARCH + CSV EXPORT -->
   <div class="search-box" id="searchWrap">
     <label for="q">Zoeken:</label>
-    <input id="q" class="search-input" type="text" placeholder="Bijv. airco, remmen, banden…"/>
+    <input id="q" type="text" placeholder="Bijv. airco, remmen, banden…" />
     <button id="csvBtn" class="btn">Exporteer CSV</button>
   </div>
 
-  <!-- Reparaties -->
-  <section id="reparatiesSection" class="table-wrap">
+  <section id="reparatiesSection">
     <table id="repTable">
       <thead><tr><th>Datum</th><th>Garage</th><th class="right">Totaalbedrag</th></tr></thead>
       <tbody></tbody>
@@ -128,110 +62,65 @@
     <div id="repTotals" class="totals"></div>
   </section>
 
-  <!-- Service -->
-  <div class="search-box" id="serviceControls" style="display:none">
-    <label for="serviceFilter">Filter servicebeurten:</label>
-    <select id="serviceFilter">
-      <option value="alle">Alle</option>
-      <option value="historisch">Historisch</option>
-      <option value="toekomstig">Toekomstig</option>
-    </select>
-  </div>
-  <section id="serviceSection" class="table-wrap" style="display:none">
+  <section id="serviceSection" style="display:none">
     <table id="serviceTable">
-      <thead><tr><th>Datum</th><th>Garage</th><th>Type</th><th>Soort</th><th>Kilometerstand</th><th>Status</th></tr></thead>
+      <thead><tr><th>Datum</th><th>Garage</th><th>Type</th><th>Soort onderhoud</th><th>Kilometerstand</th><th>Status</th></tr></thead>
       <tbody></tbody>
     </table>
   </section>
 
-  <!-- Aanstaand -->
-  <section id="upcomingSection" class="table-wrap" style="display:none">
+  <section id="upcomingSection" style="display:none">
     <table id="upTable">
-      <thead><tr><th>Verwachte datum</th><th>Onderdeel</th><th>Omschrijving</th><th class="right">Geschatte kosten</th><th class="right">Actie</th></tr></thead>
+      <thead><tr><th>Verwachte datum</th><th>Onderdeel</th><th>Omschrijving</th><th class="right">Geschatte kosten</th></tr></thead>
       <tbody></tbody>
     </table>
   </section>
 
-  <!-- MODAL -->
-  <div id="overlay" class="overlay">
-    <div class="modal">
-      <header><h3>Afspraak plannen</h3><button class="close" id="closeModal">×</button></header>
-      <div class="content">
-        <div><label>Wat wil je laten doen?</label><textarea id="issue" placeholder="Bijv. ‘auto piept bij remmen’, ‘stuur trilt boven 100 km/u’"></textarea></div>
-        <div class="upload"><div>Foto’s toevoegen</div><input id="photos" type="file" accept="image/*" multiple/><div id="previews" class="previews"></div></div>
-        <div class="ai-box" id="aiBox"><strong>AI-suggestie</strong><div id="aiSuggest" class="muted">Typ een klacht hierboven...</div></div>
-      </div>
-      <footer><button class="btn" id="cancelBtn">Annuleren</button><button class="btn primary" id="sendBtn">Verzend verzoek</button></footer>
-    </div>
-  </div>
-
-  <!-- TOAST -->
   <div id="toast" class="toast"></div>
 
   <script>
     const € = n=> new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(n??0);
     const fmtDate = iso=>{const d=new Date(iso);if(isNaN(d))return iso;return d.toLocaleDateString('nl-NL');};
     const fmtKM = km=> km?new Intl.NumberFormat('nl-NL').format(km)+' km':'–';
+    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
-    /* Tabs */
     const tabs=document.querySelectorAll('.tab');
-    const sections={reparaties:repSection=document.getElementById('reparatiesSection'),service:document.getElementById('serviceSection'),upcoming:document.getElementById('upcomingSection')};
-    const searchWrap=document.getElementById('searchWrap');const serviceControls=document.getElementById('serviceControls');
-    tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(b=>b.classList.remove('active'));t.classList.add('active');const x=t.dataset.tab;Object.keys(sections).forEach(k=>sections[k].style.display=(k===x)?'':'none');searchWrap.style.display=(x==='reparaties')?'':'none';serviceControls.style.display=(x==='service')?'':'none';}));
+    const sections={reparaties:document.getElementById('reparatiesSection'),service:document.getElementById('serviceSection'),upcoming:document.getElementById('upcomingSection')};
+    tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(b=>b.classList.remove('active'));t.classList.add('active');Object.keys(sections).forEach(k=>sections[k].style.display=k===t.dataset.tab?'':'none');}));
 
-    /* Toast */
-    function showToast(msg){
-      const toast=document.getElementById('toast');
-      toast.textContent=msg;
-      toast.classList.add('show');
-      setTimeout(()=>toast.classList.remove('show'),3000);
-    }
-
-    /* Modal */
-    const overlay=document.getElementById('overlay');
-    const openModal=()=>overlay.style.display='flex';
-    const closeModal=()=>{overlay.style.display='none';document.getElementById('issue').value='';document.getElementById('previews').innerHTML='';};
-    document.getElementById('planTopBtn').onclick=openModal;
-    document.getElementById('closeModal').onclick=closeModal;
-    document.getElementById('cancelBtn').onclick=closeModal;
-    document.getElementById('sendBtn').onclick=()=>{closeModal();showToast('✅ Je afspraakverzoek is verzonden (dummy).');};
-
-    /* AI-suggestie */
-    const rules=[{re:/piep|tikken/i,msg:'Waarschijnlijk versleten remblokken, controle binnen 500 km.'},{re:/tril|stuur/i,msg:'Mogelijk wieluitlijning of onbalans banden.'},{re:/olie/i,msg:'Controleer carterpakking of oliefilter.'},{re:/rook/i,msg:'Controleer motorventilatie of bougies.'},{re:/geur|stank/i,msg:'Mogelijk remmen of koppeling oververhit.'}];
-    const ai=document.getElementById('aiSuggest');
-    document.getElementById('issue').addEventListener('input',e=>{const t=e.target.value;const m=rules.find(r=>r.re.test(t));ai.textContent=m?m.msg:'Geen directe match, plan diagnose-afspraak.';});
-
-    /* Foto preview */
-    document.getElementById('photos').addEventListener('change',e=>{
-      const p=document.getElementById('previews');p.innerHTML='';
-      [...e.target.files].forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);img.className='preview';p.appendChild(img);});
-    });
-
-    /* Data */
     let DATA={bonnen:[],service:[],upcoming_maintenance:[]};
-    fetch('data.json?nocache='+Date.now()).then(r=>r.json()).then(d=>{DATA=d;renderRep();renderService();renderUpcoming();});
+    fetch('data.json?nocache='+Date.now())
+      .then(r=>r.json())
+      .then(d=>{DATA=d;renderRep();renderService();renderUpcoming();})
+      .catch(e=>console.error('Fout bij laden JSON:', e));
 
-    const repBody=document.querySelector('#repTable tbody');const repTotals=document.getElementById('repTotals');
+    /* Reparaties */
+    const repBody=document.querySelector('#repTable tbody');
+    const repTotals=document.getElementById('repTotals');
     function renderRep(){
       repBody.innerHTML='';let total=0;const q=document.getElementById('q').value.toLowerCase();
-      (DATA.bonnen||[]).filter(b=>!q||(b.omschrijving||'').toLowerCase().includes(q)||(b.garage||'').toLowerCase().includes(q)).forEach(f=>{
+      (DATA.bonnen||[]).filter(b=>!q||(b.omschrijving||'').toLowerCase().includes(q)).forEach(f=>{
         total+=f.totaal||0;
-        const row=document.createElement('tr');row.className='clickable';row.innerHTML=`<td>${fmtDate(f.factuurdatum)}</td><td>${f.garage}</td><td class="right">${€(f.totaal)}</td>`;
-        const det=document.createElement('tr');det.className='detail';det.innerHTML=`<td colspan="3"><div><strong>Factuurnummer:</strong> ${f.factuurnummer}</div><div><strong>Kilometerstand:</strong> ${fmtKM(f.kilometerstand)}</div><div><strong>Omschrijving:</strong> ${f.omschrijving}</div><div><strong>Categorie:</strong> ${f.categorie}</div></td>`;
+        const row=document.createElement('tr');row.innerHTML=`<td>${fmtDate(f.factuurdatum)}</td><td>${f.garage}</td><td class="right">${€(f.totaal)}</td>`;
+        const det=document.createElement('tr');det.className='detail';
+        det.innerHTML=`<td colspan="3"><strong>Factuurnummer:</strong> ${f.factuurnummer}<br><strong>Kilometerstand:</strong> ${fmtKM(f.kilometerstand)}<br><strong>Omschrijving:</strong> ${f.omschrijving}<br><strong>Categorie:</strong> ${f.categorie}</td>`;
         repBody.append(row,det);
-        row.onclick=()=>det.style.display=det.style.display==='table-row'?'none':'table-row';
+        row.addEventListener('click',()=>det.style.display=det.style.display==='table-row'?'none':'table-row');
       });
       repTotals.textContent='Totaal uitgegeven aan reparaties: '+€(total);
     }
-    document.getElementById('q').oninput=renderRep;
+    document.getElementById('q').addEventListener('input',renderRep);
 
-    /* CSV Export */
+    /* CSV export */
     document.getElementById('csvBtn').onclick=()=>{
       const rows=[['Factuurnummer','Datum','Garage','Omschrijving','Kilometerstand','Totaal']];
       (DATA.bonnen||[]).forEach(b=>rows.push([b.factuurnummer,fmtDate(b.factuurdatum),b.garage,b.omschrijving,b.kilometerstand,€(b.totaal)]));
       const csv=rows.map(r=>r.join(';')).join('\n');
       const blob=new Blob([csv],{type:'text/csv'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`wrenchly_reparaties_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=`wrenchly_reparaties_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
       showToast('📦 CSV-bestand geëxporteerd.');
     };
 
@@ -239,19 +128,21 @@
     const serviceBody=document.querySelector('#serviceTable tbody');
     function renderService(){
       serviceBody.innerHTML='';
-      const filter=document.getElementById('serviceFilter').value;const today=new Date();
+      const today=new Date();
       (DATA.service||[]).forEach(b=>{
-        const d=new Date(b.datum);const hist=d<today;if(filter==='historisch'&&!hist)return;if(filter==='toekomstig'&&hist)return;
-        const status=hist?'✔ Uitgevoerd':'⏳ Binnenkort';
-        const cls=hist?'ok':'warn';
-        serviceBody.innerHTML+=`<tr><td>${fmtDate(b.datum)}</td><td>${b.garage}</td><td>${b.type_beurt}</td><td>${b.soort_onderhoud}</td><td>${fmtKM(b.kilometerstand)}</td><td class="${cls}">${status}</td></tr>`;
+        const hist=new Date(b.datum)<today;
+        serviceBody.innerHTML+=`<tr><td>${fmtDate(b.datum)}</td><td>${b.garage}</td><td>${b.type_beurt}</td><td>${b.soort_onderhoud}</td><td>${fmtKM(b.kilometerstand)}</td><td>${hist?'✅ Uitgevoerd':'⏳ Binnenkort'}</td></tr>`;
       });
     }
-    document.getElementById('serviceFilter').onchange=renderService;
 
-    /* Upcoming */
+    /* Aanstaand onderhoud */
     const upBody=document.querySelector('#upTable tbody');
     function renderUpcoming(){
       upBody.innerHTML='';
       (DATA.upcoming_maintenance||[]).forEach(u=>{
-        upBody.innerHTML+=`<tr><td>${fmtDate(u.verwachte_datum)}</td><td>${u.onderdeel}</td><td>${u.omschrijving}</td><td class="right">${€(u.geschatte_kosten)}</td><td class="right"><
+        upBody.innerHTML+=`<tr><td>${fmtDate(u.verwachte_datum)}</td><td>${u.onderdeel}</td><td>${u.omschrijving}</td><td class="right">${€(u.geschatte_kosten)}</td></tr>`;
+      });
+    }
+  </script>
+</body>
+</html>
