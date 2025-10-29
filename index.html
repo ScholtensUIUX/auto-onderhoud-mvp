@@ -2,322 +2,255 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wrenchly – Auto-onderhoud</title>
   <style>
-    /* ---------- Design tokens ---------- */
-    :root{
-      --bg:#f6f7f8; --text:#1d1f21; --card:#ffffff; --border:#e5e7eb;
-      --header:#eef2f7; --hover:#f3f6fb;
-      --tab-inactive:#f0f1f4; --tab-inactive-text:#222;
-      --brand:#18FF83; --brand-text:#042f1b;
-      --muted:#6b7280; --danger:#ef4444;
+    :root {
+      --green: #77ff8a;
+      --bg-color: #fafafa;
+      --text-color: #222;
+      --table-bg: #fff;
+      --border-color: #ddd;
+      --header-bg: #eee;
+      --hover-bg: #f5f9ff;
+      --inactive-tab: #f0f0f0;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg:#121214; --text:#f5f5f7; --card:#191a1f; --border:#2a2a30;
-        --header:#202127; --hover:#26272d;
-        /* lighter gray for inactive tabs so they’re visible */
-        --tab-inactive:#2f3138; --tab-inactive-text:#f3f4f6;
-        --brand:#18FF83; --brand-text:#00180d;
-        --muted:#9ca3af; --danger:#f87171;
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #1c1c1e;
+        --text-color: #f5f5f7;
+        --table-bg: #2c2c2e;
+        --border-color: #3a3a3c;
+        --header-bg: #333;
+        --hover-bg: #383838;
+        --inactive-tab: #2d2d2f;
       }
     }
 
-    /* ---------- Base ---------- */
-    *{box-sizing:border-box}
-    body{
-      font-family: system-ui, -apple-system, Segoe UI, Inter, Roboto, Helvetica, Arial, sans-serif;
-      background:var(--bg); color:var(--text); margin:1.5rem;
-    }
-    h1{margin:0 0 1rem; font-weight:800; font-size:clamp(1.6rem, 1.1rem + 2vw, 3.2rem);}
-
-    /* ---------- Layout header ---------- */
-    .toprow{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:.75rem;
-      align-items:center;
-    }
-    .tabs{display:flex; gap:.5rem; flex-wrap:wrap;}
-    .actions{display:flex; gap:.5rem; justify-self:end;}
-
-    /* ---------- Tabs & buttons ---------- */
-    .tab{
-      border:1px solid var(--border);
-      background:var(--tab-inactive);
-      color:var(--tab-inactive-text);
-      padding:.55rem 1rem; border-radius:12px; cursor:pointer;
-      font-weight:700; transition:filter .2s ease, background .2s ease;
-    }
-    .tab:hover{filter:brightness(1.06)}
-    .tab.active{background:var(--brand); color:var(--brand-text); border-color:transparent;}
-
-    .btn{
-      border:1px solid var(--border); background:var(--card);
-      color:var(--text); padding:.55rem 1rem; border-radius:12px; cursor:pointer;
-      font-weight:700; transition:filter .2s ease;
-    }
-    .btn:hover{filter:brightness(1.06)}
-    .btn.primary{background:var(--brand); color:var(--brand-text); border-color:transparent;}
-
-    /* ---------- Search ---------- */
-    .toolbar{display:flex; gap:.6rem; align-items:center; margin:.9rem 0;}
-    .toolbar label{font-weight:700}
-    .toolbar input{
-      flex:1 1 360px; min-width:200px;
-      border:1px solid var(--border); background:var(--card); color:var(--text);
-      padding:.55rem .8rem; border-radius:10px;
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 1.5rem;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* ---------- Tables ---------- */
-    table{width:100%; border-collapse:collapse; border-radius:14px; overflow:hidden;}
-    th, td{padding:.7rem .9rem; border-bottom:1px solid var(--border); vertical-align:top;}
-    th{background:var(--header); text-align:left;}
-    tr:hover{background:var(--hover)}
-    .right{text-align:right}
-    .detail{display:none; background:var(--hover)}
-    .totals{text-align:right; padding:.6rem .2rem; font-weight:700;}
-    .muted{color:var(--muted); font-size:.95rem}
-
-    /* ---------- Inline error ---------- */
-    .error{
-      margin:.75rem 0; padding:.6rem .8rem; border-left:4px solid var(--danger);
-      background:var(--card); border-radius:10px; color:var(--text);
+    h1 {
+      margin-bottom: 1rem;
     }
 
-    /* ---------- Responsive ---------- */
-    @media (max-width:720px){
-      .toprow{grid-template-columns: 1fr; gap:.5rem}
-      .actions{justify-self:start}
-      th, td{padding:.6rem .7rem}
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .left-controls, .right-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background-color: var(--inactive-tab);
+      border-radius: 6px;
+      transition: all 0.2s;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .tab-button.active {
+      background-color: var(--green);
+      color: #000;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      background: var(--table-bg);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--header-bg);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .search-box {
+      margin-top: 1rem;
+    }
+
+    .search-box input {
+      padding: 0.4rem 0.6rem;
+      width: 250px;
+      max-width: 100%;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--table-bg);
+      color: var(--text-color);
+    }
+
+    .action-button {
+      padding: 0.45rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .export-btn {
+      background-color: var(--inactive-tab);
+      color: var(--text-color);
+    }
+
+    .plan-btn {
+      background-color: var(--green);
+      color: #000;
+    }
+
+    @media (max-width: 600px) {
+      table, th, td { font-size: 0.85rem; }
+      .top-bar { flex-direction: column; align-items: flex-start; }
+      .right-controls { width: 100%; justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <h1>Auto-onderhoud overzicht</h1>
 
-  <!-- Tabs left, actions right -->
-  <div class="toprow">
-    <div class="tabs">
-      <button class="tab active" data-tab="reparaties">Reparaties</button>
-      <button class="tab" data-tab="service">Serviceboekje</button>
-      <button class="tab" data-tab="upcoming">Aanstaand onderhoud</button>
+  <div class="top-bar">
+    <div class="left-controls">
+      <button class="tab-button active" data-tab="reparaties">Reparaties</button>
+      <button class="tab-button" data-tab="service">Serviceboekje</button>
+      <button class="tab-button" data-tab="toekomstig">Aanstaand onderhoud</button>
     </div>
-    <div class="actions">
-      <button id="csvBtn" class="btn">Exporteer CSV</button>
-      <button id="planTopBtn" class="btn primary">Plan afspraak</button>
+    <div class="right-controls">
+      <button class="action-button export-btn" id="exportBtn">Exporteer CSV</button>
+      <button class="action-button plan-btn" id="planBtn">Plan afspraak</button>
     </div>
   </div>
 
-  <!-- Search (only for reparaties) -->
-  <div class="toolbar" id="searchWrap">
-    <label for="q">Zoeken:</label>
-    <input id="q" type="text" placeholder="Bijv. airco, remmen, banden…"/>
+  <div class="search-box" id="searchContainer">
+    <label for="searchInput">Zoeken:</label>
+    <input type="text" id="searchInput" placeholder="Bijv. airco, remmen, banden..." />
   </div>
-  <div id="inlineError" class="error" style="display:none"></div>
 
-  <!-- Reparaties -->
-  <section id="reparatiesSection">
-    <table id="repTable">
-      <thead>
-        <tr><th>Datum</th><th>Garage</th><th class="right">Totaalbedrag</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div id="repTotals" class="totals"></div>
-  </section>
+  <table id="reparaties">
+    <thead>
+      <tr><th>Datum</th><th>Garage</th><th>Totaalbedrag</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-  <!-- Serviceboekje -->
-  <section id="serviceSection" style="display:none">
-    <table id="serviceTable">
-      <thead>
-        <tr>
-          <th>Datum</th><th>Garage</th><th>Type</th>
-          <th>Soort onderhoud</th><th>Kilometerstand</th><th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <!-- Aanstaand onderhoud -->
-  <section id="upcomingSection" style="display:none">
-    <table id="upTable">
-      <thead>
-        <tr><th>Verwachte datum</th><th>Onderdeel</th><th>Omschrijving</th><th class="right">Geschatte kosten</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+  <table id="service" style="display:none;">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Garage</th>
+        <th>Type</th>
+        <th>Soort onderhoud</th>
+        <th>Kilometerstand</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    /* ---------- Helpers ---------- */
-    const formatEuro = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
-    const fmtDate = (iso)=>{
-      if(!iso) return '–';
-      const d=new Date(iso);
-      return isNaN(d)? iso : d.toLocaleDateString('nl-NL'); // dd-mm-jjjj
-    };
-    const fmtKM = (km)=> (km==null || km==='') ? '–' : new Intl.NumberFormat('nl-NL').format(km)+' km';
-    const showErr = (msg)=>{
-      const el = document.getElementById('inlineError');
-      el.textContent = msg;
-      el.style.display = '';
+    const formatEuro = (n) =>
+      new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
+
+    const tabs = document.querySelectorAll('.tab-button');
+    const tables = {
+      reparaties: document.getElementById('reparaties'),
+      service: document.getElementById('service')
     };
 
-    /* ---------- Tabs ---------- */
-    const tabs = document.querySelectorAll('.tab');
-    const sections = {
-      reparaties: document.getElementById('reparatiesSection'),
-      service: document.getElementById('serviceSection'),
-      upcoming: document.getElementById('upcomingSection'),
-    };
-    const searchWrap = document.getElementById('searchWrap');
-
-    tabs.forEach(tab=>{
-      tab.addEventListener('click', ()=>{
-        tabs.forEach(t=>t.classList.remove('active'));
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        const sel = tab.dataset.tab;
-        Object.entries(sections).forEach(([key, el])=>{
-          el.style.display = (key===sel) ? '' : 'none';
-        });
-        searchWrap.style.display = (sel==='reparaties') ? '' : 'none';
+        Object.keys(tables).forEach(k => tables[k].style.display = 'none');
+        document.getElementById('searchContainer').style.display = tab.dataset.tab === 'reparaties' ? '' : 'none';
+        if (tables[tab.dataset.tab]) tables[tab.dataset.tab].style.display = '';
       });
     });
 
-    /* ---------- Data load (robust) ---------- */
-    let DATA = { bonnen:[], service:[], upcoming_maintenance:[] };
+    fetch('data.json?nocache=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        const repBody = document.querySelector('#reparaties tbody');
+        const servBody = document.querySelector('#service tbody');
 
-    // Resolve data.json reliably (handles subpaths)
-    const dataUrl = (new URL('./data.json', window.location.href)).toString();
+        // --- Reparaties ---
+        function renderReparaties(filter = '') {
+          repBody.innerHTML = '';
+          const filtered = data.bonnen.filter(b =>
+            b.omschrijving.toLowerCase().includes(filter.toLowerCase())
+          );
 
-    fetch(dataUrl + '?nocache=' + Date.now())
-      .then(r=>{
-        if(!r.ok) throw new Error('HTTP '+r.status+' bij laden data.json');
-        return r.text(); // read as text first to surface JSON errors
-      })
-      .then(txt=>{
-        try{
-          const d = JSON.parse(txt);
-          DATA.bonnen = Array.isArray(d.bonnen) ? d.bonnen : [];
-          DATA.service = Array.isArray(d.service) ? d.service : [];
-          DATA.upcoming_maintenance = Array.isArray(d.upcoming_maintenance) ? d.upcoming_maintenance : [];
-          if(!DATA.bonnen.length && !DATA.service.length && !DATA.upcoming_maintenance.length){
-            console.warn('Lege data.json of onjuiste sleutels.', d);
-            showErr('Let op: geen gegevens gevonden in data.json. Controleer de sleutels "bonnen", "service" en "upcoming_maintenance".');
-          }
-          renderRep(); renderService(); renderUpcoming();
-        }catch(e){
-          console.error('JSON parse fout:', e);
-          showErr('Kon data.json niet lezen (ongeldige JSON).');
-        }
-      })
-      .catch(err=>{
-        console.error('Laden data.json mislukt:', err);
-        showErr('Kon data.json niet laden. Staat het bestand in de root van je project?');
-      });
+          filtered.forEach((b, i) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${b.factuurdatum}</td><td>${b.garage}</td><td>${formatEuro(b.totaal)}</td>`;
+            repBody.appendChild(row);
 
-    /* ---------- Reparaties ---------- */
-    const repBody = document.querySelector('#repTable tbody');
-    const repTotals = document.getElementById('repTotals');
-    const searchInput = document.getElementById('q');
-
-    function renderRep(){
-      repBody.innerHTML = '';
-      const q = (searchInput.value||'').toLowerCase();
-      let total = 0;
-
-      DATA.bonnen
-        .filter(b => !q || (b.omschrijving||'').toLowerCase().includes(q))
-        .forEach(b=>{
-          total += Number(b.totaal||0);
-
-          const row = document.createElement('tr');
-          row.style.cursor='pointer';
-          row.innerHTML = `
-            <td>${fmtDate(b.factuurdatum)}</td>
-            <td>${b.garage||'–'}</td>
-            <td class="right">${formatEuro(b.totaal)}</td>
-          `;
-
-          const det = document.createElement('tr');
-          det.className='detail';
-          det.innerHTML = `
-            <td colspan="3">
-              <strong>Factuurnummer:</strong> ${b.factuurnummer||'–'}<br>
-              <strong>Kilometerstand:</strong> ${fmtKM(b.kilometerstand)}<br>
-              <strong>Omschrijving:</strong> ${b.omschrijving||'–'}<br>
-              <strong>Categorie:</strong> ${b.categorie||'–'}
-            </td>
-          `;
-
-          repBody.append(row, det);
-          row.addEventListener('click', ()=> {
-            det.style.display = det.style.display==='table-row' ? 'none' : 'table-row';
+            const details = [
+              `Factuurnummer: ${b.factuurnummer}`,
+              `Kilometerstand: ${b.kilometerstand}`,
+              `Omschrijving: ${b.omschrijving}`,
+              `Categorie: ${b.categorie}`
+            ];
+            details.forEach(d => {
+              const r = document.createElement('tr');
+              r.style.display = 'none';
+              r.innerHTML = `<td colspan="3" style="padding-left:1.5rem;">${d}</td>`;
+              repBody.appendChild(r);
+              row.addEventListener('click', () => {
+                r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
+              });
+            });
           });
+        }
+        renderReparaties();
+
+        document.getElementById('searchInput').addEventListener('input', e => renderReparaties(e.target.value));
+
+        // --- Serviceboekje ---
+        data.service.forEach(b => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${b.datum}</td>
+            <td>${b.garage}</td>
+            <td>${b.type_beurt}</td>
+            <td>${b.soort_onderhoud}</td>
+            <td>${b.kilometerstand.toLocaleString()} km</td>
+            <td>✅ Uitgevoerd</td>`;
+          servBody.appendChild(row);
         });
-
-      repTotals.textContent = 'Totaal uitgegeven aan reparaties: ' + €(total);
-    }
-    searchInput.addEventListener('input', renderRep);
-
-    /* ---------- CSV export ---------- */
-    document.getElementById('csvBtn').addEventListener('click', ()=>{
-      const rows = [['Factuurnummer','Datum','Garage','Omschrijving','Kilometerstand','Totaal']];
-      DATA.bonnen.forEach(b=>{
-        rows.push([
-          b.factuurnummer||'',
-          fmtDate(b.factuurdatum),
-          (b.garage||'').replaceAll(';',','),
-          (b.omschrijving||'').replaceAll(';',','),
-          b.kilometerstand||'',
-          String(Number(b.totaal||0)).replace('.',',')
-        ]);
-      });
-      const csv = rows.map(r=>r.join(';')).join('\n');
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `wrenchly_reparaties_${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
-    });
-
-    /* ---------- Serviceboekje ---------- */
-    const serviceBody = document.querySelector('#serviceTable tbody');
-    function renderService(){
-      serviceBody.innerHTML='';
-      const today = new Date();
-      DATA.service.forEach(b=>{
-        const hist = new Date(b.datum) < today;
-        const status = hist ? '✅ Uitgevoerd' : '⏳ Binnenkort';
-        serviceBody.innerHTML += `
-          <tr>
-            <td>${fmtDate(b.datum)}</td>
-            <td>${b.garage||'–'}</td>
-            <td>${b.type_beurt||'–'}</td>
-            <td>${b.soort_onderhoud||'–'}</td>
-            <td>${fmtKM(b.kilometerstand)}</td>
-            <td>${status}</td>
-          </tr>`;
-      });
-    }
-
-    /* ---------- Aanstaand onderhoud ---------- */
-    const upBody = document.querySelector('#upTable tbody');
-    function renderUpcoming(){
-      upBody.innerHTML='';
-      DATA.upcoming_maintenance.forEach(u=>{
-        upBody.innerHTML += `
-          <tr>
-            <td>${fmtDate(u.verwachte_datum)}</td>
-            <td>${u.onderdeel||'–'}</td>
-            <td>${u.omschrijving||'–'}</td>
-            <td class="right">${€(u.geschatte_kosten)}</td>
-          </tr>`;
-      });
-    }
+      })
+      .catch(e => console.error('Fout bij laden JSON:', e));
   </script>
 </body>
 </html>
