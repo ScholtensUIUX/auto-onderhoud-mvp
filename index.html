@@ -7,28 +7,16 @@
   <style>
     :root {
       --green: #77ff8a;
-      --bg-color: #fafafa;
-      --text-color: #222;
-      --table-bg: #fff;
-      --border-color: #ddd;
-      --header-bg: #eee;
-      --hover-bg: #f5f9ff;
-      --inactive-tab: #f0f0f0;
+      --bg-color: #1c1c1e;
+      --text-color: #f5f5f7;
+      --table-bg: #2c2c2e;
+      --border-color: #3a3a3c;
+      --header-bg: #333;
+      --hover-bg: #383838;
+      --inactive-tab: #2d2d2f;
       --urgent-hoog: #ff4d4f;
       --urgent-middel: #ff9800;
       --urgent-laag: #4caf50;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #1c1c1e;
-        --text-color: #f5f5f7;
-        --table-bg: #2c2c2e;
-        --border-color: #3a3a3c;
-        --header-bg: #333;
-        --hover-bg: #383838;
-        --inactive-tab: #2d2d2f;
-      }
     }
 
     body {
@@ -36,7 +24,6 @@
       margin: 1.5rem;
       background: var(--bg-color);
       color: var(--text-color);
-      transition: background 0.3s ease, color 0.3s ease;
     }
 
     h1 { margin-bottom: 1rem; }
@@ -120,11 +107,7 @@
       transition: all 0.2s;
     }
 
-    .export-btn {
-      background-color: var(--inactive-tab);
-      color: var(--text-color);
-    }
-
+    .export-btn { background-color: var(--inactive-tab); color: var(--text-color); }
     .plan-btn {
       background-color: var(--green);
       color: #000;
@@ -147,6 +130,14 @@
     .middel { background: var(--urgent-middel); color: #fff; }
     .laag { background: var(--urgent-laag); color: #fff; }
 
+    .total-row {
+      font-weight: 700;
+      background: var(--header-bg);
+    }
+
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable span { font-size: 0.8em; margin-left: 4px; opacity: 0.7; }
+
     /* Modal */
     .modal {
       display: none;
@@ -167,8 +158,6 @@
       max-width: 400px;
       position: relative;
     }
-
-    .modal-content h2 { margin-top: 0; }
 
     .close-modal {
       position: absolute;
@@ -198,7 +187,6 @@
     @media (max-width: 600px) {
       table, th, td { font-size: 0.85rem; }
       .top-bar { flex-direction: column; align-items: flex-start; }
-      .right-controls { width: 100%; justify-content: flex-start; }
     }
   </style>
 </head>
@@ -224,9 +212,14 @@
 
   <table id="reparaties">
     <thead>
-      <tr><th>Datum</th><th>Garage</th><th>Totaalbedrag</th></tr>
+      <tr>
+        <th class="sortable">Datum <span id="sortIcon">🔽</span></th>
+        <th>Garage</th>
+        <th>Totaalbedrag</th>
+      </tr>
     </thead>
     <tbody></tbody>
+    <tfoot><tr class="total-row"><td colspan="2">Totaal uitgegeven</td><td id="totalReparaties">€ 0,00</td></tr></tfoot>
   </table>
 
   <table id="service" style="display:none;">
@@ -249,6 +242,7 @@
       </tr>
     </thead>
     <tbody></tbody>
+    <tfoot><tr class="total-row"><td colspan="2">Totale geschatte kosten</td><td id="totalToekomstig">€ 0,00</td><td colspan="2"></td></tr></tfoot>
   </table>
 
   <!-- Modal -->
@@ -272,17 +266,17 @@
 
   <script>
     const formatEuro = n => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
+    let sortAsc = false;
 
-    const tabs = document.querySelectorAll('.tab-button');
     const tables = {
       reparaties: document.getElementById('reparaties'),
       service: document.getElementById('service'),
       toekomstig: document.getElementById('toekomstig')
     };
 
-    tabs.forEach(tab => {
+    document.querySelectorAll('.tab-button').forEach(tab => {
       tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         Object.keys(tables).forEach(k => tables[k].style.display = 'none');
         document.getElementById('searchContainer').style.display = tab.dataset.tab === 'reparaties' ? '' : 'none';
@@ -297,30 +291,42 @@
         const servBody = document.querySelector('#service tbody');
         const toekBody = document.querySelector('#toekomstig tbody');
 
-        // Reparaties + uitklappen
-        data.bonnen.forEach(b => {
-          const row = document.createElement('tr');
-          row.innerHTML = `<td>${b.factuurdatum}</td><td>${b.garage}</td><td>${formatEuro(b.totaal)}</td>`;
-          repBody.appendChild(row);
+        let repData = [...data.bonnen];
 
-          const detailRow = document.createElement('tr');
-          detailRow.classList.add('detail-row');
-          detailRow.style.display = 'none';
-          detailRow.innerHTML = `<td colspan="3">🧰 ${b.omschrijving}</td>`;
-          repBody.appendChild(detailRow);
-
-          row.addEventListener('click', () => {
-            detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
+        const renderReparaties = () => {
+          repBody.innerHTML = '';
+          let total = 0;
+          repData.forEach(b => {
+            total += Number(b.totaal || 0);
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${b.factuurdatum}</td><td>${b.garage}</td><td>${formatEuro(b.totaal)}</td>`;
+            repBody.appendChild(row);
+            const detail = document.createElement('tr');
+            detail.classList.add('detail-row');
+            detail.style.display = 'none';
+            detail.innerHTML = `<td colspan="3">🧰 ${b.omschrijving}</td>`;
+            repBody.appendChild(detail);
+            row.addEventListener('click', () => {
+              detail.style.display = detail.style.display === 'none' ? 'table-row' : 'none';
+            });
           });
+          document.getElementById('totalReparaties').textContent = formatEuro(total);
+        };
+
+        renderReparaties();
+
+        document.getElementById('sortIcon').addEventListener('click', () => {
+          sortAsc = !sortAsc;
+          repData.sort((a, b) => sortAsc
+            ? new Date(a.factuurdatum) - new Date(b.factuurdatum)
+            : new Date(b.factuurdatum) - new Date(a.factuurdatum));
+          document.getElementById('sortIcon').textContent = sortAsc ? '🔼' : '🔽';
+          renderReparaties();
         });
 
         // Serviceboekje
         data.service.forEach(b => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${b.datum}</td><td>${b.garage}</td><td>${b.type_beurt}</td>
-            <td>${b.soort_onderhoud}</td><td>${b.kilometerstand.toLocaleString()} km</td><td>✅ Uitgevoerd</td>`;
-          servBody.appendChild(row);
+          servBody.innerHTML += `<tr><td>${b.datum}</td><td>${b.garage}</td><td>${b.type_beurt}</td><td>${b.soort_onderhoud}</td><td>${b.kilometerstand.toLocaleString()} km</td><td>✅ Uitgevoerd</td></tr>`;
         });
 
         // Aanstaand onderhoud
@@ -330,33 +336,27 @@
           { datum: "2026-09-10", onderdeel: "Olie & filters", kosten: 180 }
         ];
         const vandaag = new Date();
+        let totalToekomstig = 0;
         toekomstig.forEach(t => {
+          totalToekomstig += t.kosten;
           const diff = (new Date(t.datum) - vandaag) / (1000 * 60 * 60 * 24 * 30);
-          let urgentie, icon;
-          if (diff < 3) { urgentie = `<span class='urgentie hoog'>🔴 Hoog</span>`; }
-          else if (diff < 6) { urgentie = `<span class='urgentie middel'>🟠 Gemiddeld</span>`; }
-          else { urgentie = `<span class='urgentie laag'>🟢 Laag</span>`; }
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${t.datum}</td>
-            <td>${t.onderdeel}</td>
-            <td>${formatEuro(t.kosten)}</td>
-            <td>${urgentie}</td>
-            <td><button class="plan-btn">Plan</button></td>`;
-          row.querySelector('button').addEventListener('click', openModal);
-          toekBody.appendChild(row);
+          let urgentie;
+          if (diff < 3) urgentie = `<span class='urgentie hoog'>🔴 Hoog</span>`;
+          else if (diff < 6) urgentie = `<span class='urgentie middel'>🟠 Gemiddeld</span>`;
+          else urgentie = `<span class='urgentie laag'>🟢 Laag</span>`;
+          toekBody.innerHTML += `<tr><td>${t.datum}</td><td>${t.onderdeel}</td><td>${formatEuro(t.kosten)}</td><td>${urgentie}</td><td><button class="plan-btn">Plan</button></td></tr>`;
         });
-      })
-      .catch(e => console.error('Fout bij laden JSON:', e));
+        document.getElementById('totalToekomstig').textContent = formatEuro(totalToekomstig);
+      });
 
-    // Modal functionaliteit
+    // Modal
     const modal = document.getElementById('modal');
     const closeModal = document.getElementById('closeModal');
     const planBtn = document.getElementById('planBtn');
-    const probleem = document.getElementById('probleem');
+    const toast = document.getElementById('toast');
     const aiBlok = document.getElementById('ai-blok');
     const suggestie = document.getElementById('suggestie');
-    const toast = document.getElementById('toast');
+    const probleem = document.getElementById('probleem');
 
     function openModal() {
       modal.style.display = 'flex';
@@ -371,20 +371,18 @@
     probleem.addEventListener('input', () => {
       const val = probleem.value.toLowerCase();
       if (val.includes('piep')) {
-        suggestie.textContent = 'Waarschijnlijk versleten remblokken. Plan controle binnen 500 km.';
+        suggestie.textContent = 'Waarschijnlijk versleten remblokken.';
         aiBlok.style.display = 'block';
       } else if (val.includes('trilt')) {
-        suggestie.textContent = 'Mogelijk uitlijning of onbalans in banden.';
+        suggestie.textContent = 'Mogelijk onbalans of uitlijning.';
         aiBlok.style.display = 'block';
       } else if (val.includes('olielek')) {
         suggestie.textContent = 'Controleer carterpakking of oliefilter.';
         aiBlok.style.display = 'block';
       } else if (val.length > 5) {
-        suggestie.textContent = 'Geen directe indicatie gevonden, garage zal het beoordelen.';
+        suggestie.textContent = 'Geen directe indicatie, garage zal beoordelen.';
         aiBlok.style.display = 'block';
-      } else {
-        aiBlok.style.display = 'none';
-      }
+      } else aiBlok.style.display = 'none';
     });
 
     document.getElementById('verzendBtn').addEventListener('click', () => {
