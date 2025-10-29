@@ -165,6 +165,14 @@
       font-weight: bold;
     }
 
+    #ai-blok {
+      background: var(--hover-bg);
+      border-radius: 6px;
+      padding: 0.6rem;
+      margin-bottom: 0.8rem;
+      display: none;
+    }
+
     .toast {
       position: fixed;
       bottom: 20px;
@@ -242,11 +250,17 @@
     <div class="modal-content">
       <span class="close-modal" id="closeModal">&times;</span>
       <h2>Plan afspraak</h2>
+
       <label for="probleem">Wat wil je laten doen?</label>
       <textarea id="probleem" rows="3" style="width:100%;margin:0.5rem 0;"></textarea>
+
+      <div id="ai-blok">
+        <strong>🤖 Suggestie:</strong>
+        <p id="suggestie" style="margin:0.3rem 0 0;font-size:0.9rem;"></p>
+      </div>
+
       <label for="foto">Foto uploaden:</label>
       <input type="file" id="foto" accept="image/*" style="display:block;margin:0.5rem 0;">
-      <p id="suggestie" style="font-size:0.9rem;color:var(--text-color);"></p>
       <button id="verzendBtn" class="action-button plan-btn" style="margin-top:0.8rem;">Verzend</button>
     </div>
   </div>
@@ -331,11 +345,15 @@
     const closeModal = document.getElementById('closeModal');
     const planBtn = document.getElementById('planBtn');
     const probleem = document.getElementById('probleem');
+    const aiBlok = document.getElementById('ai-blok');
     const suggestie = document.getElementById('suggestie');
     const toast = document.getElementById('toast');
 
     function openModal() {
       modal.style.display = 'flex';
+      aiBlok.style.display = 'none';
+      suggestie.textContent = '';
+      probleem.value = '';
     }
 
     closeModal.addEventListener('click', () => modal.style.display = 'none');
@@ -343,10 +361,21 @@
 
     probleem.addEventListener('input', () => {
       const val = probleem.value.toLowerCase();
-      if (val.includes('piep')) suggestie.textContent = '💡 Waarschijnlijk versleten remblokken. Plan controle binnen 500 km.';
-      else if (val.includes('trilt')) suggestie.textContent = '💡 Mogelijk uitlijning of onbalans in banden.';
-      else if (val.includes('olielek')) suggestie.textContent = '💡 Controleer carterpakking of oliefilter.';
-      else suggestie.textContent = '';
+      if (val.includes('piep')) {
+        suggestie.textContent = 'Waarschijnlijk versleten remblokken. Plan controle binnen 500 km.';
+        aiBlok.style.display = 'block';
+      } else if (val.includes('trilt')) {
+        suggestie.textContent = 'Mogelijk uitlijning of onbalans in banden.';
+        aiBlok.style.display = 'block';
+      } else if (val.includes('olielek')) {
+        suggestie.textContent = 'Controleer carterpakking of oliefilter.';
+        aiBlok.style.display = 'block';
+      } else if (val.length > 5) {
+        suggestie.textContent = 'Geen directe indicatie gevonden, garage zal het beoordelen.';
+        aiBlok.style.display = 'block';
+      } else {
+        aiBlok.style.display = 'none';
+      }
     });
 
     document.getElementById('verzendBtn').addEventListener('click', () => {
