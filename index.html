@@ -14,6 +14,9 @@
       --header-bg: #eee;
       --hover-bg: #f5f9ff;
       --inactive-tab: #f0f0f0;
+      --urgent-hoog: #ff4d4f;
+      --urgent-middel: #ff9800;
+      --urgent-laag: #4caf50;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -36,9 +39,7 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
 
-    h1 {
-      margin-bottom: 1rem;
-    }
+    h1 { margin-bottom: 1rem; }
 
     .top-bar {
       display: flex;
@@ -89,18 +90,16 @@
       vertical-align: top;
     }
 
-    th {
-      background: var(--header-bg);
-      font-weight: 600;
+    th { background: var(--header-bg); font-weight: 600; }
+    tr:hover { background-color: var(--hover-bg); cursor: pointer; }
+
+    .detail-row td {
+      background: var(--hover-bg);
+      font-size: 0.9rem;
+      color: var(--text-color);
     }
 
-    tr:hover {
-      background-color: var(--hover-bg);
-    }
-
-    .search-box {
-      margin-top: 1rem;
-    }
+    .search-box { margin-top: 1rem; }
 
     .search-box input {
       padding: 0.4rem 0.6rem;
@@ -118,6 +117,7 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
+      transition: all 0.2s;
     }
 
     .export-btn {
@@ -128,16 +128,31 @@
     .plan-btn {
       background-color: var(--green);
       color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      padding: 0.35rem 0.8rem;
     }
+
+    .plan-btn:hover { opacity: 0.9; }
+
+    .urgentie {
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      display: inline-block;
+    }
+
+    .hoog { background: var(--urgent-hoog); color: #fff; }
+    .middel { background: var(--urgent-middel); color: #fff; }
+    .laag { background: var(--urgent-laag); color: #fff; }
 
     /* Modal */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(0,0,0,0.7);
       justify-content: center;
       align-items: center;
@@ -153,16 +168,12 @@
       position: relative;
     }
 
-    .modal-content h2 {
-      margin-top: 0;
-    }
+    .modal-content h2 { margin-top: 0; }
 
     .close-modal {
       position: absolute;
-      top: 10px;
-      right: 15px;
-      cursor: pointer;
-      font-weight: bold;
+      top: 10px; right: 15px;
+      cursor: pointer; font-weight: bold;
     }
 
     #ai-blok {
@@ -175,8 +186,7 @@
 
     .toast {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 20px; right: 20px;
       background: var(--green);
       color: #000;
       padding: 1rem;
@@ -222,12 +232,7 @@
   <table id="service" style="display:none;">
     <thead>
       <tr>
-        <th>Datum</th>
-        <th>Garage</th>
-        <th>Type</th>
-        <th>Soort onderhoud</th>
-        <th>Kilometerstand</th>
-        <th>Status</th>
+        <th>Datum</th><th>Garage</th><th>Type</th><th>Soort onderhoud</th><th>Kilometerstand</th><th>Status</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -239,6 +244,7 @@
         <th>Verwachte datum</th>
         <th>Onderdeel</th>
         <th>Geschatte kosten</th>
+        <th>Urgentie</th>
         <th>Actie</th>
       </tr>
     </thead>
@@ -250,15 +256,12 @@
     <div class="modal-content">
       <span class="close-modal" id="closeModal">&times;</span>
       <h2>Plan afspraak</h2>
-
       <label for="probleem">Wat wil je laten doen?</label>
       <textarea id="probleem" rows="3" style="width:100%;margin:0.5rem 0;"></textarea>
-
       <div id="ai-blok">
         <strong>🤖 Suggestie:</strong>
         <p id="suggestie" style="margin:0.3rem 0 0;font-size:0.9rem;"></p>
       </div>
-
       <label for="foto">Foto uploaden:</label>
       <input type="file" id="foto" accept="image/*" style="display:block;margin:0.5rem 0;">
       <button id="verzendBtn" class="action-button plan-btn" style="margin-top:0.8rem;">Verzend</button>
@@ -268,8 +271,7 @@
   <div class="toast" id="toast">✅ Verzoek verzonden!</div>
 
   <script>
-    const formatEuro = (n) =>
-      new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
+    const formatEuro = n => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
 
     const tabs = document.querySelectorAll('.tab-button');
     const tables = {
@@ -295,29 +297,29 @@
         const servBody = document.querySelector('#service tbody');
         const toekBody = document.querySelector('#toekomstig tbody');
 
-        // Reparaties
-        function renderReparaties(filter = '') {
-          repBody.innerHTML = '';
-          const filtered = data.bonnen.filter(b => b.omschrijving.toLowerCase().includes(filter.toLowerCase()));
-          filtered.forEach(b => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${b.factuurdatum}</td><td>${b.garage}</td><td>${formatEuro(b.totaal)}</td>`;
-            repBody.appendChild(row);
+        // Reparaties + uitklappen
+        data.bonnen.forEach(b => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${b.factuurdatum}</td><td>${b.garage}</td><td>${formatEuro(b.totaal)}</td>`;
+          repBody.appendChild(row);
+
+          const detailRow = document.createElement('tr');
+          detailRow.classList.add('detail-row');
+          detailRow.style.display = 'none';
+          detailRow.innerHTML = `<td colspan="3">🧰 ${b.omschrijving}</td>`;
+          repBody.appendChild(detailRow);
+
+          row.addEventListener('click', () => {
+            detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
           });
-        }
-        renderReparaties();
-        document.getElementById('searchInput').addEventListener('input', e => renderReparaties(e.target.value));
+        });
 
         // Serviceboekje
         data.service.forEach(b => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td>${b.datum}</td>
-            <td>${b.garage}</td>
-            <td>${b.type_beurt}</td>
-            <td>${b.soort_onderhoud}</td>
-            <td>${b.kilometerstand.toLocaleString()} km</td>
-            <td>✅ Uitgevoerd</td>`;
+            <td>${b.datum}</td><td>${b.garage}</td><td>${b.type_beurt}</td>
+            <td>${b.soort_onderhoud}</td><td>${b.kilometerstand.toLocaleString()} km</td><td>✅ Uitgevoerd</td>`;
           servBody.appendChild(row);
         });
 
@@ -327,13 +329,20 @@
           { datum: "2026-06-15", onderdeel: "Remblokken voor", kosten: 350 },
           { datum: "2026-09-10", onderdeel: "Olie & filters", kosten: 180 }
         ];
+        const vandaag = new Date();
         toekomstig.forEach(t => {
+          const diff = (new Date(t.datum) - vandaag) / (1000 * 60 * 60 * 24 * 30);
+          let urgentie, icon;
+          if (diff < 3) { urgentie = `<span class='urgentie hoog'>🔴 Hoog</span>`; }
+          else if (diff < 6) { urgentie = `<span class='urgentie middel'>🟠 Gemiddeld</span>`; }
+          else { urgentie = `<span class='urgentie laag'>🟢 Laag</span>`; }
           const row = document.createElement('tr');
           row.innerHTML = `
             <td>${t.datum}</td>
             <td>${t.onderdeel}</td>
             <td>${formatEuro(t.kosten)}</td>
-            <td><button class="plan-btn" style="padding:0.3rem 0.6rem;font-size:0.85rem;">Plan</button></td>`;
+            <td>${urgentie}</td>
+            <td><button class="plan-btn">Plan</button></td>`;
           row.querySelector('button').addEventListener('click', openModal);
           toekBody.appendChild(row);
         });
