@@ -153,7 +153,7 @@
 
   <script>
     /* ---------- Helpers ---------- */
-    const € = (n)=> new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(Number(n||0));
+    const formatEuro = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
     const fmtDate = (iso)=>{
       if(!iso) return '–';
       const d=new Date(iso);
@@ -239,7 +239,7 @@
           row.innerHTML = `
             <td>${fmtDate(b.factuurdatum)}</td>
             <td>${b.garage||'–'}</td>
-            <td class="right">${€(b.totaal)}</td>
+            <td class="right">${formatEuro(b.totaal)}</td>
           `;
 
           const det = document.createElement('tr');
