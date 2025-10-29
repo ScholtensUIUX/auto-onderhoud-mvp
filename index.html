@@ -130,6 +130,53 @@
       color: #000;
     }
 
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: var(--table-bg);
+      padding: 1.5rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--green);
+      color: #000;
+      padding: 1rem;
+      border-radius: 6px;
+      display: none;
+      font-weight: 600;
+    }
+
     @media (max-width: 600px) {
       table, th, td { font-size: 0.85rem; }
       .top-bar { flex-direction: column; align-items: flex-start; }
@@ -178,6 +225,34 @@
     <tbody></tbody>
   </table>
 
+  <table id="toekomstig" style="display:none;">
+    <thead>
+      <tr>
+        <th>Verwachte datum</th>
+        <th>Onderdeel</th>
+        <th>Geschatte kosten</th>
+        <th>Actie</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeModal">&times;</span>
+      <h2>Plan afspraak</h2>
+      <label for="probleem">Wat wil je laten doen?</label>
+      <textarea id="probleem" rows="3" style="width:100%;margin:0.5rem 0;"></textarea>
+      <label for="foto">Foto uploaden:</label>
+      <input type="file" id="foto" accept="image/*" style="display:block;margin:0.5rem 0;">
+      <p id="suggestie" style="font-size:0.9rem;color:var(--text-color);"></p>
+      <button id="verzendBtn" class="action-button plan-btn" style="margin-top:0.8rem;">Verzend</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✅ Verzoek verzonden!</div>
+
   <script>
     const formatEuro = (n) =>
       new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
@@ -185,7 +260,8 @@
     const tabs = document.querySelectorAll('.tab-button');
     const tables = {
       reparaties: document.getElementById('reparaties'),
-      service: document.getElementById('service')
+      service: document.getElementById('service'),
+      toekomstig: document.getElementById('toekomstig')
     };
 
     tabs.forEach(tab => {
@@ -203,41 +279,22 @@
       .then(data => {
         const repBody = document.querySelector('#reparaties tbody');
         const servBody = document.querySelector('#service tbody');
+        const toekBody = document.querySelector('#toekomstig tbody');
 
-        // --- Reparaties ---
+        // Reparaties
         function renderReparaties(filter = '') {
           repBody.innerHTML = '';
-          const filtered = data.bonnen.filter(b =>
-            b.omschrijving.toLowerCase().includes(filter.toLowerCase())
-          );
-
-          filtered.forEach((b, i) => {
+          const filtered = data.bonnen.filter(b => b.omschrijving.toLowerCase().includes(filter.toLowerCase()));
+          filtered.forEach(b => {
             const row = document.createElement('tr');
             row.innerHTML = `<td>${b.factuurdatum}</td><td>${b.garage}</td><td>${formatEuro(b.totaal)}</td>`;
             repBody.appendChild(row);
-
-            const details = [
-              `Factuurnummer: ${b.factuurnummer}`,
-              `Kilometerstand: ${b.kilometerstand}`,
-              `Omschrijving: ${b.omschrijving}`,
-              `Categorie: ${b.categorie}`
-            ];
-            details.forEach(d => {
-              const r = document.createElement('tr');
-              r.style.display = 'none';
-              r.innerHTML = `<td colspan="3" style="padding-left:1.5rem;">${d}</td>`;
-              repBody.appendChild(r);
-              row.addEventListener('click', () => {
-                r.style.display = r.style.display === 'none' ? 'table-row' : 'none';
-              });
-            });
           });
         }
         renderReparaties();
-
         document.getElementById('searchInput').addEventListener('input', e => renderReparaties(e.target.value));
 
-        // --- Serviceboekje ---
+        // Serviceboekje
         data.service.forEach(b => {
           const row = document.createElement('tr');
           row.innerHTML = `
@@ -249,8 +306,54 @@
             <td>✅ Uitgevoerd</td>`;
           servBody.appendChild(row);
         });
+
+        // Aanstaand onderhoud
+        const toekomstig = [
+          { datum: "2025-12-01", onderdeel: "Distributieriem", kosten: 750 },
+          { datum: "2026-06-15", onderdeel: "Remblokken voor", kosten: 350 },
+          { datum: "2026-09-10", onderdeel: "Olie & filters", kosten: 180 }
+        ];
+        toekomstig.forEach(t => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${t.datum}</td>
+            <td>${t.onderdeel}</td>
+            <td>${formatEuro(t.kosten)}</td>
+            <td><button class="plan-btn" style="padding:0.3rem 0.6rem;font-size:0.85rem;">Plan</button></td>`;
+          row.querySelector('button').addEventListener('click', openModal);
+          toekBody.appendChild(row);
+        });
       })
       .catch(e => console.error('Fout bij laden JSON:', e));
+
+    // Modal functionaliteit
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const planBtn = document.getElementById('planBtn');
+    const probleem = document.getElementById('probleem');
+    const suggestie = document.getElementById('suggestie');
+    const toast = document.getElementById('toast');
+
+    function openModal() {
+      modal.style.display = 'flex';
+    }
+
+    closeModal.addEventListener('click', () => modal.style.display = 'none');
+    planBtn.addEventListener('click', openModal);
+
+    probleem.addEventListener('input', () => {
+      const val = probleem.value.toLowerCase();
+      if (val.includes('piep')) suggestie.textContent = '💡 Waarschijnlijk versleten remblokken. Plan controle binnen 500 km.';
+      else if (val.includes('trilt')) suggestie.textContent = '💡 Mogelijk uitlijning of onbalans in banden.';
+      else if (val.includes('olielek')) suggestie.textContent = '💡 Controleer carterpakking of oliefilter.';
+      else suggestie.textContent = '';
+    });
+
+    document.getElementById('verzendBtn').addEventListener('click', () => {
+      modal.style.display = 'none';
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 2500);
+    });
   </script>
 </body>
 </html>
