@@ -121,13 +121,12 @@
     <table id="service">
       <thead>
         <tr>
-          <th>Datum</th>
-          <th>Garage</th>
-          <th>Type</th>
-          <th>Soort onderhoud</th>
-          <th>Kilometerstand</th>
-          <th>Interval</th>
-          <th>Status</th>
+          <th style="width:12%">Datum</th>
+          <th style="width:24%">Garage</th>
+          <th style="width:22%">Type</th>
+          <th style="width:22%">Soort onderhoud</th>
+          <th style="width:12%">Kilometerstand</th>
+          <th style="width:8%">Status</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -212,7 +211,7 @@
         const reparaties = data.bonnen || [];
         const serviceData = data.service || [];
 
-        // Reparaties met uitklapbare details
+        // Reparaties
         const repBody = document.querySelector('#reparaties tbody');
         function renderReparaties(filter='') {
           repBody.innerHTML = '';
@@ -250,7 +249,7 @@
         renderReparaties();
         document.getElementById('searchInput').addEventListener('input', e => renderReparaties(e.target.value));
 
-        // Serviceboekje
+        // Serviceboekje zonder Interval-kolom
         const servBody = document.querySelector('#service tbody');
         const servFilter = document.getElementById('serviceFilter');
         function estimateServiceCost(b){
@@ -280,10 +279,11 @@
             totaalSchatting+=schatting;
             const row=document.createElement('tr');
             row.innerHTML=`
-              <td>${formatDate(b.datum)}</td><td>${b.garage}</td>
-              <td>${b.type_beurt}</td><td>${b.soort_onderhoud}</td>
+              <td>${formatDate(b.datum)}</td>
+              <td>${b.garage}</td>
+              <td>${b.type_beurt}</td>
+              <td>${b.soort_onderhoud}</td>
               <td>${b.kilometerstand.toLocaleString()} km</td>
-              <td>${b.volgende_interval}</td>
               <td class="status ${s.kleur}">${s.label}</td>`;
             servBody.appendChild(row);
           });
