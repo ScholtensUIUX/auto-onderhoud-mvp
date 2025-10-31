@@ -3,393 +3,312 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wrenchly – Auto-onderhoud</title>
+  <title>Wrenchly – Mijn voertuigen</title>
   <style>
     :root {
-      --green: #77ff8a;
-      --bg-color: #1c1c1e;
-      --text-color: #f5f5f7;
-      --table-bg: #2c2c2e;
-      --border-color: #3a3a3c;
-      --header-bg: #333;
-      --hover-bg: #383838;
-      --inactive-tab: #2d2d2f;
-      --urgent-hoog: #ff4d4f;
-      --urgent-middel: #ff9800;
-      --urgent-laag: #4caf50;
+      --bg: #181818;
+      --text: #f5f5f5;
+      --card: #262626;
+      --border: #333;
+      --accent: #8fff91;
+      --accent-dark: #73d176;
+      --muted: #aaa;
+      --danger: #f35a5a;
     }
 
     body {
       font-family: system-ui, sans-serif;
-      margin: 1.5rem;
-      background: var(--bg-color);
-      color: var(--text-color);
+      background: var(--bg);
+      color: var(--text);
+      margin: 2rem;
+      transition: background 0.3s, color 0.3s;
     }
 
-    h1 { margin-bottom: 1rem; }
-
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
     }
 
-    .left-controls, .right-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      flex-wrap: wrap;
+    /* VEHICLE CARDS */
+    .vehicle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
     }
 
-    .tab-button {
-      padding: 0.45rem 1rem;
+    .vehicle-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s ease;
       cursor: pointer;
-      border: 1px solid var(--border-color);
-      background-color: var(--inactive-tab);
-      border-radius: 6px;
-      transition: all 0.2s;
-      color: var(--text-color);
-      font-weight: 500;
+    }
+    .vehicle-card:hover { transform: scale(1.02); }
+
+    .vehicle-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .vehicle-info {
+      padding: 1rem;
+    }
+    .vehicle-info h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+    .vehicle-info p {
+      margin: 0.25rem 0;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
-    .tab-button.active {
-      background-color: var(--green);
+    /* VEHICLE DETAIL */
+    #vehicleDetail {
+      display: none;
+    }
+
+    .vehicle-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .vehicle-header img {
+      width: 180px;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .vehicle-header-info h2 {
+      margin: 0 0 0.25rem 0;
+    }
+
+    .tabs {
+      margin-bottom: 1rem;
+    }
+
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
       color: #000;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      background: var(--table-bg);
+      background: var(--card);
       border-radius: 8px;
       overflow: hidden;
     }
 
     th, td {
-      border-bottom: 1px solid var(--border-color);
-      padding: 0.6rem;
+      padding: 0.75rem 1rem;
       text-align: left;
-      vertical-align: top;
+      border-bottom: 1px solid var(--border);
     }
 
-    th { background: var(--header-bg); font-weight: 600; }
-    tr:hover { background-color: var(--hover-bg); cursor: pointer; }
-
-    .detail-row td {
-      background: var(--hover-bg);
-      font-size: 0.9rem;
-      color: var(--text-color);
+    th {
+      background: #202020;
     }
 
-    .search-box { margin-top: 1rem; }
+    tr:hover td { background: #1f1f1f; }
 
-    .search-box input {
-      padding: 0.4rem 0.6rem;
-      width: 250px;
-      max-width: 100%;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: var(--table-bg);
-      color: var(--text-color);
-    }
-
-    .action-button {
-      padding: 0.45rem 1rem;
+    .btn {
+      padding: 0.4rem 0.8rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.2s;
     }
 
-    .export-btn { background-color: var(--inactive-tab); color: var(--text-color); }
-    .plan-btn {
-      background-color: var(--green);
+    .btn-accent {
+      background: var(--accent);
       color: #000;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      padding: 0.35rem 0.8rem;
     }
 
-    .plan-btn:hover { opacity: 0.9; }
-
-    .urgentie {
-      font-weight: 600;
-      border-radius: 6px;
-      padding: 0.2rem 0.6rem;
-      display: inline-block;
+    .btn-dark {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
     }
 
-    .hoog { background: var(--urgent-hoog); color: #fff; }
-    .middel { background: var(--urgent-middel); color: #fff; }
-    .laag { background: var(--urgent-laag); color: #fff; }
-
-    .total-row {
-      font-weight: 700;
-      background: var(--header-bg);
-    }
-
-    th.sortable { cursor: pointer; user-select: none; }
-    th.sortable span { font-size: 0.8em; margin-left: 4px; opacity: 0.7; }
-
-    /* Modal */
+    /* MODAL */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.8);
       justify-content: center;
       align-items: center;
       z-index: 100;
     }
-
     .modal-content {
-      background: var(--table-bg);
+      background: var(--card);
       padding: 1.5rem;
       border-radius: 8px;
       width: 90%;
       max-width: 400px;
-      position: relative;
+    }
+    .modal-content h3 {
+      margin-top: 0;
     }
 
-    .close-modal {
-      position: absolute;
-      top: 10px; right: 15px;
-      cursor: pointer; font-weight: bold;
+    input[type="file"], input[type="text"], input[type="number"] {
+      width: 100%;
+      margin-top: 0.4rem;
+      margin-bottom: 1rem;
+      padding: 0.4rem;
+      background: #1f1f1f;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
     }
 
-    #ai-blok {
-      background: var(--hover-bg);
-      border-radius: 6px;
-      padding: 0.6rem;
-      margin-bottom: 0.8rem;
-      display: none;
+    .close {
+      float: right;
+      font-size: 1.3rem;
+      cursor: pointer;
     }
 
     .toast {
-      position: fixed;
-      bottom: 20px; right: 20px;
-      background: var(--green);
-      color: #000;
-      padding: 1rem;
-      border-radius: 6px;
       display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent-dark);
+      color: #000;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
       font-weight: 600;
     }
 
-    @media (max-width: 600px) {
-      table, th, td { font-size: 0.85rem; }
-      .top-bar { flex-direction: column; align-items: flex-start; }
+    @media(max-width:700px){
+      .vehicle-header { flex-direction: column; align-items: flex-start; }
+      .vehicle-header img { width: 100%; margin-top: 1rem; }
     }
   </style>
 </head>
 <body>
-  <h1>Auto-onderhoud overzicht</h1>
-
-  <div class="top-bar">
-    <div class="left-controls">
-      <button class="tab-button active" data-tab="reparaties">Reparaties</button>
-      <button class="tab-button" data-tab="service">Serviceboekje</button>
-      <button class="tab-button" data-tab="toekomstig">Aanstaand onderhoud</button>
-    </div>
-    <div class="right-controls">
-      <button class="action-button export-btn" id="exportBtn">Exporteer CSV</button>
-      <button class="action-button plan-btn" id="planBtn">Plan afspraak</button>
-    </div>
+  <div id="vehicleList">
+    <h1>Mijn voertuigen</h1>
+    <div class="vehicle-grid" id="voertuigGrid"></div>
   </div>
 
-  <div class="search-box" id="searchContainer">
-    <label for="searchInput">Zoeken:</label>
-    <input type="text" id="searchInput" placeholder="Bijv. airco, remmen, banden..." />
-  </div>
-
-  <table id="reparaties">
-    <thead>
-      <tr>
-        <th class="sortable">Datum <span id="sortIcon">🔽</span></th>
-        <th>Garage</th>
-        <th>Totaalbedrag</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tfoot><tr class="total-row"><td colspan="2">Totaal uitgegeven</td><td id="totalReparaties">€ 0,00</td></tr></tfoot>
-  </table>
-
-  <table id="service" style="display:none;">
-    <thead>
-      <tr>
-        <th>Datum</th><th>Garage</th><th>Type</th><th>Soort onderhoud</th><th>Kilometerstand</th><th>Status</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <table id="toekomstig" style="display:none;">
-    <thead>
-      <tr>
-        <th>Verwachte datum</th>
-        <th>Onderdeel</th>
-        <th>Geschatte kosten</th>
-        <th>Urgentie</th>
-        <th>Actie</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tfoot><tr class="total-row"><td colspan="2">Totale geschatte kosten</td><td id="totalToekomstig">€ 0,00</td><td colspan="2"></td></tr></tfoot>
-  </table>
-
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <span class="close-modal" id="closeModal">&times;</span>
-      <h2>Plan afspraak</h2>
-      <label for="probleem">Wat wil je laten doen?</label>
-      <textarea id="probleem" rows="3" style="width:100%;margin:0.5rem 0;"></textarea>
-      <div id="ai-blok">
-        <strong>🤖 Suggestie:</strong>
-        <p id="suggestie" style="margin:0.3rem 0 0;font-size:0.9rem;"></p>
+  <div id="vehicleDetail">
+    <div class="vehicle-header">
+      <div class="vehicle-header-info">
+        <h2 id="vehicleName">Volvo XC90</h2>
+        <p id="vehiclePlate">Kenteken: 83-PJ-SC</p>
+        <p id="vehicleGarage">Laatste onderhoud: 07-01-2025</p>
       </div>
-      <label for="foto">Foto uploaden:</label>
-      <input type="file" id="foto" accept="image/*" style="display:block;margin:0.5rem 0;">
-      <button id="verzendBtn" class="action-button plan-btn" style="margin-top:0.8rem;">Verzend</button>
+      <img src="xc90_2.5t_image.png" alt="Voertuig foto" />
+    </div>
+
+    <div style="display:flex; justify-content: space-between; align-items:center;">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="reparaties">Reparaties</button>
+        <button class="tab-btn" data-tab="service">Serviceboekje</button>
+        <button class="tab-btn" data-tab="aanstaand">Aanstaand onderhoud</button>
+      </div>
+      <div>
+        <button class="btn btn-dark" id="exportCsv">Exporteer CSV</button>
+        <button class="btn btn-accent" id="uploadBtn">+ Upload factuur</button>
+      </div>
+    </div>
+
+    <table id="dataTable">
+      <thead>
+        <tr><th>Datum</th><th>Garage</th><th>Totaalbedrag</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="uploadModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h3>Nieuwe factuur uploaden</h3>
+      <label>Omschrijving:</label>
+      <input type="text" id="factuurOmschrijving" placeholder="Bijv. Remblokken vervangen" />
+      <label>Bedrag (€):</label>
+      <input type="number" id="factuurBedrag" />
+      <label>Upload bestand:</label>
+      <input type="file" id="factuurFile" accept=".jpg,.jpeg,.png,.pdf" />
+      <button class="btn btn-accent" id="verzendUpload">Opslaan</button>
     </div>
   </div>
 
-  <div class="toast" id="toast">✅ Verzoek verzonden!</div>
+  <div class="toast" id="toast">✅ Factuur geüpload</div>
 
   <script>
-    const formatEuro = n => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
-    let sortAsc = false;
+    const voertuigen = [
+      {
+        kenteken: "83-PJ-SC",
+        merk: "Volvo",
+        model: "XC90 2.5T",
+        foto: "xc90_2.5t_image.png",
+        laatsteOnderhoud: "2025-01-07"
+      }
+    ];
 
-    const tables = {
-      reparaties: document.getElementById('reparaties'),
-      service: document.getElementById('service'),
-      toekomstig: document.getElementById('toekomstig')
-    };
-
-    document.querySelectorAll('.tab-button').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        Object.keys(tables).forEach(k => tables[k].style.display = 'none');
-        document.getElementById('searchContainer').style.display = tab.dataset.tab === 'reparaties' ? '' : 'none';
-        if (tables[tab.dataset.tab]) tables[tab.dataset.tab].style.display = '';
-      });
+    const grid = document.getElementById("voertuigGrid");
+    voertuigen.forEach(v => {
+      const card = document.createElement("div");
+      card.className = "vehicle-card";
+      card.innerHTML = `
+        <img src="${v.foto}" alt="${v.merk} ${v.model}" />
+        <div class="vehicle-info">
+          <h2>${v.merk} ${v.model}</h2>
+          <p>Kenteken: ${v.kenteken}</p>
+          <p>Laatst onderhoud: ${v.laatsteOnderhoud}</p>
+          <button class="btn btn-accent">Bekijk onderhoud</button>
+        </div>
+      `;
+      card.addEventListener("click", () => openVehicle(v));
+      grid.appendChild(card);
     });
 
-    fetch('data.json?nocache=' + Date.now())
-      .then(r => r.json())
-      .then(data => {
-        const repBody = document.querySelector('#reparaties tbody');
-        const servBody = document.querySelector('#service tbody');
-        const toekBody = document.querySelector('#toekomstig tbody');
-
-        let repData = [...data.bonnen];
-
-        const renderReparaties = () => {
-          repBody.innerHTML = '';
-          let total = 0;
-          repData.forEach(b => {
-            total += Number(b.totaal || 0);
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${b.factuurdatum}</td><td>${b.garage}</td><td>${formatEuro(b.totaal)}</td>`;
-            repBody.appendChild(row);
-            const detail = document.createElement('tr');
-            detail.classList.add('detail-row');
-            detail.style.display = 'none';
-            detail.innerHTML = `<td colspan="3">🧰 ${b.omschrijving}</td>`;
-            repBody.appendChild(detail);
-            row.addEventListener('click', () => {
-              detail.style.display = detail.style.display === 'none' ? 'table-row' : 'none';
-            });
-          });
-          document.getElementById('totalReparaties').textContent = formatEuro(total);
-        };
-
-        renderReparaties();
-
-        document.getElementById('sortIcon').addEventListener('click', () => {
-          sortAsc = !sortAsc;
-          repData.sort((a, b) => sortAsc
-            ? new Date(a.factuurdatum) - new Date(b.factuurdatum)
-            : new Date(b.factuurdatum) - new Date(a.factuurdatum));
-          document.getElementById('sortIcon').textContent = sortAsc ? '🔼' : '🔽';
-          renderReparaties();
-        });
-
-        // Serviceboekje
-        data.service.forEach(b => {
-          servBody.innerHTML += `<tr><td>${b.datum}</td><td>${b.garage}</td><td>${b.type_beurt}</td><td>${b.soort_onderhoud}</td><td>${b.kilometerstand.toLocaleString()} km</td><td>✅ Uitgevoerd</td></tr>`;
-        });
-
-        // Aanstaand onderhoud
-        const toekomstig = [
-          { datum: "2025-12-01", onderdeel: "Distributieriem", kosten: 750 },
-          { datum: "2026-06-15", onderdeel: "Remblokken voor", kosten: 350 },
-          { datum: "2026-09-10", onderdeel: "Olie & filters", kosten: 180 }
-        ];
-        const vandaag = new Date();
-        let totalToekomstig = 0;
-        toekomstig.forEach(t => {
-          totalToekomstig += t.kosten;
-          const diff = (new Date(t.datum) - vandaag) / (1000 * 60 * 60 * 24 * 30);
-          let urgentie;
-          if (diff < 3) urgentie = `<span class='urgentie hoog'>🔴 Hoog</span>`;
-          else if (diff < 6) urgentie = `<span class='urgentie middel'>🟠 Gemiddeld</span>`;
-          else urgentie = `<span class='urgentie laag'>🟢 Laag</span>`;
-          toekBody.innerHTML += `<tr><td>${t.datum}</td><td>${t.onderdeel}</td><td>${formatEuro(t.kosten)}</td><td>${urgentie}</td><td><button class="plan-btn">Plan</button></td></tr>`;
-        });
-        document.getElementById('totalToekomstig').textContent = formatEuro(totalToekomstig);
-      });
-
-    // Modal
-    const modal = document.getElementById('modal');
-    const closeModal = document.getElementById('closeModal');
-    const planBtn = document.getElementById('planBtn');
-    const toast = document.getElementById('toast');
-    const aiBlok = document.getElementById('ai-blok');
-    const suggestie = document.getElementById('suggestie');
-    const probleem = document.getElementById('probleem');
-
-    function openModal() {
-      modal.style.display = 'flex';
-      aiBlok.style.display = 'none';
-      suggestie.textContent = '';
-      probleem.value = '';
+    function openVehicle(v) {
+      document.getElementById("vehicleList").style.display = "none";
+      document.getElementById("vehicleDetail").style.display = "block";
+      document.getElementById("vehicleName").textContent = `${v.merk} ${v.model}`;
+      document.getElementById("vehiclePlate").textContent = `Kenteken: ${v.kenteken}`;
+      document.getElementById("vehicleGarage").textContent = `Laatste onderhoud: ${v.laatsteOnderhoud}`;
+      document.querySelector(".vehicle-header img").src = v.foto;
     }
 
-    closeModal.addEventListener('click', () => modal.style.display = 'none');
-    planBtn.addEventListener('click', openModal);
+    // Upload modal
+    const modal = document.getElementById("uploadModal");
+    const btn = document.getElementById("uploadBtn");
+    const closeBtn = document.getElementById("closeModal");
+    const toast = document.getElementById("toast");
 
-    probleem.addEventListener('input', () => {
-      const val = probleem.value.toLowerCase();
-      if (val.includes('piep')) {
-        suggestie.textContent = 'Waarschijnlijk versleten remblokken.';
-        aiBlok.style.display = 'block';
-      } else if (val.includes('trilt')) {
-        suggestie.textContent = 'Mogelijk onbalans of uitlijning.';
-        aiBlok.style.display = 'block';
-      } else if (val.includes('olielek')) {
-        suggestie.textContent = 'Controleer carterpakking of oliefilter.';
-        aiBlok.style.display = 'block';
-      } else if (val.length > 5) {
-        suggestie.textContent = 'Geen directe indicatie, garage zal beoordelen.';
-        aiBlok.style.display = 'block';
-      } else aiBlok.style.display = 'none';
-    });
+    btn.onclick = () => modal.style.display = "flex";
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = e => { if (e.target == modal) modal.style.display = "none"; }
 
-    document.getElementById('verzendBtn').addEventListener('click', () => {
-      modal.style.display = 'none';
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none', 2500);
-    });
+    document.getElementById("verzendUpload").onclick = () => {
+      modal.style.display = "none";
+      toast.style.display = "block";
+      setTimeout(()=> toast.style.display = "none", 2000);
+    };
   </script>
 </body>
 </html>
