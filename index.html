@@ -13,7 +13,6 @@
       --accent: #8fff91;
       --accent-dark: #73d176;
       --muted: #aaa;
-      --danger: #f35a5a;
     }
 
     body {
@@ -21,7 +20,6 @@
       background: var(--bg);
       color: var(--text);
       margin: 2rem;
-      transition: background 0.3s, color 0.3s;
     }
 
     h1 {
@@ -29,10 +27,10 @@
       margin-bottom: 1.5rem;
     }
 
-    /* VEHICLE CARDS */
+    /* ===== VOERTUIGEN GRID ===== */
     .vehicle-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
     }
 
@@ -41,58 +39,72 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      transition: transform 0.2s ease;
-      cursor: pointer;
     }
-    .vehicle-card:hover { transform: scale(1.02); }
 
     .vehicle-card img {
       width: 100%;
       height: 160px;
       object-fit: cover;
     }
+
     .vehicle-info {
       padding: 1rem;
     }
-    .vehicle-info h2 {
-      margin: 0;
-      font-size: 1.25rem;
-    }
+
+    .vehicle-info h2 { margin: 0; }
     .vehicle-info p {
       margin: 0.25rem 0;
       color: var(--muted);
       font-size: 0.9rem;
     }
 
-    /* VEHICLE DETAIL */
-    #vehicleDetail {
-      display: none;
+    .btn {
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
     }
+
+    .btn-accent { background: var(--accent); color: #000; }
+    .btn-dark { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+
+    /* ===== DETAIL ===== */
+    #vehicleDetail { display: none; }
 
     .vehicle-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       background: var(--card);
       border-radius: 10px;
-      padding: 1rem 1.5rem;
-      margin-bottom: 1.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
     }
 
     .vehicle-header img {
       width: 180px;
-      height: auto;
       border-radius: 8px;
     }
 
-    .vehicle-header-info h2 {
-      margin: 0 0 0.25rem 0;
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1rem;
     }
 
-    .tabs {
-      margin-bottom: 1rem;
+    .back-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--text);
     }
 
+    .tabs { margin-bottom: 1rem; }
     .tab-btn {
       background: var(--card);
       border: 1px solid var(--border);
@@ -102,53 +114,19 @@
       margin-right: 0.5rem;
       cursor: pointer;
     }
-
-    .tab-btn.active {
-      background: var(--accent);
-      color: #000;
-      font-weight: 600;
-    }
+    .tab-btn.active { background: var(--accent); color: #000; font-weight: 600; }
 
     table {
       width: 100%;
       border-collapse: collapse;
       background: var(--card);
       border-radius: 8px;
-      overflow: hidden;
     }
-
-    th, td {
-      padding: 0.75rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      background: #202020;
-    }
-
+    th, td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); }
+    th { background: #202020; }
     tr:hover td { background: #1f1f1f; }
 
-    .btn {
-      padding: 0.4rem 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-accent {
-      background: var(--accent);
-      color: #000;
-    }
-
-    .btn-dark {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    /* MODAL */
+    /* ===== MODAL ===== */
     .modal {
       display: none;
       position: fixed;
@@ -157,8 +135,8 @@
       background: rgba(0,0,0,0.8);
       justify-content: center;
       align-items: center;
-      z-index: 100;
     }
+
     .modal-content {
       background: var(--card);
       padding: 1.5rem;
@@ -166,32 +144,21 @@
       width: 90%;
       max-width: 400px;
     }
-    .modal-content h3 {
-      margin-top: 0;
-    }
 
-    input[type="file"], input[type="text"], input[type="number"] {
+    input[type="text"], input[type="number"], input[type="file"] {
       width: 100%;
-      margin-top: 0.4rem;
       margin-bottom: 1rem;
-      padding: 0.4rem;
+      padding: 0.5rem;
       background: #1f1f1f;
       border: 1px solid var(--border);
       border-radius: 4px;
       color: var(--text);
     }
 
-    .close {
-      float: right;
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-
     .toast {
       display: none;
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 20px; right: 20px;
       background: var(--accent-dark);
       color: #000;
       padding: 0.8rem 1rem;
@@ -212,13 +179,20 @@
   </div>
 
   <div id="vehicleDetail">
+    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+      <button class="back-btn" id="backBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        Terug
+      </button>
+    </div>
+
     <div class="vehicle-header">
-      <div class="vehicle-header-info">
-        <h2 id="vehicleName">Volvo XC90</h2>
-        <p id="vehiclePlate">Kenteken: 83-PJ-SC</p>
-        <p id="vehicleGarage">Laatste onderhoud: 07-01-2025</p>
+      <div>
+        <h2 id="vehicleName"></h2>
+        <p id="vehiclePlate"></p>
+        <p id="vehicleGarage"></p>
       </div>
-      <img src="xc90_2.5t_image.png" alt="Voertuig foto" />
+      <img id="vehicleImg" alt="Voertuig foto" />
     </div>
 
     <div style="display:flex; justify-content: space-between; align-items:center;">
@@ -234,16 +208,14 @@
     </div>
 
     <table id="dataTable">
-      <thead>
-        <tr><th>Datum</th><th>Garage</th><th>Totaalbedrag</th></tr>
-      </thead>
+      <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving / Type</th><th>Bedrag</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
 
   <div id="uploadModal" class="modal">
     <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
+      <span id="closeModal" style="float:right;cursor:pointer;">&times;</span>
       <h3>Nieuwe factuur uploaden</h3>
       <label>Omschrijving:</label>
       <input type="text" id="factuurOmschrijving" placeholder="Bijv. Remblokken vervangen" />
@@ -259,13 +231,7 @@
 
   <script>
     const voertuigen = [
-      {
-        kenteken: "83-PJ-SC",
-        merk: "Volvo",
-        model: "XC90 2.5T",
-        foto: "xc90_2.5t_image.png",
-        laatsteOnderhoud: "2025-01-07"
-      }
+      { kenteken: "83-PJ-SC", merk: "Volvo", model: "XC90 2.5T", foto: "./xc90_2.5t_image.png", laatsteOnderhoud: "2025-01-07" }
     ];
 
     const grid = document.getElementById("voertuigGrid");
@@ -279,9 +245,8 @@
           <p>Kenteken: ${v.kenteken}</p>
           <p>Laatst onderhoud: ${v.laatsteOnderhoud}</p>
           <button class="btn btn-accent">Bekijk onderhoud</button>
-        </div>
-      `;
-      card.addEventListener("click", () => openVehicle(v));
+        </div>`;
+      card.querySelector("button").onclick = e => { e.stopPropagation(); openVehicle(v); };
       grid.appendChild(card);
     });
 
@@ -291,7 +256,49 @@
       document.getElementById("vehicleName").textContent = `${v.merk} ${v.model}`;
       document.getElementById("vehiclePlate").textContent = `Kenteken: ${v.kenteken}`;
       document.getElementById("vehicleGarage").textContent = `Laatste onderhoud: ${v.laatsteOnderhoud}`;
-      document.querySelector(".vehicle-header img").src = v.foto;
+      document.getElementById("vehicleImg").src = v.foto;
+
+      fetch('data.json?nocache=' + Date.now())
+        .then(r => r.json())
+        .then(data => renderTable(data.bonnen, "reparaties"));
+    }
+
+    // Terugknop
+    document.getElementById("backBtn").onclick = () => {
+      document.getElementById("vehicleDetail").style.display = "none";
+      document.getElementById("vehicleList").style.display = "block";
+    };
+
+    // Tabs
+    const tabs = document.querySelectorAll(".tab-btn");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        fetch('data.json?nocache=' + Date.now())
+          .then(r => r.json())
+          .then(data => {
+            if (tab.dataset.tab === "reparaties") renderTable(data.bonnen, "reparaties");
+            if (tab.dataset.tab === "service") renderTable(data.service, "service");
+            if (tab.dataset.tab === "aanstaand") renderTable(data.aanstaand, "aanstaand");
+          });
+      });
+    });
+
+    function renderTable(data, type) {
+      const body = document.querySelector("#dataTable tbody");
+      body.innerHTML = "";
+      if (!data) return;
+      data.forEach(item => {
+        const tr = document.createElement("tr");
+        if (type === "reparaties")
+          tr.innerHTML = `<td>${item.factuurdatum}</td><td>${item.garage}</td><td>${item.omschrijving}</td><td>€ ${item.totaal.toFixed(2)}</td>`;
+        if (type === "service")
+          tr.innerHTML = `<td>${item.datum}</td><td>${item.garage}</td><td>${item.type_beurt}</td><td>${item.kilometerstand.toLocaleString()} km</td>`;
+        if (type === "aanstaand")
+          tr.innerHTML = `<td>${item.datum}</td><td>${item.onderdeel}</td><td>${item.kosten ? "€ " + item.kosten.toFixed(2) : "-"}</td><td>${item.urgentie}</td>`;
+        body.appendChild(tr);
+      });
     }
 
     // Upload modal
@@ -299,7 +306,6 @@
     const btn = document.getElementById("uploadBtn");
     const closeBtn = document.getElementById("closeModal");
     const toast = document.getElementById("toast");
-
     btn.onclick = () => modal.style.display = "flex";
     closeBtn.onclick = () => modal.style.display = "none";
     window.onclick = e => { if (e.target == modal) modal.style.display = "none"; }
