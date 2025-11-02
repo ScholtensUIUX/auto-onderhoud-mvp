@@ -13,6 +13,7 @@
       --accent: #8fff91;
       --accent-dark: #73d176;
       --muted: #aaa;
+      --danger: #f35a5a;
     }
 
     body {
@@ -27,106 +28,163 @@
       margin-bottom: 1.5rem;
     }
 
-    /* ===== VOERTUIGEN GRID ===== */
-    .vehicle-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
+    /* VEHICLE CARD */
     .vehicle-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
+      border-radius: 14px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 720px;
+      margin: 0 auto;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .vehicle-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
+    .vehicle-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
     }
 
     .vehicle-info {
-      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
-    .vehicle-info h2 { margin: 0; }
-    .vehicle-info p {
-      margin: 0.25rem 0;
-      color: var(--muted);
-      font-size: 0.9rem;
+    .vehicle-info img {
+      width: 220px;
+      border-radius: 8px;
+    }
+
+    .vehicle-text {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .vehicle-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
     }
 
     .btn {
-      padding: 0.45rem 1rem;
-      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
       border: none;
       cursor: pointer;
       font-weight: 600;
     }
 
-    .btn-accent { background: var(--accent); color: #000; }
-    .btn-dark { background: var(--card); border: 1px solid var(--border); color: var(--text); }
-
-    /* ===== DETAIL ===== */
-    #vehicleDetail { display: none; }
-
-    .vehicle-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--card);
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 1rem;
+    .btn-accent {
+      background: var(--accent);
+      color: #000;
     }
 
-    .vehicle-header img {
-      width: 180px;
-      border-radius: 8px;
+    .btn-dark {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ADD VEHICLE */
+    .add-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+      max-width: 720px;
+      margin: 1rem auto;
+      text-align: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .add-card:hover {
+      background: #1f1f1f;
+    }
+
+    /* VEHICLE DETAIL */
+    #vehicleDetail {
+      display: none;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .back-btn {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: none;
-      border: none;
-      color: var(--text);
+      gap: 0.3rem;
       cursor: pointer;
-      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      font-weight: 600;
     }
 
-    .back-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: var(--text);
+    .tabs {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
-    .tabs { margin-bottom: 1rem; }
     .tab-btn {
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
       padding: 0.5rem 1rem;
       border-radius: 6px;
-      margin-right: 0.5rem;
       cursor: pointer;
     }
-    .tab-btn.active { background: var(--accent); color: #000; font-weight: 600; }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+    }
 
     table {
       width: 100%;
       border-collapse: collapse;
       background: var(--card);
       border-radius: 8px;
+      overflow: hidden;
+      margin-top: 1rem;
     }
-    th, td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); }
-    th { background: #202020; }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #202020;
+      text-align: left;
+    }
+
     tr:hover td { background: #1f1f1f; }
 
-    /* ===== MODAL ===== */
+    .urgentie {
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+    }
+
+    .laag {
+      background: #4caf50;
+      color: #fff;
+    }
+    .hoog {
+      background: #e53935;
+      color: #fff;
+    }
+
+    /* MODALS */
     .modal {
       display: none;
       position: fixed;
@@ -135,6 +193,7 @@
       background: rgba(0,0,0,0.8);
       justify-content: center;
       align-items: center;
+      z-index: 100;
     }
 
     .modal-content {
@@ -142,23 +201,64 @@
       padding: 1.5rem;
       border-radius: 8px;
       width: 90%;
-      max-width: 400px;
+      max-width: 420px;
     }
 
-    input[type="text"], input[type="number"], input[type="file"] {
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .close {
+      float: right;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    input[type="file"], input[type="text"], input[type="number"], textarea {
       width: 100%;
+      margin-top: 0.4rem;
       margin-bottom: 1rem;
-      padding: 0.5rem;
+      padding: 0.4rem;
       background: #1f1f1f;
       border: 1px solid var(--border);
       border-radius: 4px;
       color: var(--text);
     }
 
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .preview-container img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .ai-suggestion {
+      background: #202020;
+      padding: 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      color: var(--muted);
+    }
+
     .toast {
       display: none;
       position: fixed;
-      bottom: 20px; right: 20px;
+      bottom: 20px;
+      right: 20px;
       background: var(--accent-dark);
       color: #000;
       padding: 0.8rem 1rem;
@@ -167,55 +267,109 @@
     }
 
     @media(max-width:700px){
-      .vehicle-header { flex-direction: column; align-items: flex-start; }
-      .vehicle-header img { width: 100%; margin-top: 1rem; }
+      body { margin: 1rem; }
+      .vehicle-info { flex-direction: column; align-items: flex-start; }
+      .vehicle-info img { width: 100%; margin-top: 1rem; }
+      .vehicle-buttons { flex-direction: column; width: 100%; }
+      .btn { width: 100%; text-align: center; }
     }
   </style>
 </head>
 <body>
   <div id="vehicleList">
     <h1>Mijn voertuigen</h1>
-    <div class="vehicle-grid" id="voertuigGrid"></div>
+
+    <div class="vehicle-card" id="vehicleCard">
+      <div class="vehicle-info">
+        <div class="vehicle-text">
+          <h2>Volvo XC90 2.5T</h2>
+          <p>Kenteken: 83-PJ-SC</p>
+          <p>Laatst onderhoud: 2025-01-07</p>
+        </div>
+        <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
+      </div>
+
+      <div class="vehicle-buttons">
+        <button class="btn btn-accent" onclick="openVehicle()">Bekijk onderhoud</button>
+        <button class="btn btn-dark" onclick="openUploadModal()">+ Upload factuur</button>
+        <button class="btn btn-dark">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="add-card">+ Voeg voertuig toe</div>
   </div>
 
+  <!-- Detailpagina -->
   <div id="vehicleDetail">
-    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
-      <button class="back-btn" id="backBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-        Terug
-      </button>
-    </div>
+    <div class="back-btn" onclick="backToList()">← Terug</div>
 
-    <div class="vehicle-header">
-      <div>
-        <h2 id="vehicleName"></h2>
-        <p id="vehiclePlate"></p>
-        <p id="vehicleGarage"></p>
+    <div class="vehicle-card">
+      <div class="vehicle-info">
+        <div class="vehicle-text">
+          <h2>Volvo XC90 2.5T</h2>
+          <p>Kenteken: 83-PJ-SC</p>
+          <p>Laatst onderhoud: 2025-01-07</p>
+        </div>
+        <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
       </div>
-      <img id="vehicleImg" alt="Voertuig foto" />
-    </div>
 
-    <div style="display:flex; justify-content: space-between; align-items:center;">
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="reparaties">Reparaties</button>
-        <button class="tab-btn" data-tab="service">Serviceboekje</button>
-        <button class="tab-btn" data-tab="aanstaand">Aanstaand onderhoud</button>
-      </div>
-      <div>
-        <button class="btn btn-dark" id="exportCsv">Exporteer CSV</button>
-        <button class="btn btn-accent" id="uploadBtn">+ Upload factuur</button>
+      <div class="vehicle-buttons">
+        <button class="btn btn-accent" onclick="openPlanModal()">Plan afspraak</button>
+        <button class="btn btn-dark" onclick="openUploadModal()">+ Upload factuur</button>
+        <button class="btn btn-dark">Export CSV</button>
       </div>
     </div>
 
-    <table id="dataTable">
-      <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving / Type</th><th>Bedrag</th></tr></thead>
-      <tbody></tbody>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('reparaties')">Reparaties</button>
+      <button class="tab-btn" onclick="switchTab('service')">Serviceboekje</button>
+      <button class="tab-btn" onclick="switchTab('aanstaand')">Aanstaand onderhoud</button>
+    </div>
+
+    <table id="reparaties" class="tab-content">
+      <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving</th><th>Bedrag</th></tr></thead>
+      <tbody>
+        <tr><td>2023-10-17</td><td>Total Car Service</td><td>Remblokken en schijven vervangen</td><td>€488,03</td></tr>
+        <tr><td>2024-05-31</td><td>Total Car Service</td><td>Olie + filters</td><td>€544,08</td></tr>
+      </tbody>
+    </table>
+
+    <table id="aanstaand" class="tab-content" style="display:none;">
+      <thead><tr><th>Verwachte datum</th><th>Onderdeel</th><th>Geschatte kosten</th><th>Urgentie</th><th>Actie</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>2025-12-01</td><td>Distributieriem</td><td>€750,00</td>
+          <td><span class="urgentie hoog">⚠ Hoog</span></td>
+          <td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td>
+        </tr>
+        <tr>
+          <td>2026-06-15</td><td>Remblokken voor</td><td>€350,00</td>
+          <td><span class="urgentie laag">● Laag</span></td>
+          <td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
+  <!-- PLAN MODAL -->
+  <div id="planModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closePlanModal()">&times;</span>
+      <h3>Plan afspraak</h3>
+      <label>Wat wil je laten doen?</label>
+      <textarea id="planText" placeholder="Bijv. Auto piept bij remmen"></textarea>
+      <label>Foto uploaden:</label>
+      <input type="file" id="planFiles" multiple accept=".jpg,.jpeg,.png" onchange="previewImages(event)">
+      <div id="planPreview" class="preview-container"></div>
+      <div id="aiSuggestion" class="ai-suggestion"></div>
+      <button class="btn btn-accent" onclick="submitPlan()">Verzend</button>
+    </div>
+  </div>
+
+  <!-- UPLOAD MODAL -->
   <div id="uploadModal" class="modal">
     <div class="modal-content">
-      <span id="closeModal" style="float:right;cursor:pointer;">&times;</span>
+      <span class="close" onclick="closeUploadModal()">&times;</span>
       <h3>Nieuwe factuur uploaden</h3>
       <label>Omschrijving:</label>
       <input type="text" id="factuurOmschrijving" placeholder="Bijv. Remblokken vervangen" />
@@ -223,97 +377,88 @@
       <input type="number" id="factuurBedrag" />
       <label>Upload bestand:</label>
       <input type="file" id="factuurFile" accept=".jpg,.jpeg,.png,.pdf" />
-      <button class="btn btn-accent" id="verzendUpload">Opslaan</button>
+      <button class="btn btn-accent" onclick="submitUpload()">Opslaan</button>
     </div>
   </div>
 
-  <div class="toast" id="toast">✅ Factuur geüpload</div>
+  <div class="toast" id="toast">✅ Actie voltooid</div>
 
   <script>
-    const voertuigen = [
-      { kenteken: "83-PJ-SC", merk: "Volvo", model: "XC90 2.5T", foto: "./xc90_2.5t_image.png", laatsteOnderhoud: "2025-01-07" }
-    ];
-
-    const grid = document.getElementById("voertuigGrid");
-    voertuigen.forEach(v => {
-      const card = document.createElement("div");
-      card.className = "vehicle-card";
-      card.innerHTML = `
-        <img src="${v.foto}" alt="${v.merk} ${v.model}" />
-        <div class="vehicle-info">
-          <h2>${v.merk} ${v.model}</h2>
-          <p>Kenteken: ${v.kenteken}</p>
-          <p>Laatst onderhoud: ${v.laatsteOnderhoud}</p>
-          <button class="btn btn-accent">Bekijk onderhoud</button>
-        </div>`;
-      card.querySelector("button").onclick = e => { e.stopPropagation(); openVehicle(v); };
-      grid.appendChild(card);
-    });
-
-    function openVehicle(v) {
+    // Navigatie
+    function openVehicle() {
       document.getElementById("vehicleList").style.display = "none";
       document.getElementById("vehicleDetail").style.display = "block";
-      document.getElementById("vehicleName").textContent = `${v.merk} ${v.model}`;
-      document.getElementById("vehiclePlate").textContent = `Kenteken: ${v.kenteken}`;
-      document.getElementById("vehicleGarage").textContent = `Laatste onderhoud: ${v.laatsteOnderhoud}`;
-      document.getElementById("vehicleImg").src = v.foto;
-
-      fetch('data.json?nocache=' + Date.now())
-        .then(r => r.json())
-        .then(data => renderTable(data.bonnen, "reparaties"));
     }
-
-    // Terugknop
-    document.getElementById("backBtn").onclick = () => {
+    function backToList() {
       document.getElementById("vehicleDetail").style.display = "none";
       document.getElementById("vehicleList").style.display = "block";
-    };
+    }
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(tabEl => tabEl.style.display = "none");
+      document.querySelector(`.tab-btn[onclick*='${tab}']`).classList.add("active");
+      document.getElementById(tab).style.display = "table";
+    }
 
-    // Tabs
-    const tabs = document.querySelectorAll(".tab-btn");
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        fetch('data.json?nocache=' + Date.now())
-          .then(r => r.json())
-          .then(data => {
-            if (tab.dataset.tab === "reparaties") renderTable(data.bonnen, "reparaties");
-            if (tab.dataset.tab === "service") renderTable(data.service, "service");
-            if (tab.dataset.tab === "aanstaand") renderTable(data.aanstaand, "aanstaand");
-          });
-      });
-    });
+    // PLAN MODAL
+    const planModal = document.getElementById("planModal");
+    const aiBox = document.getElementById("aiSuggestion");
+    const planPreview = document.getElementById("planPreview");
 
-    function renderTable(data, type) {
-      const body = document.querySelector("#dataTable tbody");
-      body.innerHTML = "";
-      if (!data) return;
-      data.forEach(item => {
-        const tr = document.createElement("tr");
-        if (type === "reparaties")
-          tr.innerHTML = `<td>${item.factuurdatum}</td><td>${item.garage}</td><td>${item.omschrijving}</td><td>€ ${item.totaal.toFixed(2)}</td>`;
-        if (type === "service")
-          tr.innerHTML = `<td>${item.datum}</td><td>${item.garage}</td><td>${item.type_beurt}</td><td>${item.kilometerstand.toLocaleString()} km</td>`;
-        if (type === "aanstaand")
-          tr.innerHTML = `<td>${item.datum}</td><td>${item.onderdeel}</td><td>${item.kosten ? "€ " + item.kosten.toFixed(2) : "-"}</td><td>${item.urgentie}</td>`;
-        body.appendChild(tr);
+    function openPlanModal() {
+      planModal.style.display = "flex";
+    }
+    function closePlanModal() {
+      planModal.style.display = "none";
+      aiBox.textContent = "";
+      planPreview.innerHTML = "";
+    }
+
+    function previewImages(event) {
+      planPreview.innerHTML = "";
+      Array.from(event.target.files).forEach(file => {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        planPreview.appendChild(img);
       });
     }
 
-    // Upload modal
-    const modal = document.getElementById("uploadModal");
-    const btn = document.getElementById("uploadBtn");
-    const closeBtn = document.getElementById("closeModal");
-    const toast = document.getElementById("toast");
-    btn.onclick = () => modal.style.display = "flex";
-    closeBtn.onclick = () => modal.style.display = "none";
-    window.onclick = e => { if (e.target == modal) modal.style.display = "none"; }
+    function submitPlan() {
+      const input = document.getElementById("planText").value.toLowerCase();
+      let suggest = "";
+      if (input.includes("piep")) suggest = "Waarschijnlijk versleten remblokken, plan controle binnen 500 km.";
+      else if (input.includes("trilt")) suggest = "Mogelijke uitlijnings- of bandenslijtage. Plan controle.";
+      else if (input.includes("olie")) suggest = "Controleer carterpakking of oliefilter.";
+      else suggest = "Afspraak wordt ingepland voor diagnose.";
+      aiBox.textContent = "🤖 " + suggest;
+      setTimeout(()=>showToast("✅ Afspraak ingepland"),1500);
+    }
 
-    document.getElementById("verzendUpload").onclick = () => {
-      modal.style.display = "none";
+    // UPLOAD MODAL
+    const uploadModal = document.getElementById("uploadModal");
+    function openUploadModal() {
+      uploadModal.style.display = "flex";
+    }
+    function closeUploadModal() {
+      uploadModal.style.display = "none";
+    }
+    function submitUpload() {
+      closeUploadModal();
+      showToast("✅ Factuur opgeslagen");
+    }
+
+    // TOAST
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
       toast.style.display = "block";
-      setTimeout(()=> toast.style.display = "none", 2000);
+      setTimeout(()=>toast.style.display="none",2000);
+    }
+
+    // Klik buiten modal
+    window.onclick = e => {
+      if (e.target === planModal) closePlanModal();
+      if (e.target === uploadModal) closeUploadModal();
     };
   </script>
 </body>
