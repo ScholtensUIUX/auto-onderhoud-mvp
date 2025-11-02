@@ -20,11 +20,21 @@
       font-family: system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
-      margin: 2rem;
-      transition: background 0.3s, color 0.3s;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
     }
 
-    h1 { font-size: 2rem; margin-bottom: 1.5rem; }
+    .container {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+    }
 
     /* VEHICLE CARD */
     .vehicle-card {
@@ -36,11 +46,7 @@
       padding: 1.5rem;
       width: 100%;
       margin-bottom: 1.5rem;
-      transition: transform 0.2s ease;
-      cursor: pointer;
     }
-
-    .vehicle-card:hover { transform: scale(1.01); }
 
     .vehicle-card img {
       width: 220px;
@@ -52,7 +58,6 @@
     .vehicle-info h2 { margin: 0 0 0.25rem 0; }
     .vehicle-info p { margin: 0.2rem 0; color: var(--muted); }
 
-    /* BUTTONS */
     .btn {
       padding: 0.45rem 1rem;
       border-radius: 6px;
@@ -64,15 +69,30 @@
 
     .btn-accent { background: var(--accent); color: #000; }
     .btn-dark { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .btn-accent:hover { background: var(--accent-dark); }
 
-    /* TABLE */
+    .tabs { margin-bottom: 1rem; }
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       background: var(--card);
       border-radius: 8px;
       overflow: hidden;
-      margin-top: 1rem;
     }
 
     th, td {
@@ -81,14 +101,9 @@
       text-align: left;
     }
 
-    th {
-      background: #202020;
-      cursor: pointer;
-    }
-
+    th { background: #202020; }
     tr:hover td { background: #1f1f1f; }
 
-    /* MODALS */
     .modal {
       display: none;
       position: fixed;
@@ -99,6 +114,7 @@
       align-items: center;
       z-index: 100;
     }
+
     .modal-content {
       background: var(--card);
       padding: 1.5rem;
@@ -135,23 +151,6 @@
       font-weight: 600;
     }
 
-    .tabs { margin-bottom: 1rem; }
-    .tab-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      margin-right: 0.5rem;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: var(--accent);
-      color: #000;
-      font-weight: 600;
-    }
-
     .thumbnail {
       width: 60px;
       height: 60px;
@@ -167,84 +166,89 @@
   </style>
 </head>
 <body>
-  <h1>Mijn voertuigen</h1>
-
-  <div class="vehicle-card" id="vehicleCard">
-    <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
-    <div class="vehicle-info">
-      <h2>Volvo XC90 2.5T</h2>
-      <p>Kenteken: 83-PJ-SC</p>
-      <p>Laatst onderhoud: 31-05-2024</p>
-      <button class="btn btn-accent" onclick="openDetails()">Bekijk onderhoud</button>
-      <button class="btn btn-dark" id="addVehicle">+ Voertuig toevoegen</button>
+  <div class="container">
+    <div id="homePage">
+      <h1>Mijn voertuigen</h1>
+      <div class="vehicle-card">
+        <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
+        <div class="vehicle-info">
+          <h2>Volvo XC90 2.5T</h2>
+          <p>Kenteken: 83-PJ-SC</p>
+          <p>Laatst onderhoud: 31-05-2024</p>
+          <button class="btn btn-accent" onclick="openDetails()">Bekijk onderhoud</button>
+        </div>
+      </div>
+      <button class="btn btn-dark" style="width:100%;">+ Voertuig toevoegen</button>
     </div>
-  </div>
 
-  <div id="vehicleDetail" style="display:none;">
-    <div style="display:flex; justify-content: space-between; align-items:center;">
+    <div id="vehicleDetail" style="display:none;">
+      <button class="btn btn-dark" onclick="goBack()" style="margin-bottom:1rem;">← Terug</button>
+
+      <div class="vehicle-card" style="cursor:default;">
+        <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
+        <div class="vehicle-info">
+          <h2>Volvo XC90 2.5T</h2>
+          <p>Kenteken: 83-PJ-SC</p>
+          <p>Laatst onderhoud: 31-05-2024</p>
+          <button class="btn btn-accent" id="planBtn">Plan afspraak</button>
+          <button class="btn btn-dark" id="uploadBtn">Upload factuur</button>
+          <button class="btn btn-dark">Export CSV</button>
+        </div>
+      </div>
+
       <div class="tabs">
         <button class="tab-btn active" data-tab="reparaties">Reparaties</button>
         <button class="tab-btn" data-tab="service">Serviceboekje</button>
         <button class="tab-btn" data-tab="aanstaand">Aanstaand onderhoud</button>
       </div>
-      <div>
-        <button class="btn btn-dark" id="exportCsv">Exporteer CSV</button>
-        <button class="btn btn-accent" id="uploadBtn">Upload factuur</button>
-        <button class="btn btn-accent" id="planBtn">Plan afspraak</button>
-      </div>
+
+      <!-- Reparaties -->
+      <table id="reparatiesTable">
+        <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving</th><th>Bedrag</th></tr></thead>
+        <tbody>
+          <tr><td>2023-10-17</td><td>Total Car Service Naarden</td><td>Remblokset en remschijf vervangen, werkplaatskosten</td><td>€488,03</td></tr>
+          <tr><td>2023-11-29</td><td>Total Car Service Naarden</td><td>Olie + filter vervangen</td><td>€258,78</td></tr>
+          <tr><td>2023-12-08</td><td>Total Car Service Naarden</td><td>Kleine beurt + oliefilter</td><td>€264,06</td></tr>
+          <tr><td>2024-02-23</td><td>Autobandenhal.nl Tynaarlo</td><td>Nieuwe winterbanden</td><td>€90,00</td></tr>
+          <tr><td>2024-05-31</td><td>Total Car Service Naarden</td><td>Olie & filters</td><td>€544,08</td></tr>
+          <tr><td>2024-12-10</td><td>Total Car Service Naarden</td><td>Remvloeistof vervangen</td><td>€377,44</td></tr>
+          <tr><td>2025-01-07</td><td>Total Car Service Naarden</td><td>Airco onderhoud + vullen</td><td>€361,68</td></tr>
+          <tr><td>2025-05-19</td><td>Total Car Service Naarden</td><td>Uitlaatdemper vervangen</td><td>€277,70</td></tr>
+          <tr><td>2025-06-06</td><td>Total Car Service Naarden</td><td>Oliepomp inspectie</td><td>€370,27</td></tr>
+          <tr><td>2025-07-18</td><td>Total Car Service Naarden</td><td>Remleiding vervangen + APK</td><td>€212,50</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="3">Totaal</td><td>€3.243,54</td></tr></tfoot>
+      </table>
+
+      <!-- Serviceboekje -->
+      <table id="serviceTable" style="display:none;">
+        <thead><tr><th>Datum</th><th>Omschrijving</th><th>Garage</th><th>Kilometerstand</th></tr></thead>
+        <tbody>
+          <tr><td>2018-05-23</td><td>Service 60.000 km / 2 jaar</td><td>Total Car Service Naarden</td><td>62.150 km</td></tr>
+          <tr><td>2019-05-20</td><td>Service 90.000 km / 3 jaar</td><td>Total Car Service Naarden</td><td>92.810 km</td></tr>
+          <tr><td>2020-05-22</td><td>Service 120.000 km / 4 jaar</td><td>Total Car Service Naarden</td><td>122.460 km</td></tr>
+          <tr><td>2021-06-04</td><td>Service 150.000 km / 5 jaar</td><td>Total Car Service Naarden</td><td>151.080 km</td></tr>
+          <tr><td>2022-06-14</td><td>Service 180.000 km / 6 jaar</td><td>Total Car Service Naarden</td><td>179.740 km</td></tr>
+          <tr><td>2023-06-26</td><td>Service 210.000 km / 7 jaar</td><td>Total Car Service Naarden</td><td>210.560 km</td></tr>
+          <tr><td>2024-07-02</td><td>Service 240.000 km / 8 jaar</td><td>Total Car Service Naarden</td><td>240.950 km</td></tr>
+          <tr><td>2025-06-30</td><td>Service 270.000 km / 9 jaar</td><td>Total Car Service Naarden</td><td>269.430 km</td></tr>
+          <tr><td>2026-06-12</td><td>Service 300.000 km / 10 jaar</td><td>Total Car Service Naarden</td><td>301.200 km</td></tr>
+          <tr><td>2027-06-08</td><td>Service 330.000 km / 11 jaar</td><td>Total Car Service Naarden</td><td>332.870 km</td></tr>
+          <tr><td>2028-06-16</td><td>Service 360.000 km / 12 jaar</td><td>Total Car Service Naarden</td><td>361.550 km</td></tr>
+          <tr><td>2029-06-20</td><td>Service 390.000 km / 13 jaar</td><td>Total Car Service Naarden</td><td>392.310 km</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Aanstaand onderhoud -->
+      <table id="aanstaandTable" style="display:none;">
+        <thead><tr><th>Type</th><th>Verwacht bij</th><th>Urgentie</th><th>Kosten</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Distributieriem</td><td>380.000 km</td><td>⚠️ Hoog</td><td>€850,00</td><td><button class="btn btn-accent" onclick="openModal('planModal')">Plan</button></td></tr>
+          <tr><td>Remvloeistof verversen</td><td>370.000 km</td><td>🟠 Middel</td><td>€95,00</td><td><button class="btn btn-accent" onclick="openModal('planModal')">Plan</button></td></tr>
+          <tr><td>Bougies vervangen</td><td>400.000 km</td><td>🟢 Laag</td><td>€180,00</td><td><button class="btn btn-accent" onclick="openModal('planModal')">Plan</button></td></tr>
+        </tbody>
+      </table>
     </div>
-
-    <table id="reparatiesTable" class="data-table">
-      <thead>
-        <tr><th>Datum</th><th>Garage</th><th>Omschrijving</th><th>Bedrag</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>03/05/2023</td><td>Garage Naarden</td><td>Remblokken voor vervangen</td><td>€ 295,00</td></tr>
-        <tr><td>12/11/2022</td><td>HR Car Improvement</td><td>Airco service + vullen</td><td>€ 125,00</td></tr>
-        <tr><td>10/09/2022</td><td>Autohûs Haren</td><td>Accu vervangen</td><td>€ 180,00</td></tr>
-        <tr><td>05/06/2022</td><td>Autohûs Haren</td><td>Olie en filter vervangen</td><td>€ 150,00</td></tr>
-        <tr><td>15/01/2022</td><td>Autohûs Haren</td><td>Ruitenwissers en verlichting</td><td>€ 75,00</td></tr>
-        <tr><td>12/07/2021</td><td>Autohûs Haren</td><td>Remvloeistof vervangen</td><td>€ 85,00</td></tr>
-        <tr><td>08/04/2021</td><td>Autohûs Haren</td><td>Banden wissel (zomer)</td><td>€ 50,00</td></tr>
-        <tr><td>05/01/2021</td><td>Autohûs Haren</td><td>Kleine beurt + APK</td><td>€ 365,00</td></tr>
-        <tr><td>20/04/2020</td><td>Autohûs Haren</td><td>Grote beurt + distributieriem</td><td>€ 850,00</td></tr>
-        <tr><td>10/01/2019</td><td>Autohûs Haren</td><td>Banden vervangen</td><td>€ 400,00</td></tr>
-        <tr><td>15/03/2018</td><td>Broekhuis Groningen</td><td>Remschijven + blokken achter</td><td>€ 310,00</td></tr>
-        <tr><td>01/10/2017</td><td>Autohûs Haren</td><td>Olie, filter en bougies</td><td>€ 175,00</td></tr>
-      </tbody>
-      <tfoot>
-        <tr><td colspan="3"><b>Totaal</b></td><td><b>€ 3.860,00</b></td></tr>
-      </tfoot>
-    </table>
-
-    <table id="serviceTable" class="data-table" style="display:none;">
-      <thead><tr><th>Datum</th><th>Garage</th><th>Type</th><th>Soort</th><th>Kilometerstand</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>14/02/2006</td><td>Henk Scholten Ede</td><td>Service 30.000 km / 1 jaar</td><td>Kleine beurt</td><td>32.843 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>12/02/2007</td><td>Henk Scholten Ede</td><td>Service 60.000 km / 2 jaar</td><td>Kleine beurt</td><td>60.000 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>25/02/2008</td><td>Henk Scholten Nijmegen</td><td>Service 90.000 km / 3 jaar</td><td>Kleine beurt</td><td>92.688 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>15/04/2009</td><td>Henk Scholten Nijmegen</td><td>Service 120.000 km / 4 jaar</td><td>Grote beurt</td><td>120.889 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>25/05/2010</td><td>Henk Scholten Nijmegen</td><td>Service 150.000 km / 5 jaar</td><td>Kleine beurt</td><td>141.744 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>04/02/2012</td><td>Henk Scholten Nijmegen</td><td>Service 180.000 km / 6 jaar</td><td>Grote beurt + distributieriem</td><td>174.968 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>10/03/2014</td><td>Van Kampen Groningen</td><td>Service 210.000 km / 7 jaar</td><td>Grote beurt</td><td>199.462 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>15/01/2016</td><td>Broekhuis Groningen</td><td>Service 240.000 km / 8 jaar</td><td>Kleine beurt</td><td>216.420 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>28/06/2017</td><td>Autohûs Haren</td><td>Service 270.000 km / 9 jaar</td><td>Kleine beurt</td><td>239.087 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>20/04/2018</td><td>Autohûs Haren</td><td>Service 300.000 km / 10 jaar</td><td>Grote beurt + remmen</td><td>250.567 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>11/05/2022</td><td>Autohûs Haren</td><td>Service 330.000 km / 12 jaar</td><td>Kleine beurt</td><td>300.401 km</td><td>✅ Uitgevoerd</td></tr>
-        <tr><td>31/05/2024</td><td>Garage Naarden</td><td>Service 360.000 km / 14 jaar</td><td>Grote beurt</td><td>341.763 km</td><td>✅ Uitgevoerd</td></tr>
-      </tbody>
-      <tfoot><tr><td colspan="6">📘 12 onderhoudsbeurten geregistreerd</td></tr></tfoot>
-    </table>
-
-    <table id="aanstaandTable" class="data-table" style="display:none;">
-      <thead><tr><th>Type</th><th>Verwacht bij</th><th>Urgentie</th><th>Kosten</th><th></th></tr></thead>
-      <tbody>
-        <tr><td>Distributieriem</td><td>380.000 km</td><td>⚠️ Hoog</td><td>€ 850,00</td><td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td></tr>
-        <tr><td>Remvloeistof verversen</td><td>370.000 km</td><td>🟠 Middel</td><td>€ 95,00</td><td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td></tr>
-        <tr><td>Bougies vervangen</td><td>375.000 km</td><td>🟢 Laag</td><td>€ 120,00</td><td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td></tr>
-      </tbody>
-      <tfoot><tr><td colspan="3"><b>Geschatte totale kosten</b></td><td colspan="2"><b>€ 1.065,00</b></td></tr></tfoot>
-    </table>
   </div>
 
   <!-- MODALS -->
@@ -275,18 +279,62 @@
   <div class="toast" id="toast">✅ Verzoek verzonden</div>
 
   <script>
-    function openDetails(){ document.getElementById('vehicleDetail').style.display='block'; window.scrollTo(0,0); }
+    function openDetails() {
+      document.getElementById('homePage').style.display = 'none';
+      document.getElementById('vehicleDetail').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    function goBack() {
+      document.getElementById('vehicleDetail').style.display = 'none';
+      document.getElementById('homePage').style.display = 'block';
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.getElementById('reparatiesTable').style.display = tab === 'reparaties' ? '' : 'none';
+        document.getElementById('serviceTable').style.display = tab === 'service' ? '' : 'none';
+        document.getElementById('aanstaandTable').style.display = tab === 'aanstaand' ? '' : 'none';
+      });
+    });
+
     function openModal(id){ document.getElementById(id).style.display='flex'; }
     function closeModal(id){ document.getElementById(id).style.display='none'; }
-    function openPlanModal(){ openModal('planModal'); }
+
+    function previewUploads(event){
+      const files = event.target.files;
+      const container = document.getElementById('previewContainer');
+      container.innerHTML = '';
+      for (const file of files){
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.className = 'thumbnail';
+          container.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function aiSimulate(){
+      const el = document.getElementById('aiSuggestion');
+      el.innerText = "💡 Suggestie: Controleer remvloeistofniveau en plan vervanging binnen 2 maanden.";
+    }
+
+    function showToast(){
+      const toast = document.getElementById('toast');
+      toast.style.display = 'block';
+      setTimeout(()=>toast.style.display='none',2000);
+      closeModal('uploadModal');
+      closeModal('planModal');
+    }
 
     document.getElementById('uploadBtn').onclick=()=>openModal('uploadModal');
     document.getElementById('planBtn').onclick=()=>openModal('planModal');
-
-    document.querySelectorAll('.tab-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        const tab=btn.dataset.tab;
-        document.getElementById('reparatiesTable').style.display=tab==='reparaties'?'':'none';
-        document.getElementById('serviceTable').style.display=tab==='service'?'':'none
+  </script>
+</body>
+</html>
