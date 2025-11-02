@@ -33,38 +33,37 @@
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      max-width: 720px;
-      margin: 0 auto;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .vehicle-card:hover {
-      transform: scale(1.01);
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    }
-
-    .vehicle-info {
+      padding: 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto 1.5rem auto;
     }
 
-    .vehicle-info img {
-      width: 220px;
-      border-radius: 8px;
+    .vehicle-left img {
+      width: 300px;
+      border-radius: 10px;
+      object-fit: cover;
     }
 
-    .vehicle-text {
+    .vehicle-right {
       flex: 1;
-      min-width: 240px;
+    }
+
+    .vehicle-right h2 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .vehicle-right p {
+      margin: 0.2rem 0;
+      color: var(--muted);
     }
 
     .vehicle-buttons {
+      margin-top: 1rem;
       display: flex;
       flex-wrap: wrap;
       gap: 0.6rem;
@@ -94,8 +93,8 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 1rem;
-      max-width: 720px;
-      margin: 1rem auto;
+      max-width: 1200px;
+      margin: 0 auto;
       text-align: center;
       color: var(--muted);
       cursor: pointer;
@@ -106,7 +105,7 @@
       background: #1f1f1f;
     }
 
-    /* VEHICLE DETAIL */
+    /* DETAIL */
     #vehicleDetail {
       display: none;
       max-width: 1200px;
@@ -124,7 +123,7 @@
     }
 
     .tabs {
-      margin-top: 1rem;
+      margin-bottom: 1rem;
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
@@ -151,7 +150,6 @@
       background: var(--card);
       border-radius: 8px;
       overflow: hidden;
-      margin-top: 1rem;
     }
 
     th, td {
@@ -165,6 +163,12 @@
     }
 
     tr:hover td { background: #1f1f1f; }
+
+    tfoot td {
+      font-weight: 600;
+      color: var(--accent);
+      border-top: 2px solid var(--border);
+    }
 
     .urgentie {
       border-radius: 6px;
@@ -268,55 +272,59 @@
 
     @media(max-width:700px){
       body { margin: 1rem; }
-      .vehicle-info { flex-direction: column; align-items: flex-start; }
-      .vehicle-info img { width: 100%; margin-top: 1rem; }
-      .vehicle-buttons { flex-direction: column; width: 100%; }
-      .btn { width: 100%; text-align: center; }
+      .vehicle-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .vehicle-left img {
+        width: 100%;
+      }
+      .vehicle-buttons { width: 100%; flex-direction: column; }
+      .btn { width: 100%; }
     }
   </style>
 </head>
 <body>
+  <!-- HOME -->
   <div id="vehicleList">
     <h1>Mijn voertuigen</h1>
 
     <div class="vehicle-card" id="vehicleCard">
-      <div class="vehicle-info">
-        <div class="vehicle-text">
-          <h2>Volvo XC90 2.5T</h2>
-          <p>Kenteken: 83-PJ-SC</p>
-          <p>Laatst onderhoud: 2025-01-07</p>
-        </div>
+      <div class="vehicle-left">
         <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
       </div>
-
-      <div class="vehicle-buttons">
-        <button class="btn btn-accent" onclick="openVehicle()">Bekijk onderhoud</button>
-        <button class="btn btn-dark" onclick="openUploadModal()">+ Upload factuur</button>
-        <button class="btn btn-dark">Export CSV</button>
+      <div class="vehicle-right">
+        <h2>Volvo XC90 2.5T</h2>
+        <p>Kenteken: 83-PJ-SC</p>
+        <p>Laatst onderhoud: 2025-01-07</p>
+        <div class="vehicle-buttons">
+          <button class="btn btn-accent" onclick="openVehicle()">Bekijk onderhoud</button>
+          <button class="btn btn-dark" onclick="openUploadModal()">+ Upload factuur</button>
+          <button class="btn btn-dark">Export CSV</button>
+        </div>
       </div>
     </div>
 
     <div class="add-card">+ Voeg voertuig toe</div>
   </div>
 
-  <!-- Detailpagina -->
+  <!-- DETAIL -->
   <div id="vehicleDetail">
     <div class="back-btn" onclick="backToList()">← Terug</div>
 
     <div class="vehicle-card">
-      <div class="vehicle-info">
-        <div class="vehicle-text">
-          <h2>Volvo XC90 2.5T</h2>
-          <p>Kenteken: 83-PJ-SC</p>
-          <p>Laatst onderhoud: 2025-01-07</p>
-        </div>
+      <div class="vehicle-left">
         <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
       </div>
-
-      <div class="vehicle-buttons">
-        <button class="btn btn-accent" onclick="openPlanModal()">Plan afspraak</button>
-        <button class="btn btn-dark" onclick="openUploadModal()">+ Upload factuur</button>
-        <button class="btn btn-dark">Export CSV</button>
+      <div class="vehicle-right">
+        <h2>Volvo XC90 2.5T</h2>
+        <p>Kenteken: 83-PJ-SC</p>
+        <p>Laatst onderhoud: 2025-01-07</p>
+        <div class="vehicle-buttons">
+          <button class="btn btn-accent" onclick="openPlanModal()">Plan afspraak</button>
+          <button class="btn btn-dark" onclick="openUploadModal()">+ Upload factuur</button>
+          <button class="btn btn-dark">Export CSV</button>
+        </div>
       </div>
     </div>
 
@@ -326,27 +334,39 @@
       <button class="tab-btn" onclick="switchTab('aanstaand')">Aanstaand onderhoud</button>
     </div>
 
+    <!-- REPARATIES -->
     <table id="reparaties" class="tab-content">
       <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving</th><th>Bedrag</th></tr></thead>
       <tbody>
-        <tr><td>2023-10-17</td><td>Total Car Service</td><td>Remblokken en schijven vervangen</td><td>€488,03</td></tr>
-        <tr><td>2024-05-31</td><td>Total Car Service</td><td>Olie + filters</td><td>€544,08</td></tr>
+        <tr><td>2023-10-17</td><td>Total Car Service</td><td>Remblokset en remschijf vervangen</td><td>€488,03</td></tr>
+        <tr><td>2023-12-08</td><td>Total Car Service</td><td>Kleine beurt + olie</td><td>€264,06</td></tr>
+        <tr><td>2024-02-23</td><td>Autobandenhal.nl</td><td>Nieuwe winterbanden</td><td>€90,00</td></tr>
+        <tr><td>2024-05-31</td><td>Total Car Service</td><td>Olie & filters</td><td>€544,08</td></tr>
       </tbody>
+      <tfoot>
+        <tr><td colspan="3">Totaal</td><td>€1.386,17</td></tr>
+      </tfoot>
     </table>
 
+    <!-- SERVICEBOEKJE -->
+    <table id="service" class="tab-content" style="display:none;">
+      <thead><tr><th>Datum</th><th>Omschrijving</th><th>Garage</th></tr></thead>
+      <tbody>
+        <tr><td>2022-06-20</td><td>Jaarlijkse onderhoudsbeurt</td><td>Total Car Service</td></tr>
+        <tr><td>2023-05-12</td><td>Olie + filter vervangen</td><td>Total Car Service</td></tr>
+        <tr><td>2024-05-31</td><td>APK keuring + remmencontrole</td><td>Total Car Service</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3">3 onderhoudsbeurten geregistreerd</td></tr>
+      </tfoot>
+    </table>
+
+    <!-- AANSTAAND ONDERHOUD -->
     <table id="aanstaand" class="tab-content" style="display:none;">
       <thead><tr><th>Verwachte datum</th><th>Onderdeel</th><th>Geschatte kosten</th><th>Urgentie</th><th>Actie</th></tr></thead>
       <tbody>
-        <tr>
-          <td>2025-12-01</td><td>Distributieriem</td><td>€750,00</td>
-          <td><span class="urgentie hoog">⚠ Hoog</span></td>
-          <td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td>
-        </tr>
-        <tr>
-          <td>2026-06-15</td><td>Remblokken voor</td><td>€350,00</td>
-          <td><span class="urgentie laag">● Laag</span></td>
-          <td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td>
-        </tr>
+        <tr><td>2025-12-01</td><td>Distributieriem</td><td>€750,00</td><td><span class="urgentie hoog">⚠ Hoog</span></td><td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td></tr>
+        <tr><td>2026-06-15</td><td>Remblokken voor</td><td>€350,00</td><td><span class="urgentie laag">● Laag</span></td><td><button class="btn btn-accent" onclick="openPlanModal()">Plan</button></td></tr>
       </tbody>
     </table>
   </div>
