@@ -40,19 +40,20 @@
     .vehicle-card {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.5rem;
       width: 100%;
       margin-bottom: 1.5rem;
+      gap: 1.5rem;
     }
 
     .vehicle-card img {
       width: 220px;
       height: auto;
       border-radius: 10px;
-      margin-right: 1.5rem;
     }
 
     .vehicle-info h2 { margin: 0 0 0.25rem 0; }
@@ -71,6 +72,21 @@
     .btn-dark { background: var(--card); color: var(--text); border: 1px solid var(--border); }
     .btn-accent:hover { background: var(--accent-dark); }
 
+    /* secondary add-vehicle button */
+    .add-vehicle {
+      width: 100%;
+      height: 48px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .add-vehicle:hover { background: #2d2d2d; }
+
+    /* TABS */
     .tabs { margin-bottom: 1rem; }
     .tab-btn {
       background: var(--card);
@@ -87,6 +103,7 @@
       font-weight: 600;
     }
 
+    /* TABLES */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -104,6 +121,7 @@
     th { background: #202020; }
     tr:hover td { background: #1f1f1f; }
 
+    /* MODALS */
     .modal {
       display: none;
       position: fixed;
@@ -159,9 +177,29 @@
       margin-right: 5px;
     }
 
-    @media(max-width:700px){
-      .vehicle-card { flex-direction: column; align-items: flex-start; }
-      .vehicle-card img { width: 100%; margin-bottom: 1rem; }
+    /* RESPONSIVE FIXES */
+    @media(max-width: 700px) {
+      body { padding: 1rem; }
+      .vehicle-card {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .vehicle-card img {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+      .vehicle-info button {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        margin-bottom: 0.5rem;
+      }
     }
   </style>
 </head>
@@ -178,20 +216,20 @@
           <button class="btn btn-accent" onclick="openDetails()">Bekijk onderhoud</button>
         </div>
       </div>
-      <button class="btn btn-dark" style="width:100%;">+ Voertuig toevoegen</button>
+      <button class="add-vehicle">+ Voertuig toevoegen</button>
     </div>
 
     <div id="vehicleDetail" style="display:none;">
       <button class="btn btn-dark" onclick="goBack()" style="margin-bottom:1rem;">← Terug</button>
 
-      <div class="vehicle-card" style="cursor:default;">
+      <div class="vehicle-card">
         <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
         <div class="vehicle-info">
           <h2>Volvo XC90 2.5T</h2>
           <p>Kenteken: 83-PJ-SC</p>
-          <p>Laatst onderhoud: 31-05-2024</p>
+          <p>Laatst onderhoud: 2025-01-07</p>
           <button class="btn btn-accent" id="planBtn">Plan afspraak</button>
-          <button class="btn btn-dark" id="uploadBtn">Upload factuur</button>
+          <button class="btn btn-dark" id="uploadBtn">+ Upload factuur</button>
           <button class="btn btn-dark">Export CSV</button>
         </div>
       </div>
@@ -211,31 +249,17 @@
           <tr><td>2023-12-08</td><td>Total Car Service Naarden</td><td>Kleine beurt + oliefilter</td><td>€264,06</td></tr>
           <tr><td>2024-02-23</td><td>Autobandenhal.nl Tynaarlo</td><td>Nieuwe winterbanden</td><td>€90,00</td></tr>
           <tr><td>2024-05-31</td><td>Total Car Service Naarden</td><td>Olie & filters</td><td>€544,08</td></tr>
-          <tr><td>2024-12-10</td><td>Total Car Service Naarden</td><td>Remvloeistof vervangen</td><td>€377,44</td></tr>
-          <tr><td>2025-01-07</td><td>Total Car Service Naarden</td><td>Airco onderhoud + vullen</td><td>€361,68</td></tr>
-          <tr><td>2025-05-19</td><td>Total Car Service Naarden</td><td>Uitlaatdemper vervangen</td><td>€277,70</td></tr>
-          <tr><td>2025-06-06</td><td>Total Car Service Naarden</td><td>Oliepomp inspectie</td><td>€370,27</td></tr>
-          <tr><td>2025-07-18</td><td>Total Car Service Naarden</td><td>Remleiding vervangen + APK</td><td>€212,50</td></tr>
         </tbody>
-        <tfoot><tr><td colspan="3">Totaal</td><td>€3.243,54</td></tr></tfoot>
+        <tfoot><tr><td colspan="3">Totaal</td><td>€1.644,95</td></tr></tfoot>
       </table>
 
       <!-- Serviceboekje -->
       <table id="serviceTable" style="display:none;">
         <thead><tr><th>Datum</th><th>Omschrijving</th><th>Garage</th><th>Kilometerstand</th></tr></thead>
         <tbody>
-          <tr><td>2018-05-23</td><td>Service 60.000 km / 2 jaar</td><td>Total Car Service Naarden</td><td>62.150 km</td></tr>
-          <tr><td>2019-05-20</td><td>Service 90.000 km / 3 jaar</td><td>Total Car Service Naarden</td><td>92.810 km</td></tr>
-          <tr><td>2020-05-22</td><td>Service 120.000 km / 4 jaar</td><td>Total Car Service Naarden</td><td>122.460 km</td></tr>
-          <tr><td>2021-06-04</td><td>Service 150.000 km / 5 jaar</td><td>Total Car Service Naarden</td><td>151.080 km</td></tr>
-          <tr><td>2022-06-14</td><td>Service 180.000 km / 6 jaar</td><td>Total Car Service Naarden</td><td>179.740 km</td></tr>
-          <tr><td>2023-06-26</td><td>Service 210.000 km / 7 jaar</td><td>Total Car Service Naarden</td><td>210.560 km</td></tr>
-          <tr><td>2024-07-02</td><td>Service 240.000 km / 8 jaar</td><td>Total Car Service Naarden</td><td>240.950 km</td></tr>
-          <tr><td>2025-06-30</td><td>Service 270.000 km / 9 jaar</td><td>Total Car Service Naarden</td><td>269.430 km</td></tr>
-          <tr><td>2026-06-12</td><td>Service 300.000 km / 10 jaar</td><td>Total Car Service Naarden</td><td>301.200 km</td></tr>
-          <tr><td>2027-06-08</td><td>Service 330.000 km / 11 jaar</td><td>Total Car Service Naarden</td><td>332.870 km</td></tr>
-          <tr><td>2028-06-16</td><td>Service 360.000 km / 12 jaar</td><td>Total Car Service Naarden</td><td>361.550 km</td></tr>
-          <tr><td>2029-06-20</td><td>Service 390.000 km / 13 jaar</td><td>Total Car Service Naarden</td><td>392.310 km</td></tr>
+          <tr><td>2022-06-20</td><td>Jaarlijkse onderhoudsbeurt</td><td>Total Car Service</td><td>188.240 km</td></tr>
+          <tr><td>2023-05-12</td><td>Olie + filter vervangen</td><td>Total Car Service</td><td>198.740 km</td></tr>
+          <tr><td>2024-05-31</td><td>APK keuring + remmencontrole</td><td>Total Car Service</td><td>209.870 km</td></tr>
         </tbody>
       </table>
 
