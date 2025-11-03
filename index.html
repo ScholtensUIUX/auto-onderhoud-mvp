@@ -40,12 +40,10 @@
     .vehicle-card {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.5rem;
-      width: 100%;
       margin-bottom: 1.5rem;
       gap: 1.5rem;
     }
@@ -56,23 +54,46 @@
       border-radius: 10px;
     }
 
-    .vehicle-info h2 { margin: 0 0 0.25rem 0; }
-    .vehicle-info p { margin: 0.2rem 0; color: var(--muted); }
+    .vehicle-info {
+      flex: 1;
+    }
+
+    .vehicle-info h2 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.6rem;
+    }
+
+    .vehicle-info p {
+      margin: 0.25rem 0;
+      color: var(--muted);
+    }
 
     .btn {
-      padding: 0.45rem 1rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
       border: none;
       transition: all 0.2s;
+      margin-right: 0.4rem;
     }
 
-    .btn-accent { background: var(--accent); color: #000; }
-    .btn-dark { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-    .btn-accent:hover { background: var(--accent-dark); }
+    .btn-accent {
+      background: var(--accent);
+      color: #000;
+    }
 
-    /* secondary add-vehicle button */
+    .btn-accent:hover {
+      background: var(--accent-dark);
+    }
+
+    .btn-dark {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ADD VEHICLE BUTTON */
     .add-vehicle {
       width: 100%;
       height: 48px;
@@ -84,19 +105,28 @@
       cursor: pointer;
       font-size: 1rem;
     }
-    .add-vehicle:hover { background: #2d2d2d; }
+
+    .add-vehicle:hover {
+      background: #2d2d2d;
+    }
 
     /* TABS */
-    .tabs { margin-bottom: 1rem; }
+    .tabs {
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
     .tab-btn {
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1rem;
       border-radius: 6px;
-      margin-right: 0.5rem;
       cursor: pointer;
     }
+
     .tab-btn.active {
       background: var(--accent);
       color: #000;
@@ -110,6 +140,7 @@
       background: var(--card);
       border-radius: 8px;
       overflow: hidden;
+      margin-bottom: 2rem;
     }
 
     th, td {
@@ -118,8 +149,13 @@
       text-align: left;
     }
 
-    th { background: #202020; }
-    tr:hover td { background: #1f1f1f; }
+    th {
+      background: #202020;
+    }
+
+    tr:hover td {
+      background: #1f1f1f;
+    }
 
     /* MODALS */
     .modal {
@@ -157,18 +193,6 @@
       cursor: pointer;
     }
 
-    .toast {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--accent-dark);
-      color: #000;
-      padding: 0.8rem 1rem;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
     .thumbnail {
       width: 60px;
       height: 60px;
@@ -177,34 +201,28 @@
       margin-right: 5px;
     }
 
-    /* RESPONSIVE FIXES */
-    @media(max-width: 700px) {
+    /* RESPONSIVE */
+    @media(max-width: 768px) {
       body { padding: 1rem; }
       .vehicle-card {
         flex-direction: column;
         align-items: flex-start;
-        text-align: left;
       }
       .vehicle-card img {
         width: 100%;
         margin-bottom: 1rem;
       }
-      .vehicle-info button {
+      .btn {
+        display: block;
         width: 100%;
-        margin-top: 0.5rem;
-      }
-      .tabs {
-        display: flex;
-        flex-wrap: wrap;
-      }
-      .tab-btn {
-        margin-bottom: 0.5rem;
+        margin: 0.3rem 0;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- HOME PAGE -->
     <div id="homePage">
       <h1>Mijn voertuigen</h1>
       <div class="vehicle-card">
@@ -219,6 +237,7 @@
       <button class="add-vehicle">+ Voertuig toevoegen</button>
     </div>
 
+    <!-- DETAIL PAGE -->
     <div id="vehicleDetail" style="display:none;">
       <button class="btn btn-dark" onclick="goBack()" style="margin-bottom:1rem;">← Terug</button>
 
@@ -240,30 +259,38 @@
         <button class="tab-btn" data-tab="aanstaand">Aanstaand onderhoud</button>
       </div>
 
-      <!-- Reparaties -->
+      <!-- REPARATIES -->
       <table id="reparatiesTable">
         <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving</th><th>Bedrag</th></tr></thead>
         <tbody>
-          <tr><td>2023-10-17</td><td>Total Car Service Naarden</td><td>Remblokset en remschijf vervangen, werkplaatskosten</td><td>€488,03</td></tr>
+          <tr><td>2022-03-10</td><td>Total Car Service Naarden</td><td>Remvloeistof vervangen</td><td>€95,00</td></tr>
+          <tr><td>2022-06-20</td><td>Total Car Service Naarden</td><td>Kleine beurt + filters</td><td>€260,00</td></tr>
+          <tr><td>2022-12-18</td><td>Total Car Service Naarden</td><td>Grote beurt + bougies</td><td>€640,00</td></tr>
+          <tr><td>2023-03-12</td><td>Total Car Service Naarden</td><td>Remblokken achter vervangen</td><td>€210,00</td></tr>
+          <tr><td>2023-06-15</td><td>Total Car Service Naarden</td><td>Nieuwe zomerbanden</td><td>€480,00</td></tr>
+          <tr><td>2023-08-22</td><td>Total Car Service Naarden</td><td>APK + controle</td><td>€75,00</td></tr>
+          <tr><td>2023-10-17</td><td>Total Car Service Naarden</td><td>Remblokset + schijven vervangen</td><td>€488,03</td></tr>
           <tr><td>2023-11-29</td><td>Total Car Service Naarden</td><td>Olie + filter vervangen</td><td>€258,78</td></tr>
           <tr><td>2023-12-08</td><td>Total Car Service Naarden</td><td>Kleine beurt + oliefilter</td><td>€264,06</td></tr>
           <tr><td>2024-02-23</td><td>Autobandenhal.nl Tynaarlo</td><td>Nieuwe winterbanden</td><td>€90,00</td></tr>
           <tr><td>2024-05-31</td><td>Total Car Service Naarden</td><td>Olie & filters</td><td>€544,08</td></tr>
+          <tr><td>2024-08-21</td><td>Total Car Service Naarden</td><td>Nieuwe accu</td><td>€189,00</td></tr>
         </tbody>
-        <tfoot><tr><td colspan="3">Totaal</td><td>€1.644,95</td></tr></tfoot>
+        <tfoot><tr><td colspan="3">Totaal</td><td>€3.593,95</td></tr></tfoot>
       </table>
 
-      <!-- Serviceboekje -->
+      <!-- SERVICEBOEKJE -->
       <table id="serviceTable" style="display:none;">
         <thead><tr><th>Datum</th><th>Omschrijving</th><th>Garage</th><th>Kilometerstand</th></tr></thead>
         <tbody>
+          <tr><td>2021-05-01</td><td>APK + grote beurt</td><td>Total Car Service</td><td>165.200 km</td></tr>
           <tr><td>2022-06-20</td><td>Jaarlijkse onderhoudsbeurt</td><td>Total Car Service</td><td>188.240 km</td></tr>
           <tr><td>2023-05-12</td><td>Olie + filter vervangen</td><td>Total Car Service</td><td>198.740 km</td></tr>
           <tr><td>2024-05-31</td><td>APK keuring + remmencontrole</td><td>Total Car Service</td><td>209.870 km</td></tr>
         </tbody>
       </table>
 
-      <!-- Aanstaand onderhoud -->
+      <!-- AANSTAAND -->
       <table id="aanstaandTable" style="display:none;">
         <thead><tr><th>Type</th><th>Verwacht bij</th><th>Urgentie</th><th>Kosten</th><th></th></tr></thead>
         <tbody>
@@ -274,33 +301,6 @@
       </table>
     </div>
   </div>
-
-  <!-- MODALS -->
-  <div id="uploadModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('uploadModal')">&times;</span>
-      <h3>Nieuwe factuur uploaden</h3>
-      <input type="text" placeholder="Omschrijving..." />
-      <input type="number" placeholder="Bedrag (€)" />
-      <input type="file" id="factuurFile" accept=".jpg,.jpeg,.png,.pdf" multiple onchange="previewUploads(event)" />
-      <div id="previewContainer" style="display:flex; flex-wrap:wrap;"></div>
-      <button class="btn btn-accent" onclick="showToast()">Opslaan</button>
-    </div>
-  </div>
-
-  <div id="planModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('planModal')">&times;</span>
-      <h3>Afspraak plannen</h3>
-      <textarea id="issueText" placeholder="Omschrijf het probleem..."></textarea>
-      <input type="file" id="planFile" accept=".jpg,.jpeg,.png" multiple onchange="previewUploads(event)" />
-      <div id="aiSuggestion" style="margin-top:1rem; font-size:0.9rem; color:var(--muted);"></div>
-      <button class="btn btn-accent" onclick="aiSimulate()">Genereer AI suggestie</button>
-      <button class="btn btn-accent" onclick="showToast()">Verzend verzoek</button>
-    </div>
-  </div>
-
-  <div class="toast" id="toast">✅ Verzoek verzonden</div>
 
   <script>
     function openDetails() {
@@ -324,41 +324,6 @@
         document.getElementById('aanstaandTable').style.display = tab === 'aanstaand' ? '' : 'none';
       });
     });
-
-    function openModal(id){ document.getElementById(id).style.display='flex'; }
-    function closeModal(id){ document.getElementById(id).style.display='none'; }
-
-    function previewUploads(event){
-      const files = event.target.files;
-      const container = document.getElementById('previewContainer');
-      container.innerHTML = '';
-      for (const file of files){
-        const reader = new FileReader();
-        reader.onload = e => {
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          img.className = 'thumbnail';
-          container.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function aiSimulate(){
-      const el = document.getElementById('aiSuggestion');
-      el.innerText = "💡 Suggestie: Controleer remvloeistofniveau en plan vervanging binnen 2 maanden.";
-    }
-
-    function showToast(){
-      const toast = document.getElementById('toast');
-      toast.style.display = 'block';
-      setTimeout(()=>toast.style.display='none',2000);
-      closeModal('uploadModal');
-      closeModal('planModal');
-    }
-
-    document.getElementById('uploadBtn').onclick=()=>openModal('uploadModal');
-    document.getElementById('planBtn').onclick=()=>openModal('planModal');
   </script>
 </body>
 </html>
