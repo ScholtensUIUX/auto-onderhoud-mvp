@@ -13,7 +13,6 @@
       --accent: #8fff91;
       --accent-dark: #73d176;
       --muted: #aaa;
-      --danger: #f35a5a;
     }
 
     body {
@@ -223,7 +222,6 @@
       z-index: 200;
     }
 
-    /* RESPONSIVE */
     @media(max-width: 768px) {
       body { padding: 1rem; }
       .vehicle-card {
@@ -244,7 +242,7 @@
 </head>
 <body>
   <div class="container">
-    <!-- HOME PAGE -->
+    <!-- HOME -->
     <div id="homePage">
       <h1>Mijn voertuigen</h1>
       <div class="vehicle-card">
@@ -259,10 +257,9 @@
       <button class="add-vehicle">+ Voertuig toevoegen</button>
     </div>
 
-    <!-- DETAIL PAGE -->
+    <!-- DETAIL -->
     <div id="vehicleDetail" style="display:none;">
       <button class="btn btn-dark" onclick="goBack()" style="margin-bottom:1rem;">← Terug</button>
-
       <div class="vehicle-card">
         <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
         <div class="vehicle-info">
@@ -285,6 +282,7 @@
       <table id="reparatiesTable">
         <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving</th><th>Bedrag</th></tr></thead>
         <tbody>
+          <tr><td>2021-09-10</td><td>Total Car Service Naarden</td><td>Remvloeistof + olie</td><td>€180,00</td></tr>
           <tr><td>2022-03-10</td><td>Total Car Service Naarden</td><td>Remvloeistof vervangen</td><td>€95,00</td></tr>
           <tr><td>2022-06-20</td><td>Total Car Service Naarden</td><td>Kleine beurt + filters</td><td>€260,00</td></tr>
           <tr><td>2022-12-18</td><td>Total Car Service Naarden</td><td>Grote beurt + bougies</td><td>€640,00</td></tr>
@@ -296,9 +294,7 @@
           <tr><td>2023-12-08</td><td>Total Car Service Naarden</td><td>Kleine beurt + oliefilter</td><td>€264,06</td></tr>
           <tr><td>2024-02-23</td><td>Autobandenhal.nl Tynaarlo</td><td>Nieuwe winterbanden</td><td>€90,00</td></tr>
           <tr><td>2024-05-31</td><td>Total Car Service Naarden</td><td>Olie & filters</td><td>€544,08</td></tr>
-          <tr><td>2024-08-21</td><td>Total Car Service Naarden</td><td>Nieuwe accu</td><td>€189,00</td></tr>
         </tbody>
-        <tfoot><tr><td colspan="3">Totaal</td><td>€3.593,95</td></tr></tfoot>
       </table>
 
       <!-- SERVICEBOEKJE -->
@@ -387,16 +383,11 @@
       });
     });
 
+    document.getElementById('planBtn').addEventListener('click', () => openModal('planModal'));
+    document.getElementById('uploadBtn').addEventListener('click', () => openModal('uploadModal'));
+
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
     }
 
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = '✅ ' + msg;
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none
+    function closeModal(id)
