@@ -242,7 +242,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- HOME -->
     <div id="homePage">
       <h1>Mijn voertuigen</h1>
       <div class="vehicle-card">
@@ -251,15 +250,14 @@
           <h2>Volvo XC90 2.5T</h2>
           <p>Kenteken: 83-PJ-SC</p>
           <p>Laatst onderhoud: 31-05-2024</p>
-          <button class="btn btn-accent" onclick="openDetails()">Bekijk onderhoud</button>
+          <button class="btn btn-accent" id="openDetailsBtn">Bekijk onderhoud</button>
         </div>
       </div>
       <button class="add-vehicle">+ Voertuig toevoegen</button>
     </div>
 
-    <!-- DETAIL -->
     <div id="vehicleDetail" style="display:none;">
-      <button class="btn btn-dark" onclick="goBack()" style="margin-bottom:1rem;">← Terug</button>
+      <button class="btn btn-dark" id="backBtn" style="margin-bottom:1rem;">← Terug</button>
       <div class="vehicle-card">
         <img src="xc90_2.5t_image.png" alt="Volvo XC90" />
         <div class="vehicle-info">
@@ -278,116 +276,81 @@
         <button class="tab-btn" data-tab="aanstaand">Aanstaand onderhoud</button>
       </div>
 
-      <!-- REPARATIES -->
       <table id="reparatiesTable">
         <thead><tr><th>Datum</th><th>Garage</th><th>Omschrijving</th><th>Bedrag</th></tr></thead>
         <tbody>
-          <tr><td>2021-09-10</td><td>Total Car Service Naarden</td><td>Remvloeistof + olie</td><td>€180,00</td></tr>
-          <tr><td>2022-03-10</td><td>Total Car Service Naarden</td><td>Remvloeistof vervangen</td><td>€95,00</td></tr>
-          <tr><td>2022-06-20</td><td>Total Car Service Naarden</td><td>Kleine beurt + filters</td><td>€260,00</td></tr>
-          <tr><td>2022-12-18</td><td>Total Car Service Naarden</td><td>Grote beurt + bougies</td><td>€640,00</td></tr>
-          <tr><td>2023-03-12</td><td>Total Car Service Naarden</td><td>Remblokken achter vervangen</td><td>€210,00</td></tr>
-          <tr><td>2023-06-15</td><td>Total Car Service Naarden</td><td>Nieuwe zomerbanden</td><td>€480,00</td></tr>
-          <tr><td>2023-08-22</td><td>Total Car Service Naarden</td><td>APK + controle</td><td>€75,00</td></tr>
-          <tr><td>2023-10-17</td><td>Total Car Service Naarden</td><td>Remblokset + schijven vervangen</td><td>€488,03</td></tr>
+          <tr><td>2023-10-17</td><td>Total Car Service Naarden</td><td>Remblokset en remschijf vervangen, werkplaatkosten</td><td>€488,03</td></tr>
           <tr><td>2023-11-29</td><td>Total Car Service Naarden</td><td>Olie + filter vervangen</td><td>€258,78</td></tr>
           <tr><td>2023-12-08</td><td>Total Car Service Naarden</td><td>Kleine beurt + oliefilter</td><td>€264,06</td></tr>
           <tr><td>2024-02-23</td><td>Autobandenhal.nl Tynaarlo</td><td>Nieuwe winterbanden</td><td>€90,00</td></tr>
           <tr><td>2024-05-31</td><td>Total Car Service Naarden</td><td>Olie & filters</td><td>€544,08</td></tr>
         </tbody>
       </table>
-
-      <!-- SERVICEBOEKJE -->
-      <table id="serviceTable" style="display:none;">
-        <thead><tr><th>Datum</th><th>Omschrijving</th><th>Garage</th><th>Kilometerstand</th></tr></thead>
-        <tbody>
-          <tr><td>2020-05-22</td><td>APK + onderhoud</td><td>Total Car Service</td><td>148.500 km</td></tr>
-          <tr><td>2021-05-01</td><td>Grote beurt + filters</td><td>Total Car Service</td><td>165.200 km</td></tr>
-          <tr><td>2021-11-13</td><td>Nieuwe accu + olieverversing</td><td>Total Car Service</td><td>173.400 km</td></tr>
-          <tr><td>2022-06-20</td><td>Jaarlijkse onderhoudsbeurt</td><td>Total Car Service</td><td>188.240 km</td></tr>
-          <tr><td>2022-12-10</td><td>APK + filters</td><td>Total Car Service</td><td>192.800 km</td></tr>
-          <tr><td>2023-05-12</td><td>Olie + filter vervangen</td><td>Total Car Service</td><td>198.740 km</td></tr>
-          <tr><td>2023-11-15</td><td>Grote beurt + remcontrole</td><td>Total Car Service</td><td>204.120 km</td></tr>
-          <tr><td>2024-05-31</td><td>APK keuring + remmencontrole</td><td>Total Car Service</td><td>209.870 km</td></tr>
-          <tr><td>2024-10-21</td><td>Nieuwe banden + uitlijning</td><td>Total Car Service</td><td>213.540 km</td></tr>
-          <tr><td>2025-01-07</td><td>Kleine beurt + olieverversing</td><td>Total Car Service</td><td>215.800 km</td></tr>
-        </tbody>
-      </table>
-
-      <!-- AANSTAAND -->
-      <table id="aanstaandTable" style="display:none;">
-        <thead><tr><th>Type</th><th>Verwacht bij</th><th>Urgentie</th><th>Kosten</th><th></th></tr></thead>
-        <tbody>
-          <tr><td>Distributieriem</td><td>380.000 km</td><td>⚠️ Hoog</td><td>€850,00</td><td><button class="btn btn-accent" onclick="openModal('planModal')">Plan</button></td></tr>
-          <tr><td>Remvloeistof verversen</td><td>370.000 km</td><td>🟠 Middel</td><td>€95,00</td><td><button class="btn btn-accent" onclick="openModal('planModal')">Plan</button></td></tr>
-          <tr><td>Bougies vervangen</td><td>400.000 km</td><td>🟢 Laag</td><td>€180,00</td><td><button class="btn btn-accent" onclick="openModal('planModal')">Plan</button></td></tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
-  <!-- PLAN MODAL -->
   <div id="planModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeModal('planModal')">&times;</span>
+      <span class="close" data-modal="planModal">&times;</span>
       <h3>Plan onderhoudsafspraak</h3>
       <label>Datum:</label>
       <input type="date" />
       <label>Opmerkingen:</label>
       <textarea placeholder="Bijv. olie vervangen of controle remmen..."></textarea>
-      <label>Voeg afbeelding toe:</label>
-      <input type="file" id="planFile" accept="image/*" multiple onchange="previewFiles(event, 'planPreview')" />
-      <div class="preview" id="planPreview"></div>
-      <button class="btn btn-accent" onclick="showToast('Afspraak ingepland!')">Opslaan</button>
+      <button class="btn btn-accent" data-save="plan">Opslaan</button>
     </div>
   </div>
 
-  <!-- UPLOAD MODAL -->
   <div id="uploadModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeModal('uploadModal')">&times;</span>
+      <span class="close" data-modal="uploadModal">&times;</span>
       <h3>Nieuwe factuur uploaden</h3>
       <label>Omschrijving:</label>
       <input type="text" placeholder="Bijv. Remblokken vervangen" />
       <label>Bedrag (€):</label>
       <input type="number" />
-      <label>Upload bestand:</label>
-      <input type="file" id="uploadFile" accept="image/*,.pdf" multiple onchange="previewFiles(event, 'uploadPreview')" />
-      <div class="preview" id="uploadPreview"></div>
-      <button class="btn btn-accent" onclick="showToast('Factuur geüpload!')">Opslaan</button>
+      <button class="btn btn-accent" data-save="upload">Opslaan</button>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    function openDetails() {
-      document.getElementById('homePage').style.display = 'none';
-      document.getElementById('vehicleDetail').style.display = 'block';
+    // navigatie
+    const home = document.getElementById('homePage');
+    const detail = document.getElementById('vehicleDetail');
+    document.getElementById('openDetailsBtn').addEventListener('click', () => {
+      home.style.display = 'none';
+      detail.style.display = 'block';
       window.scrollTo(0, 0);
-    }
-
-    function goBack() {
-      document.getElementById('vehicleDetail').style.display = 'none';
-      document.getElementById('homePage').style.display = 'block';
-    }
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const tab = btn.dataset.tab;
-        document.getElementById('reparatiesTable').style.display = tab === 'reparaties' ? '' : 'none';
-        document.getElementById('serviceTable').style.display = tab === 'service' ? '' : 'none';
-        document.getElementById('aanstaandTable').style.display = tab === 'aanstaand' ? '' : 'none';
-      });
+    });
+    document.getElementById('backBtn').addEventListener('click', () => {
+      detail.style.display = 'none';
+      home.style.display = 'block';
     });
 
+    // modals
+    const openModal = id => document.getElementById(id).style.display = 'flex';
+    const closeModal = id => document.getElementById(id).style.display = 'none';
     document.getElementById('planBtn').addEventListener('click', () => openModal('planModal'));
     document.getElementById('uploadBtn').addEventListener('click', () => openModal('uploadModal'));
+    document.querySelectorAll('.close').forEach(c => c.onclick = () => closeModal(c.dataset.modal));
 
-    function openModal(id) {
-      document.getElementById(id).style.display = 'flex';
+    // toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = '✅ ' + msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2000);
     }
 
-    function closeModal(id)
+    document.querySelectorAll('[data-save]').forEach(b => {
+      b.onclick = () => {
+        const modal = b.dataset.save === 'plan' ? 'planModal' : 'uploadModal';
+        showToast('Opgeslagen!');
+        closeModal(modal);
+      };
+    });
+  </script>
+</body>
+</html>
